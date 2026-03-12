@@ -8,7 +8,6 @@ import { getUserFetch } from "../../app/redux/reducer/auth/userSlice";
 
 import CustomButton from "../Custom/CustomButton";
 import { useLanguage } from "@/app/context/LangContext";
-import { cookieHelper } from "@/src/helpers/cookieHelper";
 
 
 
@@ -30,9 +29,9 @@ const RePack = ({ setShowProDetail }) => {
   };
 
   useEffect(() => {
-    const token = cookieHelper.get("access_token");
+    const user = JSON.parse(localStorage.getItem("user") || "{} ");
 
-    if (token) {
+    if (user.name) {
       dispatch(getUserFetch());
     } else {
     }

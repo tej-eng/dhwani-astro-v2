@@ -5,7 +5,6 @@ import AlertLoading from './AlertLoading';
 import { useRouter } from "next/navigation";
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { cookieHelper } from '@/src/helpers/cookieHelper';
 import { useLanguage } from '../context/LangContext';
 import dynamic from 'next/dynamic';
 
@@ -24,10 +23,11 @@ export default function SingleButton({ astro_charge_chat, availability, astro_ch
     const { userData } = useSelector((state) => state.getuserDetail);
     const [isMounted, setIsMounted] = useState(false);
     const { messages: t } = useLanguage();
-    const token = cookieHelper.get("access_token");
+    let user = JSON.parse(localStorage.getItem("user") || "{} ");
+
     useEffect(() => {
-        setIsMounted(!!token);
-    }, [token]);
+        setIsMounted(!!user?.name);
+    }, [user]);
     useEffect(() => {
 
     }, [userData])
@@ -35,7 +35,7 @@ export default function SingleButton({ astro_charge_chat, availability, astro_ch
 
     const chatredirect = () => {
 
-        if (!token) {
+        if (!user?.name) {
             toast.error(`${t?.pop?.pop1 || "You Are Offline. Please Connect to Login"}`);
             return;
         }
@@ -48,7 +48,7 @@ export default function SingleButton({ astro_charge_chat, availability, astro_ch
 
     const callredirect = () => {
 
-        if (!token) {
+        if (!user?.name) {
             toast.error(`${t?.pop?.pop1 || "You Are Offline. Please Connect to Login"}`);
             return;
         }

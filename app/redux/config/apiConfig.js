@@ -1,4 +1,3 @@
-import { cookieHelper } from "@/src/helpers/cookieHelper";
 import { localStorageHelper } from "../../../src/helpers/localStorageHelper";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5002/api/";
 const API_AUTH_URL = process.env.NEXT_PUBLIC_API_AUTH_URL || "http://localhost:5003/api/";
@@ -50,7 +49,8 @@ export const API_ENDPOINTS = {
 
 
 export const getAuthHeaders = () => {
-  const token = cookieHelper.get("access_token");
+  let user = JSON.parse(localStorage.getItem("user") || "{} ");
+  const token = user?.name;
   return token;
 };
 

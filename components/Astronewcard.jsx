@@ -53,12 +53,11 @@ export default function Astronewcard() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [alert, setAlert] = useState(false);
-  const { data = [], loading } = useSelector(
+  const { data = []} = useSelector(
     (state) => state.astrologerReducer
   );
 
-  const socket = useContext(SocketContext);
-
+const { socket,loading} = useContext(SocketContext);
   const [astroId, setAstroId] = useState(0);
   const [busyAstros, setBusyAstros] = useState([]);
 
@@ -84,40 +83,38 @@ export default function Astronewcard() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!socket) {
-      console.log("socket not available");
+  if (!socket) {
+    console.log("socket not available");
+    return;
+  }
+
+  socket.on("astrologer_request_busy", (data) => {
+    const id = Number(data?.astro_id);
+
+    if (busySet.has(id)) {
       return;
     }
 
-    socket.on("astrologer_request_busy", (data) => {
-      const id = Number(data?.astro_id);
+    busySet.add(id);
+    setBusyAstros([...busySet]);
+  });
 
-      if (busySet.has(id)) {
-        console.log(`Astrologer ID ${id} is already marked as busy.`);
-        return;
-      }
+  const handleFree = (data) => {
+    const id = parseInt(data.astro_id);
 
-      busySet.add(id);
-      setBusyAstros([...busySet]);
-    });
+    setBusyAstros((prev) =>
+      prev.filter((astroId) => astroId !== id)
+    );
+  };
 
-    const handleFree = (data) => {
-      const id = parseInt(data.astro_id);
-      setBusyAstros((prev) => {
-        if (!prev.includes(id)) {
-          return prev;
-        }
-        return prev.filter((astroId) => astroId !== id);
-      });
-    };
+  socket.on("astrologerfree", handleFree);
 
-    socket.on("astrologerfree", handleFree);
+  return () => {
+    socket.off("astrologer_request_busy");
+    socket.off("astrologerfree", handleFree);
+  };
 
-    return () => {
-      socket.off("astrologer_request_busy");
-      socket.off("astrologerfree", handleFree);
-    };
-  }, [socket]);
+}, [socket]);
 
   const astrologeroffline = () => {
     toast.error(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
@@ -13,64 +13,31 @@ import { gql } from "@apollo/client";
 import client from "@/utils/apolloClient";
 import LanguageSwitcher from "../components/Custom/LangSwitcher";
 import { useLanguage } from "../app/context/LangContext";
-import { cookieHelper } from "@/src/helpers/cookieHelper";
-
+import { AuthContext } from "@/app/context/authContext";
 const LOGOUT_MUTATION = gql`
   mutation Logout {
     logout
   }
 `;
 
-const ME_QUERY = gql`
-  query Me {
-    me {
-      id
-      name
-      mobile
-    }
-  }
-`;
-
 export default function Header({ openSignInModal }) {
+  const { user, setUser, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const { messages: t } = useLanguage();
   const [isUserOpen, setIsUserOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // ==============================
-  // ME QUERY
-  // ==============================
+console.log("isssssssssssssssssss",isLoggedIn);
 
-  const { data, loading, error } = useQuery(ME_QUERY, {
-    fetchPolicy: "network-only",
-    notifyOnNetworkStatusChange: true,
-  });
+// useEffect(() => {
+//   const storedUser = localStorage.getItem("user");
 
-  // ==============================
-  // HANDLE UNAUTHORIZED AUTO
-  // ==============================
+//   if (storedUser) {
+//     setUser(JSON.parse(storedUser));
+//   }
 
-  useEffect(() => {
-    if (error) {
-      if (
-        error.message?.includes("Unauthorized") ||
-        error.graphQLErrors?.some((e) =>
-          e.message?.includes("Unauthorized")
-        )
-      ) {
-        handleForceLogout(false);
-      }
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (data?.me) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, [data]);
+// }, [isLoggedIn]);
 
   // ==============================
   // LOGOUT MUTATION
@@ -78,36 +45,27 @@ export default function Header({ openSignInModal }) {
 
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
-
-  const handleForceLogout = async (showToast = true) => {
-    try {
-      cookieHelper.remove("accessToken");
-      cookieHelper.remove("refreshToken");
-
-      await client.clearStore();
-      await persistor.purge();
-
-      setIsLoggedIn(false);
-
-      if (showToast) {
-        toast.success("Logged out successfully");
-      }
-
-      router.refresh();
-    } catch (err) {
-      console.error("Force logout error:", err);
-    }
-  };
-
   const LogOut = async () => {
     try {
-      await logoutMutation().catch(() => {});
-
-      await handleForceLogout(true);
-      router.push("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-      await handleForceLogout(true);
+      const result = await logoutMutation().catch(() => {});
+      console.log("Logout result:", result.data.logout);
+      if(result.data.logout){
+         localStorage.removeItem("user");
+         setUser(null);
+          setIsLoggedIn(false);
+         await client.clearStore();
+         await persistor.purge();
+        //  setIsLoggedIn(false);
+         toast.success("Logged out successfully");
+        router.refresh();
+         router.push("/");
+      }else{        
+        toast.error("Logout failed");
+      }
+      
+    } catch (err) {
+      console.error("Logout error:", err);
+     
     }
   };
 
@@ -186,8 +144,8 @@ export default function Header({ openSignInModal }) {
 
             {isUserOpen && (
               <div className="absolute -left-36 z-30 w-50 p-3 mt-2 space-y-3 bg-purple-900 rounded-lg shadow-lg">
-                <p className="text-white text-sm">
-                  {data?.me?.name || "User"}
+                <p className="text-white text-sm"> 
+                  {user?.name || "User"}
                 </p>
               </div>
             )}

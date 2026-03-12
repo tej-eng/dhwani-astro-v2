@@ -15,21 +15,12 @@ import { useSearchParams } from 'next/navigation';
 
 export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
 
-
-
-
-
-
-
-
-
-
   const searchParams = useSearchParams();
 
   const payAmount = amount || 0;
 
-  console.log("🟢 PayOPT Received Amount:", payAmount);
-  console.log("🟢 Original Amount (DB):", oriamount);
+  console.log(" PayOPT Received Amount:", payAmount);
+  console.log("Original Amount (DB):", oriamount);
 
   const dispatch = useDispatch();
   const { statusCode } = useSelector((state) => state.recharge_payment);
@@ -59,8 +50,8 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
 
   const [loading, setLoading] = useState(false);
   const handleCheckout = async (selectedMethod) => {
-    console.log("💳 User Selected Payment Method:", selectedMethod);
-    console.log("💰 Sending Amount to Razorpay:", payAmount);
+    console.log("User Selected Payment Method:", selectedMethod);
+    console.log(" Sending Amount to Razorpay:", payAmount);
     try {
       setLoading(true);
       const res = await fetch("/api/createOrder", {
@@ -71,7 +62,7 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
 
       const order = await res.json();
 
-      console.log("📦 Razorpay Order Created:", order);
+      console.log(" Razorpay Order Created:", order);
 
 
       if (order.error) {
@@ -89,7 +80,7 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
         order_id: order.id,
         handler: async function (response) {
 
-          console.log("✅ Razorpay Payment Success Response:", response);
+          console.log("Razorpay Payment Success Response:", response);
           setLoading(true);
 
           const res = await fetch("/api/verifypayment", {
@@ -102,7 +93,7 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
             }),
           });
           const order = await res.json();
-          console.log("🔐 Payment Verification Response:", order);
+          console.log("Payment Verification Response:", order);
 
           // console.log("hello",order);
 
@@ -114,7 +105,7 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
 
             const totalamount = oriamount || 0;
 
-            console.log("📤 Dispatching Payment Detail:");
+            console.log("Dispatching Payment Detail:");
             console.log({
               userId,
               paymentId,

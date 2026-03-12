@@ -34,8 +34,7 @@ export const useOTP = () => {
 
   const timerRef = useRef(null);
 
-  const [requestOtp, { loading: otpLoading }] =
-    useMutation(REQUEST_OTP);
+  const [requestOtp, { loading: otpLoading }] =useMutation(REQUEST_OTP);
 
   const [verifyOtp, { loading: verifyLoading }] =
     useMutation(AUTHWITH_OTP);
@@ -58,10 +57,19 @@ export const useOTP = () => {
   };
 
   const sendOtp = async (mobile) => {
-    await requestOtp({ variables: { mobile } });
-    setStep("OTP");
-    startTimer(60);
-  };
+  try {
+    const res = await requestOtp({ variables: { mobile } });
+    if(res.data.requestOtp.message=="OTP sent successfully"){
+     setStep("OTP");
+     startTimer(60);
+    }else{
+      alert("Failed to send OTP");
+    }
+     
+  } catch (err) {
+    console.error("OTP Error:", err);
+  }
+};
 
   const confirmOtp = async (mobile) => {
     const otpValue = otp.join("");

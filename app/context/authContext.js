@@ -2,40 +2,36 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
-const ME_QUERY = gql`
-  query Me {
-    me {
-      id
-      name
-    }
-  }
-`;
 
 export function AuthProvider({ children }) {
-
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("accessToken")
-      : null;
-
-  const { data, loading, refetch } = useQuery(ME_QUERY, {
-    skip: !token,
-    fetchPolicy: "network-only",
-    errorPolicy: "ignore", 
-  });
-
+const [user, setUser] = useState(null);
+  
+ const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
   const [showLogin, setShowLogin] = useState(false);
   const [pendingRoute, setPendingRoute] = useState(null);
 
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+    setIsLoggedIn(true);
+  } else {
+    setIsLoggedIn(false);
+  }
+
+}, []);
+
   const value = {
-    user: data?.me || null,
-    isAuth: !!data?.me,
-    loading,
-    refetchUser: refetch,
+    user,
+    setUser,
+    isLoggedIn,
+    setIsLoggedIn,
     showLogin,
     setShowLogin,
     pendingRoute,

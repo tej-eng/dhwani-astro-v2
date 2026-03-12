@@ -8,7 +8,6 @@ import { getUserFetch } from "../../app/redux/reducer/auth/userSlice";
 import CustomInput from "../Custom/CustomInput";
 
 import { useLanguage } from "@/app/context/LangContext";
-import { cookieHelper } from "@/src/helpers/cookieHelper";
 import { useAuth } from "@/app/context/authContext";
 
 function FilterBar({
@@ -29,17 +28,16 @@ function FilterBar({
 
   const { userData } = useSelector((state) => state.getuserDetail);
   const [user, setUser] = useState(false);
-  const { token } = useSelector((state => state.auth));
  const { isAuth, setShowLogin, setPendingRoute } = useAuth();
 
 
   useEffect(() => {
-    const cookieToken = cookieHelper.get("access_token");
-    if (token || cookieToken) {
+    const user = JSON.parse(localStorage.getItem("user") || "{} ");
+    if (user.name) {
       dispatch(getUserFetch());
       setUser(true);
     }
-  }, [token]);
+  }, [user]);
 
 
   const onRecharge = () => {
