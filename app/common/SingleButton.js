@@ -8,13 +8,6 @@ import { useEffect } from 'react';
 import { useLanguage } from '../context/LangContext';
 import dynamic from 'next/dynamic';
 
-
-
-
-
-
-
-
 export default function SingleButton({ astro_charge_chat, availability, astro_charge_call, astro_id, disprice_chat, disprice_call }) {
     const [alert, setAlert] = useState(false);
 

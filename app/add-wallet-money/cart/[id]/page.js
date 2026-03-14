@@ -86,6 +86,7 @@ export default function CartPage() {
         <PayOPT
           amount={pack.price}
           oriamount={pack.price}
+          packid={pack.id}
           coupon_id={0}
           couponprice={0}
         />

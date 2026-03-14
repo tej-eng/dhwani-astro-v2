@@ -5,8 +5,8 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
-const SOCKET_URL = "https://chatmicroservice.onrender.com";
-// const SOCKET_URL = "http://localhost:8001";
+//const SOCKET_URL = "https://chatmicroservice.onrender.com";
+ const SOCKET_URL = "http://localhost:8003";
 
 export const SocketProvider = ({ children }) => {
 

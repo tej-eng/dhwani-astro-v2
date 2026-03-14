@@ -13,19 +13,16 @@ import {
 
 import { useSearchParams } from 'next/navigation';
 
-export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
-
-  const searchParams = useSearchParams();
+export default function PayOPT({ amount,oriamount,coupon_id,couponprice,packid }) {
+const searchParams = useSearchParams();
 
   const payAmount = amount || 0;
-
-  console.log(" PayOPT Received Amount:", payAmount);
-  console.log("Original Amount (DB):", oriamount);
 
   const dispatch = useDispatch();
   const { statusCode } = useSelector((state) => state.recharge_payment);
   const { userData } = useSelector((state) => state.getuserDetail);
   const [user, setUserData] = useState("");
+ const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     if (userData) {
@@ -33,8 +30,8 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
     }
   }, [userData]);
 
-  useEffect(() => {
-  }, [oriamount]);
+      useEffect(() => {
+}, [oriamount]);
 
   useEffect(() => {
     if (statusCode === 200) {
@@ -42,19 +39,17 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
       toast.success("Payment Add successfully!");
       route.push("/chat-with-astrologer");
       dispatch(resetStatusCode());
-
+      
     }
   }, [statusCode]);
 
   const route = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const handleCheckout = async (selectedMethod) => {
-    console.log("User Selected Payment Method:", selectedMethod);
-    console.log(" Sending Amount to Razorpay:", payAmount);
+  const handleCheckout = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/createOrder", {
+      const res = await fetch("https://dhwaniastro.com/api/createOrder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: payAmount }),
@@ -62,8 +57,8 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
 
       const order = await res.json();
 
-      console.log(" Razorpay Order Created:", order);
-
+      console.log("Order created:", order);
+     
 
       if (order.error) {
         alert("Error creating order");
@@ -78,55 +73,17 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
         name: "Dhwani Astro LLp",
         description: "Recharge Payment",
         order_id: order.id,
-        handler: async function (response) {
-
-          console.log("Razorpay Payment Success Response:", response);
-          setLoading(true);
-
-          const res = await fetch("/api/verifypayment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
-          const order = await res.json();
-          console.log("Payment Verification Response:", order);
-
-          // console.log("hello",order);
-
-          if (order.success) {
-            const userId = user?.id;
-            const paymentId = order.payment_id;
-            // const totalamount = order.paymentamount;
-            const method = order.paymentmethod;
-
-            const totalamount = oriamount || 0;
-
-            console.log("Dispatching Payment Detail:");
-            console.log({
-              userId,
-              paymentId,
-              totalamount,
-              method,
-              coupon_id,
-              couponprice
-            });
-
-            const res = dispatch(
-              sendPaymentDetail({ userId, paymentId, totalamount, method, coupon_id, couponprice })
-            );
-          } else {
-            alert(order);
-          }
-        },
         prefill: {
           name: "",
           email: "",
           contact: "",
         },
+         notes: {
+         userId: storedUser?.id || "test-user-1",
+         source: "dhwaniastro",
+         rechargePackId: packid || "pack_001",
+         coins: 100,
+       },
         theme: {
           color: "#fff49e",
         },
@@ -163,7 +120,7 @@ export default function PayOPT({ amount, oriamount, coupon_id, couponprice }) {
           { name: "Bhim UPI", icon: "/prblm/bh-a.png" },
         ].map((method, idx) => (
           <button aria-label={`Pay with ${method.name}`}
-            onClick={() => handleCheckout(method.name)}
+            onClick={handleCheckout}
             key={idx}
             className="bg-[linear-gradient(to_right,#a65ed677_54%,#ba38cb67_100%)] rounded-lg p-2  flex flex-col gap-1 items-center hover:scale-105 transition-transform shadow"
           >

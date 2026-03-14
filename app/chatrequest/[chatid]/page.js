@@ -15,13 +15,32 @@ import { IntakeFromRequest } from "@/app/redux/reducer/auth/intakeStoreSlice";
 import { fetchIntakeRequest } from "@/app/redux/reducer/auth/intakeSlice";
 import { getIntakeDataRequest } from "@/app/redux/reducer/intake/getIntakeData";
 import { RequestAstrologerDetail } from "@/app/redux/reducer/astrologer/AstrologerDetail";
-import { useMutation } from "@apollo/client/react";
+import { useMutation,useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
     createIntake(input: $input) {
       id
+    }
+  }
+`;
+const GET_USER_BY_ID = gql`
+  query GetUserById($id: String!) {
+    getUserById(id: $id) {
+      id
+      name
+      mobile
+      gender
+      birthDate
+      birthTime
+      occupation
+      wallet {
+        id
+        balanceCoins
+        createdAt
+        updatedAt
+      }
     }
   }
 `;
@@ -60,6 +79,26 @@ export default function RequestForm({ params }) {
 
 
   const { userData } = useSelector((state) => state.getuserDetail);
+  const id=JSON.parse(localStorage.getItem("user"))?.id;
+  
+  const { data: userInfo } = useQuery(GET_USER_BY_ID, {
+  variables: { id: id },
+  skip: !id,
+  });
+
+  useEffect(() => {
+  if (userInfo?.getUserById) {
+    const user = userInfo.getUserById;
+    console.log("Fetched user info:", user);
+
+    setName(user?.name || "");
+    setPhone(user?.mobile || "");
+    setGender(user?.gender || "MALE");
+    setDob(user?.birthDate ? user.birthDate.split("T")[0] : "");
+    setTime(user?.birthTime || "");
+    setOccupation(user?.occupation || "");
+  }
+}, [userInfo]);
 
   useEffect(() => {
     if (userData) {
@@ -75,10 +114,10 @@ export default function RequestForm({ params }) {
   useEffect(() => {
     setIsClient(true);
   }, []);
-  useEffect(() => {
-    if (!socket) return;
-    dispatch(fetchIntakeRequest());
-  }, [dispatch, socket]);
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   dispatch(fetchIntakeRequest());
+  // }, [dispatch, socket]);
   const { astrologerloading, astrologerdata: astro } = useSelector((state) => state.astrologerdetail);
   useEffect(() => {
     if (!astro || astro.length === 0) {

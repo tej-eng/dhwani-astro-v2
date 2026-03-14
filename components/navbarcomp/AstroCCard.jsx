@@ -34,58 +34,58 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
   const [alert, setAlert] = useState(false);
 
 
-  const { userData } = useSelector((state) => state.getuserDetail);
+  const[userData,setUserData] = useState({user_status:0,balance_amount:0});
 
   useEffect(() => {
 
   }, [sameUser])
 
-  useEffect(() => {
-    if (!socket) {
+  // useEffect(() => {
+  //   if (!socket) {
 
-      return;
-    }
+  //     return;
+  //   }
 
-    socket.on("astrologer_request_busy", (data) => {
-      const id = Number(data?.astro_id);
+  //   socket.on("astrologer_request_busy", (data) => {
+  //     const id = Number(data?.astro_id);
 
-      if (busySet.has(id)) {
-        console.log(`Astrologer ID ${id} is already marked as busy.`);
-        return;
-      }
+  //     if (busySet.has(id)) {
+  //       console.log(`Astrologer ID ${id} is already marked as busy.`);
+  //       return;
+  //     }
 
-      busySet.add(id);
+  //     busySet.add(id);
 
-      console.log(`Astrologer ID ${id} marked as busy. Current busy astrologers:`, Array.from(busySet));
-      setBusyAstros([...busySet]);
-    });
+  //     console.log(`Astrologer ID ${id} marked as busy. Current busy astrologers:`, Array.from(busySet));
+  //     setBusyAstros([...busySet]);
+  //   });
 
-    const handleFree = (data) => {
+  //   const handleFree = (data) => {
 
-      const id = parseInt(data.astro_id);
-
-
-
-      setBusyAstros((prev) => {
-        if (!prev || prev.length === 0) {
-          setSameUser(id);
-          return prev || [];
-        }
-
-        if (!prev.includes(id)) {
-          return prev;
-        }
+  //     const id = parseInt(data.astro_id);
 
 
-        return prev.filter((astroId) => astroId !== id);
-      });
-    };
-    socket.on("astrologerfree", handleFree);
-    return () => {
-      socket.off("astrologer_request_busy");
-      socket.off("astrologerfree", handleFree);
-    };
-  }, [socket]);
+
+  //     setBusyAstros((prev) => {
+  //       if (!prev || prev.length === 0) {
+  //         setSameUser(id);
+  //         return prev || [];
+  //       }
+
+  //       if (!prev.includes(id)) {
+  //         return prev;
+  //       }
+
+
+  //       return prev.filter((astroId) => astroId !== id);
+  //     });
+  //   };
+  //   socket.on("astrologerfree", handleFree);
+  //   return () => {
+  //     socket.off("astrologer_request_busy");
+  //     socket.off("astrologerfree", handleFree);
+  //   };
+  // }, [socket]);
 
 
 

@@ -27,13 +27,9 @@ function CustomButton({
 }) {
   const [showLogin, setShowLogin] = useState(false);
 
-  const { isAuth, loading } = useAuth();
-
-const handleAuthClick = () => {
-  console.log("Button clicked");
-  console.log("isAuth:", isAuth);
-
-  if (!isAuth) {
+  const handleAuthClick = () => {
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!storedUser?.id) {
     setShowLogin(true);
     return;
   }
