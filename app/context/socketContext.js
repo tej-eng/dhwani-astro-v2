@@ -1,45 +1,46 @@
 "use client";
 
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
-//const SOCKET_URL = "https://chatmicroservice.onrender.com";
- const SOCKET_URL = "http://localhost:8003";
+const SOCKET_BASE_URL = "https://dhwaniastro.com//dhwani-astro";
 
 export const SocketProvider = ({ children }) => {
-
   const [socket, setSocket] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const connectSocket = () => {
+    if (socket && socket.connected) {
+      console.log("Socket already connected");
+      return socket;
+    }
 
-    const socketInstance = io(SOCKET_URL, {
+    const socketInstance = io("https://dhwaniastro.com/dhwani-astro", {
+      path: "/user-socket-service-v2/socket.io",
       transports: ["websocket", "polling"],
-      withCredentials: true   
+      withCredentials: true,
     });
 
     socketInstance.on("connect", () => {
-      console.log("Socket connected:", socketInstance.id);
-      setLoading(false);
+      console.log(" Socket connected:", socketInstance.id);
     });
 
     socketInstance.on("connect_error", (err) => {
-      console.error("Socket error:", err.message);
-      setLoading(false);
+      console.error(" Socket error:", err.message);
+    });
+
+    socketInstance.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
     });
 
     setSocket(socketInstance);
 
-    return () => {
-      socketInstance.disconnect();
-    };
-
-  }, []);
+    return socketInstance;
+  };
 
   return (
-    <SocketContext.Provider value={{ socket, loading }}>
+    <SocketContext.Provider value={{ socket, connectSocket }}>
       {children}
     </SocketContext.Provider>
   );

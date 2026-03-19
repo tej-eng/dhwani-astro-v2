@@ -15,6 +15,7 @@ import { IntakeFromRequest } from "@/app/redux/reducer/auth/intakeStoreSlice";
 import { fetchIntakeRequest } from "@/app/redux/reducer/auth/intakeSlice";
 import { getIntakeDataRequest } from "@/app/redux/reducer/intake/getIntakeData";
 import { RequestAstrologerDetail } from "@/app/redux/reducer/astrologer/AstrologerDetail";
+//const { socket, connectSocket } = useContext(SocketContext);
 import { useMutation,useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 
@@ -44,6 +45,19 @@ const GET_USER_BY_ID = gql`
     }
   }
 `;
+const GET_ASTROLOGER_BY_ID = gql`
+  query GetAstrologerById($id: String!) {
+    getAstrologerById(id: $id) {
+      id
+      name
+      profilePic
+      price
+      rating
+      status
+      experience
+    }
+  }
+`;
 
 
 
@@ -54,7 +68,7 @@ export default function RequestForm({ params }) {
 
   const router = useRouter();
 
-  const socket = useContext(SocketContext);
+  const { socket, connectSocket } = useContext(SocketContext);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
@@ -76,15 +90,36 @@ export default function RequestForm({ params }) {
 
   const [intake_Id, setInatkeId] = useState(null);
   const [chatsend, setChatSend] = useState("");
+  const [id, setId] = useState(null);
 
 
   const { userData } = useSelector((state) => state.getuserDetail);
-  const id=JSON.parse(localStorage.getItem("user"))?.id;
+ useEffect(() => {
+  const userData = localStorage.getItem("user");
+
+  if (userData) {
+    const parsed = JSON.parse(userData);
+    setId(parsed?.id);
+  }
+}, []);
   
   const { data: userInfo } = useQuery(GET_USER_BY_ID, {
   variables: { id: id },
   skip: !id,
   });
+
+  const { data: astrologerInfo, loading: astrologerloading } = useQuery(
+  GET_ASTROLOGER_BY_ID,
+  {
+    variables: { id: astro_id },
+    skip: !astro_id,
+  }
+);
+  useEffect(() => {
+  if (astrologerInfo?.getAstrologerById) {
+    setAstrologer(astrologerInfo.getAstrologerById);
+  }
+}, [astrologerInfo]);
 
   useEffect(() => {
   if (userInfo?.getUserById) {
@@ -100,251 +135,89 @@ export default function RequestForm({ params }) {
   }
 }, [userInfo]);
 
-  useEffect(() => {
-    if (userData) {
-      setUser(userData);
-    }
-
-  }, [userData, dispatch]);
-
-
-
-  const { data = [], loading } = useSelector((state) => state.intake);
-  const intake_data = data?.intakedata;
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  // useEffect(() => {
-  //   if (!socket) return;
-  //   dispatch(fetchIntakeRequest());
-  // }, [dispatch, socket]);
-  const { astrologerloading, astrologerdata: astro } = useSelector((state) => state.astrologerdetail);
-  useEffect(() => {
-    if (!astro || astro.length === 0) {
-
-      dispatch(RequestAstrologerDetail({ astro_id: parseInt(astro_id) }));
-    }
-
-  }, [dispatch, astro_id, astro]);
-
-
-  useEffect(() => {
-    if (astro) {
-      setAstrologer(astro);
-    }
-  }, [astro]);
-
-  const {
-    loading: dataloading,
-    chatData = [],
-    chatStatusCode,
-  } = useSelector((state) => state.send_request_chat);
-
-  useEffect(() => {
-    const intakesingledata = data?.intakedata?.[0] || null;
-
-
-    setName(intakesingledata?.name || userData?.name);
-    setPhone(intakesingledata?.mobile || userData?.phonenumber);
-    setDob(intakesingledata?.dob || "");
-    setTime(intakesingledata?.btime || "");
-    setOccupation(intakesingledata?.occupation || "");
-    setInatkeId(intakesingledata?.id);
-  }, [data, userData]);
 
   const sendRequest = async () => {
-    if (!name || !phone || !dob || !time || !place || !occupation || !usergender) {
-      toast.error("Please enter valid inputs");
+  if (!name || !phone || !dob || !time || !place || !occupation || !usergender) {
+    toast.error("Please enter valid inputs");
+    return;
+  }
+
+  try {
+    const response = await createIntake({
+      variables: {
+        input: {
+          astrologerId: astro_id,
+          name,
+          mobile: phone,
+          gender: usergender,
+          birthDate: dob,
+          birthTime: time,
+          occupation,
+          birthPlace: place,
+          requestType: "chat",
+        },
+      },
+    });
+
+    const intakeId = response?.data?.createIntake?.id;
+
+    if (!intakeId) {
+      toast.error("Failed to create intake");
       return;
     }
 
-    try {
-      const response = await createIntake({
-        variables: {
-          input: {
-            astrologerId: astro_id,
-            name,
-            mobile: phone,
-            gender: usergender,
-            birthDate: dob,
-            birthTime: time,
-            occupation,
-            birthPlace: place,
-            requestType: "chat",
-          },
-        },
+    console.log("✅ Intake created:", intakeId);
+
+    //  CONNECT SOCKET HERE
+    let activeSocket = socket;
+
+    if (!activeSocket || !activeSocket.connected) {
+      activeSocket = connectSocket();
+    }
+
+    // Wait for connection if not ready
+    activeSocket.on("connect", () => {
+      console.log("🚀 Sending chat request");
+
+      activeSocket.emit("chat_request", {
+        intakeId,
+        astrologerId: astro_id,
       });
+    });
 
-      console.log("Intake Saved:", response.data.createIntake.id);
-
-      // THEN trigger chat request logic
-      dispatch(
-        sendChatRequest({
-          expert_id: parseInt(astro_id),
-          user_name: name,
-          request_type: "chat",
-          astro_charge: astrologer?.disc_chat_charge || 0,
-          user_amount: userData?.balance_amount || 0,
-          is_promotional: userData?.user_status,
-        })
-      );
-
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
-
-
-  // card request
-
-
-
-  const sendRequestcard = (intakeid) => {
-
-    if (
-      name == ""
-
-
-    ) {
-      toast.error("Please enter a valid Input");
-    } else {
-
-      setInatkeId(intakeid);
-      setDisabled(true);
-      setAlert(true);
-      const expert_id = parseInt(astro_id);
-      const user_name = name || "";
-      const request_type = "chat";
-      const astro_charge = astrologer?.disc_chat_charge || 0;
-      const user_amount = userData?.balance_amount || 0;
-      const is_promotional = userData?.user_status;
-      dispatch(
-        sendChatRequest({
-          expert_id,
-          user_name,
-          request_type,
-          astro_charge,
-          user_amount,
-          is_promotional
-        })
-      );
-      dispatch(resetChatAlertData());
-
-    }
-  };
-  // 
-
-
+  } catch (err) {
+    toast.error(err.message);
+  }
+};
   useEffect(() => {
-    if (chatStatusCode === 200) {
-      const roomid = chatData.chatId;
+    if (astrologer?.status === true) {
+      const roomid = "123456";
       const requesttype = "chat";
 
-      let intakedata;
-      const intakeId = intake_data?.find((item) => item.id === intake_Id);
-      if (chatsend === 1) {
-        intakedata = {
-          name,
-          gender: usergender.toUpperCase(),
-          dob,
-          btime: time,
-          occupation,
-          birth_place: place,
-          mobile: phone,
-          chatid: roomid,
-          request_type: requesttype,
-        };
-      } else {
-        intakedata = {
-          name: intakeId?.name || name || "Unknown",
-          gender: intakeId?.gender || usergender || "",
-          dob: intakeId?.dob || dob || "",
-          btime: intakeId?.btime || time || "",
-          occupation: intakeId?.occupation || occupation || "",
-          birth_place: intakeId?.birth_place || place || "",
-          mobile: phone,
-          chatid: roomid,
-          request_type: requesttype,
-        };
-      }
-
-      dispatch(IntakeFromRequest({ intakedata }));
-
-      setAlert(true);
-      setRoomId(roomid);
+    
       const chattimeInMin = chatData.chatTime;
 
 
-      let messageData = {
-        message: " sent a chat request!",
-        phoneNumber: "***********",
-        room_id: roomid,
-        astro_id: astro_id || "",
-        user_id: user?.id || "",
-        is_promotional: true,
-        astro_name: astrologer?.full_name || "",
-        maximum_time: chattimeInMin || 0,
-      };
+      // let messageData = {
+      //   message: " sent a chat request!",
+      //   phoneNumber: "***********",
+      //   room_id: roomid,
+      //   astro_id: astro_id || "",
+      //   user_id: user?.id || "",
+      //   is_promotional: true,
+      //   astro_name: astrologer?.full_name || "",
+      //   maximum_time: chattimeInMin || 0,
+      // };
 
+      // socket.emit("chat_request", messageData);
 
+      // const astrlogerdata = {
+      //   astro_id,
+      //   status: 2,
+      // };
 
-      if (chatsend === 1) {
-
-        dispatch(getIntakeDataRequest(intakedata));
-        messageData = {
-          ...messageData,
-          userName: name || "Unknown",
-          gender: usergender || "",
-          dateOfBirth: dob || "",
-          timeOfBirth: time || "",
-          occupation: occupation || "",
-          location: place || "",
-        };
-      } else {
-        dispatch(getIntakeDataRequest(intakeId));
-        messageData = {
-          ...messageData,
-          userName: intakeId?.name || name || "Unknown",
-          gender: intakeId?.gender || usergender || "",
-          dateOfBirth: intakeId?.dob || dob || "",
-          timeOfBirth: intakeId?.btime || time || "",
-          occupation: intakeId?.occupation || occupation || "",
-          location: intakeId?.birth_place || place || "",
-        };
-      }
-
-      socket.emit("chat_request", messageData);
-      const astrlogerdata = {
-        astro_id,
-        status: 2,
-      };
-
-      socket.emit("astrologer_request", astrlogerdata);
-
-      setTimeout(() => {
-        dispatch(resetCode());
-        dispatch(
-          setChatAlertLoading({
-            data: {
-              astro_id,
-              room_Id: roomid,
-              user_id: user?.id || "",
-              astro_name: astrologer?.full_name || "",
-              astro_image: astrologer?.profile_image || "",
-              chat_time: chatData.chatTime,
-              experts_price: astrologer?.disc_chat_charge,
-              intakeId: intake_Id
-            },
-          })
-        );
-        router.push("/");
-        setAlert(false);
-      }, 100);
     }
   }, [
-    chatStatusCode,
-    chatData,
-    dispatch,
     name,
     usergender,
     dob,
@@ -357,9 +230,6 @@ export default function RequestForm({ params }) {
     user,
     router,
     socket,
-    intake_Id,
-    intake_data,
-    chatsend
   ]);
 
 
@@ -532,7 +402,7 @@ export default function RequestForm({ params }) {
         </div>
       )}
 
-      <AlertLoading show={dataloading} title="Please Wait..." />
+      {/* <AlertLoading show={true} title="Please Wait..." /> */}
       <AlertLoading show={astrologerloading} title="Fetch Astrologer..." />
     </div>
   );
