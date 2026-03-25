@@ -33,15 +33,15 @@ export default function PhoneInput({ onChange, handleKeyEnter }) {
         const phone = parsePhoneNumberFromString(
             `${country.dialCode}${number}`
         );
-         console.log("Parsed phonexxxxxxxxxxxxxxxxxx:", phone);
-
-        onChange({
-            raw: number,
-            dialCode: country.dialCode,
+            console.log("Parsed phonexxxxxxxxxxxxxxxxxx:", phone);
+            const cleanNumber = number.replace(/^0+/, "");
+            onChange({
+            countryCode: country.dialCode,   
+            mobile: cleanNumber,                  
             iso: country.iso,
             e164: phone?.number || "",
-            isValid: phone?.isValid() || false,
-        });
+            isValid: phone?.isValid() && number.length >= 6 || false,
+            });
     }, [number, country, onChange]);
 
     return (

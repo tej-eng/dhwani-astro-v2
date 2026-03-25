@@ -17,19 +17,26 @@ const ChatRequestCard = ({
   experts_price,
 }) => {
   const route = useRouter();
-  const socket = useContext(SocketContext);
+  //const socket = useContext(SocketContext);
+  const { socket, connectSocket } = useContext(SocketContext);
   const [isChatStarted, setIsChatStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [showchat, setShowChat] = useState(false);
+   const [astroConfirm, setAstroConfirm] = useState(false);
   const timerRef = useRef(null);
+  let activeSocket = socket;
+
+    if (!activeSocket || !activeSocket.connected) {
+      activeSocket = connectSocket();
+    }
   useEffect(() => {
-    if (!socket) return;
+    if (!activeSocket) return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timerRef.current);
 
-          socket.emit("autodisconnect", {
+          activeSocket.emit("autodisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
@@ -41,7 +48,7 @@ const ChatRequestCard = ({
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-  }, [room_Id, astro_id, socket]);
+  }, [room_Id, astro_id, activeSocket]);
 
   const stopTimer = () => {
     if (timerRef.current) {
@@ -57,15 +64,22 @@ const ChatRequestCard = ({
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!activeSocket) return;
     socket.on("chat_started_user", (data) => {
+      console.log("Chat started event received:1111111111111111111111111111111111111111111", data);
       if (data.roomid === room_Id) {
-        // console.log("Chat started by astrologer");
+        setShowChat(true);
+        setAstroConfirm(true);
         setIsChatStarted(true);
         setTimeLeft(60);
       }
     });
-    socket.on("chat_rejected_astrologer", (data) => {
+    // if(astroConfirm){
+    //    activeSocket.emit("chat_accepted_user", { room_id: room_Id }, (response) => {
+    //     console.log("Chat accepted response:-------------", response);
+    // });
+    // }
+    activeSocket.on("chat_rejected_astrologer", (data) => {
       stopTimer();
       if (data.roomid === room_Id) {
         toast.error("Your chat request rejected");
@@ -74,7 +88,7 @@ const ChatRequestCard = ({
         }, 1000);
       }
     });
-    socket.on("chat_reject_auto", (data) => {
+    activeSocket.on("chat_reject_auto", (data) => {
       alert("Chat request rejected by astrologer due to timeout.", data);
       if (data.room_id === room_Id) {
         toast.error(
@@ -85,7 +99,7 @@ const ChatRequestCard = ({
       }
     });
 
-    socket.on("chat_rejected", (data) => {
+    activeSocket.on("chat_rejected", (data) => {
       if (data.roomid === room_Id) {
         stopTimer();
 
@@ -96,7 +110,7 @@ const ChatRequestCard = ({
       }
     });
 
-    socket.on("user_conformation_chat", (data) => {
+    activeSocket.on("user_conformation_chat", (data) => {
       if (data.roomid === room_Id) {
         // console.log("Chat started received:", data);
         stopTimer();
@@ -109,27 +123,27 @@ const ChatRequestCard = ({
 
     return () => {
       stopTimer();
-      socket.off("chat_started_user");
-      socket.off("chat_rejected_astrologer");
-      socket.off("chat_reject_auto");
-      socket.off("chat_rejected");
-      socket.off("user_conformation_chat");
+      activeSocket.off("chat_started_user");
+      activeSocket.off("chat_rejected_astrologer");
+      activeSocket.off("chat_reject_auto");
+      activeSocket.off("chat_rejected");
+      activeSocket.off("user_conformation_chat");
     };
-  }, [socket, room_Id, route]);
+  }, [activeSocket, room_Id, route]);
 
-  const handleAccept = () => {
-    socket.emit("chat_accepted_user", { room_id: room_Id }, (response) => {
-      // console.log("Chat accepted response:", response);
-    });
-  };
+  // const handleAccept = () => {
+  //   activeSocket.emit("chat_accepted_user", { room_id: room_Id }, (response) => {
+  //     // console.log("Chat accepted response:", response);
+  //   });
+  // };
 
-  const handleReject = () => {
-    socket.emit(
-      "chat_rejected_user",
-      { room_id: room_Id, astroid: astro_id },
-      (res) => console.log("Rejected response:", res)
-    );
-  };
+  // const handleReject = () => {
+  //   activeSocket.emit(
+  //     "chat_rejected_user",
+  //     { room_id: room_Id, astroid: astro_id },
+  //     (res) => console.log("Rejected response:", res)
+  //   );
+  // };
 
   const astrologerData = {
     name: astro_Name,
@@ -193,33 +207,7 @@ const ChatRequestCard = ({
 
             <p className="text-sm text-gray-600">{astrologerData.message}</p>
 
-            {isChatStarted ? (
-              <div className="flex space-x-3">
-                <button
-                  onClick={handleAccept}
-                  aria-label="Accept chat request"
-                  className="flex items-center justify-center flex-1 px-4 py-2 space-x-2 font-medium text-white transition-all duration-200 transform bg-green-700 rounded-lg hover:bg-yellow-500 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                >
-                  <svg width={18} height={18} viewBox="0 0 640 640">
-                    <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
-                  </svg>
-                  <span>Accept</span>
-                </button>
-
-                <button
-                  onClick={handleReject}
-                  aria-label="Reject chat request"
-                  className="flex items-center justify-center flex-1 px-4 py-2 space-x-2 font-medium text-white transition-all duration-200 bg-red-400 rounded-lg hover:bg-gray-200 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50"
-                >
-                  <svg width={18} height={18} viewBox="0 0 640 640">
-                    <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
-                  </svg>{" "}
-                  <span>Decline</span>
-                </button>
-              </div>
-            ) : (
-              <></>
-            )}
+           
           </div>
         </div>
       )}

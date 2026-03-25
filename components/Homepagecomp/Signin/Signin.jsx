@@ -43,12 +43,11 @@ const SignInModal = ({ onClose }) => {
     setStep,
   } = useOTP();
 
-  const [phoneData, setPhoneData] = useState({
-    raw: "",
-    dialCode: "",
-    e164: "",
-    isValid: false,
-  });
+ const [phoneData, setPhoneData] = useState({
+  countryCode: "+91",
+  mobile: "",
+  isValid: false,
+});
 
   const [existingUserName, setExistingUserName] = useState("");
   const [userName, setUserName] = useState("");
@@ -81,14 +80,19 @@ const SignInModal = ({ onClose }) => {
      SEND OTP
   ============================= */
 
-  const handleGetOTP = async () => {
-    try {
-      await sendOtp(phoneData.e164);
-      toast.success("OTP sent successfully");
-    } catch (err) {
-      toast.error(err.message);
+ const handleGetOTP = async () => {
+  try {
+    if (!phoneData.mobile || !phoneData.countryCode) {
+      toast.error("Enter valid mobile number");
+      return;
     }
-  };
+
+    await sendOtp(phoneData.countryCode, phoneData.mobile);
+    toast.success("OTP sent successfully");
+  } catch (err) {
+    toast.error(err.message);
+  }
+};
 
   /* =============================
      VERIFY OTP
@@ -96,7 +100,10 @@ const SignInModal = ({ onClose }) => {
 
   const handleVerifyOTP = async () => {
     try {
-      const result = await confirmOtp(phoneData.e164);
+      const result = await confirmOtp(
+      phoneData.countryCode,
+      phoneData.mobile
+      );
       localStorage.setItem("user", JSON.stringify(result.user));
 
        setUser(result.user);
@@ -230,11 +237,7 @@ const SignInModal = ({ onClose }) => {
               <>
                 <PhoneInput onChange={setPhoneData} />
                 <button
-                  onClick={async () => {
-                    await sendOtp(phoneData.e164);
-                    console.log("OTP sent successfully");
-                   // setStep("OTP");
-                  }}
+                  onClick={handleGetOTP}
                   disabled={otpLoading}
                   className="w-[70%] bg-yellow-400 py-2 rounded-full"
                 >

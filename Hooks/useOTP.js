@@ -6,30 +6,31 @@ import { useState, useRef, useEffect } from "react";
 
 
 const REQUEST_OTP = gql`
-  mutation RequestOtp($mobile: String!) {
-    requestOtp(mobile: $mobile) {
-      message
-    }
+  mutation RequestOtp($countryCode: String!, $mobile: String!) {
+  requestOtp(countryCode: $countryCode, mobile: $mobile) {
+    message
   }
+}
 `;
 
 const AUTHWITH_OTP = gql`
-  mutation AuthWithOtp($mobile: String!, $otp: String!) {
-    authWithOtp(mobile: $mobile, otp: $otp) {
-      accessToken
-      refreshToken
-      hasName
-      user {
-        id
-        name
-      }
+  mutation AuthWithOtp($countryCode: String!, $mobile: String!, $otp: String!) {
+  authWithOtp(countryCode: $countryCode, mobile: $mobile, otp: $otp) {
+    accessToken
+    refreshToken
+    hasName
+    user {
+      id
+      name
     }
   }
+}
 `;
 
 export const useOTP = () => {
   const [step, setStep] = useState("PHONE"); // PHONE | OTP
   const [otp, setOtp] = useState(["", "", "", ""]);
+ // const [countryCode, setCountryCode] = useState("+91");
   const [timer, setTimer] = useState(0);
 
   const timerRef = useRef(null);
@@ -56,39 +57,41 @@ export const useOTP = () => {
     }, 1000);
   };
 
-  const sendOtp = async (mobile) => {
+  const sendOtp = async (countryCode, mobile) => {
   try {
-    const res = await requestOtp({ variables: { mobile } });
-    if(res.data.requestOtp.message=="OTP sent successfully"){
-     setStep("OTP");
-     startTimer(60);
-    }else{
+    const res = await requestOtp({
+      variables: { countryCode, mobile },
+    });
+
+    if (res.data.requestOtp.message === "OTP sent successfully") {
+      setStep("OTP");
+      startTimer(60);
+    } else {
       alert("Failed to send OTP");
     }
-     
   } catch (err) {
     console.error("OTP Error:", err);
   }
 };
 
-  const confirmOtp = async (mobile) => {
-    const otpValue = otp.join("");
+  const confirmOtp = async (countryCode, mobile) => {
+  const otpValue = otp.join("");
 
-    if (!/^\d{4}$/.test(otpValue)) {
-      throw new Error("Invalid OTP");
-    }
+  if (!/^\d{4}$/.test(otpValue)) {
+    throw new Error("Invalid OTP");
+  }
 
-    const res = await verifyOtp({
-      variables: { mobile, otp: otpValue },
-    });
+  const res = await verifyOtp({
+    variables: { countryCode, mobile, otp: otpValue },
+  });
 
-    clearInterval(timerRef.current);
-    setTimer(0);
-    setOtp(["", "", "", ""]);
-    setStep("PHONE");
+  clearInterval(timerRef.current);
+  setTimer(0);
+  setOtp(["", "", "", ""]);
+  setStep("PHONE");
 
-    return res.data.authWithOtp;
-  };
+  return res.data.authWithOtp;
+};
 
   const resetOTP = () => {
     clearInterval(timerRef.current);

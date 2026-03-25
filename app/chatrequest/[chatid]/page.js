@@ -22,7 +22,9 @@ import { gql } from "@apollo/client";
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
     createIntake(input: $input) {
-      id
+      intakeId
+      roomId
+      chatTime
     }
   }
 `;
@@ -31,6 +33,7 @@ const GET_USER_BY_ID = gql`
     getUserById(id: $id) {
       id
       name
+      countryCode
       mobile
       gender
       birthDate
@@ -80,6 +83,9 @@ export default function RequestForm({ params }) {
   const [alert, setAlert] = useState(false);
   const [astrologer, setAstrologer] = useState(null);
   const [place, setPlace] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+  const [chatTime, setChatTime] = useState(0);
+  
 
   const [user, setUser] = useState("");
   const [usergender, setGender] = useState("MALE");
@@ -127,7 +133,7 @@ export default function RequestForm({ params }) {
     console.log("Fetched user info:", user);
 
     setName(user?.name || "");
-    setPhone(user?.mobile || "");
+    setPhone(user?.mobile || ""); 
     setGender(user?.gender || "MALE");
     setDob(user?.birthDate ? user.birthDate.split("T")[0] : "");
     setTime(user?.birthTime || "");
@@ -137,7 +143,7 @@ export default function RequestForm({ params }) {
 
 
   const sendRequest = async () => {
-  if (!name || !phone || !dob || !time || !place || !occupation || !usergender) {
+  if (!name || !phone ||!countryCode || !dob || !time || !place || !occupation || !usergender) {
     toast.error("Please enter valid inputs");
     return;
   }
@@ -148,6 +154,7 @@ export default function RequestForm({ params }) {
         input: {
           astrologerId: astro_id,
           name,
+          countryCode,
           mobile: phone,
           gender: usergender,
           birthDate: dob,
@@ -159,14 +166,16 @@ export default function RequestForm({ params }) {
       },
     });
 
-    const intakeId = response?.data?.createIntake?.id;
+    const { roomId, chatTime, intakeId } = response.data.createIntake;
+    setChatTime(chatTime);
+    setRoomId(roomId);
 
     if (!intakeId) {
       toast.error("Failed to create intake");
       return;
     }
 
-    console.log("✅ Intake created:", intakeId);
+    console.log(" Intake created:", intakeId);
 
     //  CONNECT SOCKET HERE
     let activeSocket = socket;
@@ -175,62 +184,79 @@ export default function RequestForm({ params }) {
       activeSocket = connectSocket();
     }
 
+      const req_data={
+          name,
+          gender: usergender,
+          dateOfBirth: dob,
+          timeOfBirth: time,
+          occupation,
+          location: place,
+          userName: name,
+          user_id: id,
+          astro_id: astro_id,
+          room_id: roomId,
+          is_promotional: true,
+          maximum_time: chatTime ,
+          user_image: userInfo?.getUserById?.profilePic || "",
+          phoneNumber: phone,
+          }
     // Wait for connection if not ready
-    activeSocket.on("connect", () => {
-      console.log("🚀 Sending chat request");
+        if (activeSocket.connected) {
+        activeSocket.emit("chat_request", req_data);
+        setRequest(true);
+      } else {
+        activeSocket.on("connect", () => {
+          activeSocket.emit("chat_request", req_data);
+          setRequest(true);
+        });
+      }
 
-      activeSocket.emit("chat_request", {
-        intakeId,
-        astrologerId: astro_id,
-      });
-    });
-
-  } catch (err) {
-    toast.error(err.message);
-  }
+        } catch (err) {
+          toast.error(err.message);
+        }
 };
-  useEffect(() => {
-    if (astrologer?.status === true) {
-      const roomid = "123456";
-      const requesttype = "chat";
+  // useEffect(() => {
+  //   if (astrologer?.status === true) {
+  //     const roomid = "123456";
+  //     const requesttype = "chat";
 
     
-      const chattimeInMin = chatData.chatTime;
+  //     const chattimeInMin = chatData.chatTime;
 
 
-      // let messageData = {
-      //   message: " sent a chat request!",
-      //   phoneNumber: "***********",
-      //   room_id: roomid,
-      //   astro_id: astro_id || "",
-      //   user_id: user?.id || "",
-      //   is_promotional: true,
-      //   astro_name: astrologer?.full_name || "",
-      //   maximum_time: chattimeInMin || 0,
-      // };
+  //     let messageData = {
+  //       message: " sent a chat request!",
+  //       phoneNumber: "***********",
+  //       room_id: roomid,
+  //       astro_id: astro_id || "",
+  //       user_id: user?.id || "",
+  //       is_promotional: true,
+  //       astro_name: astrologer?.full_name || "",
+  //       maximum_time: chattimeInMin || 0,
+  //     };
 
-      // socket.emit("chat_request", messageData);
+  //     socket.emit("chat_request", messageData);
 
-      // const astrlogerdata = {
-      //   astro_id,
-      //   status: 2,
-      // };
+  //     const astrlogerdata = {
+  //       astro_id,
+  //       status: 2,
+  //     };
 
-    }
-  }, [
-    name,
-    usergender,
-    dob,
-    time,
-    occupation,
-    place,
-    phone,
-    astro_id,
-    astrologer,
-    user,
-    router,
-    socket,
-  ]);
+  //   }
+  // }, [
+  //   name,
+  //   usergender,
+  //   dob,
+  //   time,
+  //   occupation,
+  //   place,
+  //   phone,
+  //   astro_id,
+  //   astrologer,
+  //   user,
+  //   router,
+  //   socket,
+  // ]);
 
 
 
@@ -266,7 +292,7 @@ export default function RequestForm({ params }) {
                   label="Name"
                   placeholder="Enter Full Name"
                   className="w-full text-black border border-gray-500 focus:border-none"
-                  value={name}
+                  value={usergender === "OTHER" ? "Unisex" : name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -276,10 +302,10 @@ export default function RequestForm({ params }) {
                   Mobile <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center w-full gap-2 overflow-hidden rounded-md">
-                  <span className="w-[30%] px-2 py-1 text-black bg-gray-100 border-b rounded-full">
-                    🇮🇳 +91
-                  </span>
-                  <CustomInput
+                <span className="w-[30%] px-2 py-1 text-black bg-gray-100 border-b rounded-full">
+                  {countryCode}
+                </span>
+                    <CustomInput
                     
                     type="tel"
                     placeholder="Enter Phone Number"
@@ -302,7 +328,7 @@ export default function RequestForm({ params }) {
                   value={"Male"}
                   // value={formData.day}
                   // onChange={handleChange}
-                  options={[, ...gender]}
+                  options={gender}
                   required
                   className="w-full text-black border border-gray-500 focus:border-none"
                   onChange={(e) => setGender(e.target.value)}
@@ -340,7 +366,7 @@ export default function RequestForm({ params }) {
                   value={occupation || "hellllo"}
                   // value={formData.day}
                   onChange={(e) => setOccupation(e.target.value)}
-                  options={[, ...occupation_list]}
+                  options={occupation_list}
                   required
                   className="w-full text-black border border-gray-500 focus:border-none"
                 />
@@ -395,8 +421,8 @@ export default function RequestForm({ params }) {
             user_Id={user?.id}
             astroimage={astrologer?.profile_image || ""}
             astro_id={astrologer?.id || ""}
-            chat_time={chatData?.chatTime}
-            experts_price={astrologer?.disc_chat_charge}
+            chat_time={chatTime}
+            experts_price={astrologer?.price || 0}
 
           />
         </div>
