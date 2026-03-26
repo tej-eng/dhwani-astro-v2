@@ -43,7 +43,7 @@ const GET_INTAKE_BY_ID = gql`
     }
   }
 `;
-
+let user = JSON.parse(localStorage.getItem("user") || "{} ");
 // ================= COMPONENT =================
 
 const UserChat = ({
@@ -234,16 +234,27 @@ const UserChat = ({
     if (!message.trim()) return;
 
     const newMessage = {
-      sender: "user",
-      message: message.trim(),
-      time: new Date().toLocaleTimeString(),
-    };
+  msg_id: crypto.randomUUID(),
+  sender_id: user_Id,
+  received_id: astroid,
+  image: null,
+  sender: "user",
+  replyTo: null,
+  message: message.trim(),
+  time: new Date().toISOString(),
+};
 
-    activeSocket.emit("send_message", {
-      room_id: room_Id,
-      message: message.trim(),
-      sender: "user",
-    });
+  activeSocket.emit("send_message", {
+  room_id: room_Id,
+  msg_id: crypto.randomUUID(),
+  sender_id: user.id,
+  received_id: astroid,
+  image: null,
+  sender: "user",
+  replyTo: null,
+  message: message.trim(),
+  time: new Date().toISOString(),
+});
 
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
