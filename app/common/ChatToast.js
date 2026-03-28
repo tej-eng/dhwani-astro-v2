@@ -159,7 +159,7 @@ function ChatToast({
       }
     };
 
-    socket.on("chat_started_user", handleChatStarted);
+    socket.on("chatAcceptedByAstrologer", handleChatStarted);
     socket.on("chat_rejected_astrologer", handleAstroReject);
     socket.on("chat_rejected", handleChatRejected);
     socket.on("user_conformation_chat", handleUserConfirmation);
@@ -167,7 +167,7 @@ function ChatToast({
 
     return () => {
       stopTimer();
-      socket.off("chat_started_user", handleChatStarted);
+      socket.off("chatAcceptedByAstrologer", handleChatStarted);
       socket.off("chat_rejected_astrologer", handleAstroReject);
       socket.off("chat_rejected", handleChatRejected);
       socket.off("user_conformation_chat", handleUserConfirmation);

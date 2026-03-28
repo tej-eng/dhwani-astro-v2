@@ -66,7 +66,7 @@ const CallRequestCard = ({
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("chat_started_user", (data) => {
+    socket.on("chatAcceptedByAstrologer", (data) => {
       if (data.roomid === room_Id) {
         // console.log("Chat started by astrologer");
         setIsChatStarted(true);
@@ -78,7 +78,7 @@ const CallRequestCard = ({
 
     return () => {
       stopTimer();
-      socket.off("chat_started_user");
+     socket.off("chatAcceptedByAstrologer");
 
     };
   }, [socket, room_Id]);

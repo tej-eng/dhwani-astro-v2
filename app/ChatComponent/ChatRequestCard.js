@@ -65,7 +65,7 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     if (!activeSocket) return;
-    socket.on("chat_started_user", (data) => {
+    socket.on("chatAcceptedByAstrologer", (data) => {
       console.log("Chat started event received:1111111111111111111111111111111111111111111", data);
       if (data.roomid === room_Id) {
         setShowChat(true);
@@ -123,7 +123,7 @@ const ChatRequestCard = ({
 
     return () => {
       stopTimer();
-      activeSocket.off("chat_started_user");
+      activeSocket.off("chatAcceptedByAstrologer");
       activeSocket.off("chat_rejected_astrologer");
       activeSocket.off("chat_reject_auto");
       activeSocket.off("chat_rejected");
