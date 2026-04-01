@@ -79,15 +79,15 @@ const ChatRequestCard = ({
     //     console.log("Chat accepted response:-------------", response);
     // });
     // }
-    activeSocket.on("chat_rejected_astrologer", (data) => {
-      stopTimer();
-      if (data.roomid === room_Id) {
-        toast.error("Your chat request rejected");
-        setTimeout(() => {
-          route.push("/homepage/chatAstro");
-        }, 1000);
-      }
-    });
+    // activeSocket.on("chat_rejected_astrologer", (data) => {
+    //   stopTimer();
+    //   if (data.roomid === room_Id) {
+    //     toast.error("Your chat request rejected");
+    //     setTimeout(() => {
+    //       route.push("/homepage/chatAstro");
+    //     }, 1000);
+    //   }
+    // });
     activeSocket.on("chat_reject_auto", (data) => {
       alert("Chat request rejected by astrologer due to timeout.", data);
       if (data.room_id === room_Id) {
@@ -124,7 +124,7 @@ const ChatRequestCard = ({
     return () => {
       stopTimer();
       activeSocket.off("chatAcceptedByAstrologer");
-      activeSocket.off("chat_rejected_astrologer");
+     // activeSocket.off("chat_rejected_astrologer");
       activeSocket.off("chat_reject_auto");
       activeSocket.off("chat_rejected");
       activeSocket.off("user_conformation_chat");

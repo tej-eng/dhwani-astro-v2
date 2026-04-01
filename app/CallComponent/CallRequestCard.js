@@ -66,19 +66,19 @@ const CallRequestCard = ({
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("chatAcceptedByAstrologer", (data) => {
-      if (data.roomid === room_Id) {
-        // console.log("Chat started by astrologer");
-        setIsChatStarted(true);
-        setTimeLeft(60);
-      }
-    });
+    // socket.on("chatAcceptedByAstrologer", (data) => {
+    //   if (data.roomid === room_Id) {
+    //     // console.log("Chat started by astrologer");
+    //     setIsChatStarted(true);
+    //     setTimeLeft(60);
+    //   }
+    // });
 
 
 
     return () => {
       stopTimer();
-     socket.off("chatAcceptedByAstrologer");
+    // socket.off("chatAcceptedByAstrologer");
 
     };
   }, [socket, room_Id]);

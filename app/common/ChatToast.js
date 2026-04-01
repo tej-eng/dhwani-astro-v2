@@ -114,12 +114,12 @@ function ChatToast({
   useEffect(() => {
     if (!socket || !room_Id) return;
 
-    const handleChatStarted = (data) => {
-      if (data.roomid === room_Id) {
-        dispatch(showChatButton());
-        setTimeLeft(INITIAL_TIME);
-      }
-    };
+    // const handleChatStarted = (data) => {
+    //   if (data.roomid === room_Id) {
+    //     dispatch(showChatButton());
+    //     setTimeLeft(INITIAL_TIME);
+    //   }
+    // };
 
     const handleAstroReject = (data) => {
       if (data.roomid === room_Id) {
@@ -159,16 +159,16 @@ function ChatToast({
       }
     };
 
-    socket.on("chatAcceptedByAstrologer", handleChatStarted);
-    socket.on("chat_rejected_astrologer", handleAstroReject);
+    //socket.on("chatAcceptedByAstrologer", handleChatStarted);
+    //socket.on("chat_rejected_astrologer", handleAstroReject);
     socket.on("chat_rejected", handleChatRejected);
     socket.on("user_conformation_chat", handleUserConfirmation);
     socket.on("chat_reject_auto", handleAutoChat);
 
     return () => {
       stopTimer();
-      socket.off("chatAcceptedByAstrologer", handleChatStarted);
-      socket.off("chat_rejected_astrologer", handleAstroReject);
+     // socket.off("chatAcceptedByAstrologer", handleChatStarted);
+      //socket.off("chat_rejected_astrologer", handleAstroReject);
       socket.off("chat_rejected", handleChatRejected);
       socket.off("user_conformation_chat", handleUserConfirmation);
       socket.off("chat_reject_auto", handleAutoChat);
