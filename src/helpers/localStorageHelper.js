@@ -1,5 +1,7 @@
 export const localStorageHelper = {
   setItem(key, value) {
+    if (typeof window === "undefined") return; // ✅ FIX
+
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -13,7 +15,6 @@ export const localStorageHelper = {
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) : null;
     } catch (error) {
-      // console.error("Error getting localStorage", error);
       return null;
     }
   },
@@ -22,34 +23,29 @@ export const localStorageHelper = {
     if (typeof window === "undefined") return;
     try {
       localStorage.removeItem(key);
-    } catch (error) {
-      // console.error("Error removing localStorage", error);
-    }
+    } catch (error) {}
   },
 
   clear() {
     if (typeof window === "undefined") return;
     try {
       localStorage.clear();
-    } catch (error) {
-      // console.error("Error clearing localStorage", error);
-    }
+    } catch (error) {}
   },
 
-  // ✅ Set Basic Auth Credentials
   setAuthCredentials(id, password) {
-    const credentials = btoa(`${id}:${password}`); // base64 encode
+    if (typeof window === "undefined") return; 
+
+    const credentials = btoa(`${id}:${password}`);
     this.setItem("authCredentials", credentials);
   },
 
-  // ✅ Get Basic Auth Header
   getAuthHeader() {
     const credentials = this.getItem("authCredentials");
     if (!credentials) return null;
     return `Basic ${credentials}`;
   },
 
-  // ✅ Clear Auth
   clearAuthCredentials() {
     this.removeItem("authCredentials");
   }

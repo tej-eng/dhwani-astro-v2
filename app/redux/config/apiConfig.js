@@ -49,8 +49,15 @@ export const API_ENDPOINTS = {
 
 
 export const getAuthHeaders = () => {
-  let user = JSON.parse(localStorage.getItem("user") || "{} ");
-  const token = user?.name;
-  return token;
+  if (typeof window === "undefined") return null; 
+
+  try {
+    let user = JSON.parse(localStorage.getItem("user") || "{}");
+    const token = user?.name;
+    return token;
+  } catch (err) {
+    console.error("getAuthHeaders error:", err);
+    return null;
+  }
 };
 

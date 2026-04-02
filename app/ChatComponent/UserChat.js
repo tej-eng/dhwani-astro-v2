@@ -67,7 +67,6 @@ const GET_INTAKE_BY_ID = gql`
     }
   }
 `;
-let user = JSON.parse(localStorage.getItem("user") || "{} ");
 // ================= COMPONENT =================
 
 const UserChat = ({
