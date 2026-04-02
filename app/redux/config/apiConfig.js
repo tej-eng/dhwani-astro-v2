@@ -6,7 +6,7 @@ const CHAT_MICRO = process.env.NEXT_PUBLIC_CHAT_MICRO || "http://localhost:8001/
 const ASTROLOGY_API_BASE_URL = process.env.NEXT_PUBLIC_ASTROLOGY_API_BASE_URL || "https://json.astrologyapi.com/";
 export const customer_url =  process.env.customer_url || "https://customer-dashboard-1-1piy.onrender.com/dashboard";
 
-export const graphqlEndpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ;
+export const graphqlEndpoint = "https://dhwaniastro.com/userAuth/graphql" ;
 
 // const httpLink = new HttpLink({
 //   uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:5003/graphql",
