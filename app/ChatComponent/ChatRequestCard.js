@@ -23,20 +23,24 @@ const ChatRequestCard = ({
   const [timeLeft, setTimeLeft] = useState(60);
   const [showchat, setShowChat] = useState(false);
    const [astroConfirm, setAstroConfirm] = useState(false);
+   const [queueData, setQueueData] = useState(null);
+   const [showQueuePopup, setShowQueuePopup] = useState(false);
   const timerRef = useRef(null);
-  let activeSocket = socket;
 
-    if (!activeSocket || !activeSocket.connected) {
-      activeSocket = connectSocket();
-    }
   useEffect(() => {
-    if (!activeSocket) return;
+  // Reset queue state when new chat starts
+  setQueueData(null);
+  setShowQueuePopup(false);
+}, [room_Id]);
+ 
+  useEffect(() => {
+    if (!socket) return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timerRef.current);
 
-          activeSocket.emit("autodisconnect", {
+          socket.emit("autodisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
@@ -48,7 +52,7 @@ const ChatRequestCard = ({
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-  }, [room_Id, astro_id, activeSocket]);
+  }, [room_Id, astro_id, socket]);
 
   const stopTimer = () => {
     if (timerRef.current) {
@@ -62,33 +66,39 @@ const ChatRequestCard = ({
     const sec = seconds % 60;
     return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
   };
+  useEffect(() => {
+  if (!queueData) return;
+
+  const interval = setInterval(() => {
+    setQueueData((prev) => ({
+      ...prev,
+      waitTime: prev.waitTime > 0 ? prev.waitTime - 1 : 0,
+    }));
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [queueData]);
+
 
   useEffect(() => {
-    if (!activeSocket) return;
-    socket.on("chatAcceptedByAstrologer", (data) => {
-      console.log("Chat started event received:1111111111111111111111111111111111111111111", data);
-      if (data.roomid === room_Id) {
-        setShowChat(true);
-        setAstroConfirm(true);
-        setIsChatStarted(true);
-        setTimeLeft(60);
-      }
-    });
-    // if(astroConfirm){
-    //    activeSocket.emit("chat_accepted_user", { room_id: room_Id }, (response) => {
-    //     console.log("Chat accepted response:-------------", response);
-    // });
-    // }
-    // activeSocket.on("chat_rejected_astrologer", (data) => {
-    //   stopTimer();
-    //   if (data.roomid === room_Id) {
-    //     toast.error("Your chat request rejected");
-    //     setTimeout(() => {
-    //       route.push("/homepage/chatAstro");
-    //     }, 1000);
-    //   }
-    // });
-    activeSocket.on("chat_reject_auto", (data) => {
+    if (!socket) return;
+   socket.on("chatAcceptedByAstrologer", (data) => {
+  if (data.roomid === room_Id) {
+    setShowChat(true);
+    setAstroConfirm(true);
+    setIsChatStarted(true);
+
+    //IMPORTANT RESET
+    setShowQueuePopup(false);
+    setQueueData(null);
+
+    setTimeLeft(60);
+  }
+});
+
+    
+   
+    socket.on("chat_reject_auto", (data) => {
       alert("Chat request rejected by astrologer due to timeout.", data);
       if (data.room_id === room_Id) {
         toast.error(
@@ -99,7 +109,13 @@ const ChatRequestCard = ({
       }
     });
 
-    activeSocket.on("chat_rejected", (data) => {
+     socket.on("queue_position", (data) => {
+       console.log("Queue Data:", data);
+       setQueueData(data); // { position: 3, waitTime: 120 }
+       setShowQueuePopup(true);
+    });
+
+    socket.on("chat_rejected", (data) => {
       if (data.roomid === room_Id) {
         stopTimer();
 
@@ -110,7 +126,7 @@ const ChatRequestCard = ({
       }
     });
 
-    activeSocket.on("user_conformation_chat", (data) => {
+    socket.on("user_conformation_chat", (data) => {
       if (data.roomid === room_Id) {
         // console.log("Chat started received:", data);
         stopTimer();
@@ -123,27 +139,15 @@ const ChatRequestCard = ({
 
     return () => {
       stopTimer();
-      activeSocket.off("chatAcceptedByAstrologer");
+      socket.off("chatAcceptedByAstrologer");
      // activeSocket.off("chat_rejected_astrologer");
-      activeSocket.off("chat_reject_auto");
-      activeSocket.off("chat_rejected");
-      activeSocket.off("user_conformation_chat");
+      socket.off("chat_reject_auto");
+      socket.off("chat_rejected");
+      socket.off("user_conformation_chat");
     };
-  }, [activeSocket, room_Id, route]);
+  }, [socket, room_Id, route]);
 
-  // const handleAccept = () => {
-  //   activeSocket.emit("chat_accepted_user", { room_id: room_Id }, (response) => {
-  //     // console.log("Chat accepted response:", response);
-  //   });
-  // };
-
-  // const handleReject = () => {
-  //   activeSocket.emit(
-  //     "chat_rejected_user",
-  //     { room_id: room_Id, astroid: astro_id },
-  //     (res) => console.log("Rejected response:", res)
-  //   );
-  // };
+  
 
   const astrologerData = {
     name: astro_Name,
@@ -211,7 +215,59 @@ const ChatRequestCard = ({
           </div>
         </div>
       )}
+      {showQueuePopup && queueData && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="w-full max-w-sm p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
+      
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-gray-800">
+          Queue Status
+        </h2>
+        <button
+          onClick={() => setShowQueuePopup(false)}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="space-y-4 text-center">
+        
+        {/* Position */}
+        <div>
+          <p className="text-sm text-gray-500">Your Position</p>
+          <h1 className="text-3xl font-bold text-indigo-600">
+            {queueData.position}
+          </h1>
+        </div>
+
+        {/* Wait Time */}
+        <div>
+          <p className="text-sm text-gray-500">Estimated Wait Time</p>
+          <h2 className="text-xl font-semibold text-gray-700">
+            {formatTime(queueData.waitTime)}
+          </h2>
+        </div>
+
+        {/* Info */}
+        <p className="text-sm text-gray-600">
+          Please wait while we connect you to the astrologer.
+        </p>
+
+        {/* Loader */}
+        <div className="flex justify-center">
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+      </div>
     </div>
+  </div>
+)}
+    </div>
+    
+    
   );
 };
 
