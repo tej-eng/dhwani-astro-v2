@@ -67,7 +67,6 @@ const GET_INTAKE_BY_ID = gql`
     }
   }
 `;
-let user = JSON.parse(localStorage.getItem("user") || "{} ");
 // ================= COMPONENT =================
 
 const UserChat = ({
@@ -118,7 +117,7 @@ const UserChat = ({
 
   const [typingStatus, setTypingStatus] = useState("");
   //const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
-  const [timeLeft, setTimeLeft] = useState(2 * 60);
+  const [timeLeft, setTimeLeft] = useState(5 * 60);
 
   const [showPopup, setShowPopup] = useState(false);
   const [leaveMessage, setLeaveMessage] = useState("");
@@ -131,8 +130,8 @@ const UserChat = ({
   const [user, setUser] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  const [queueData, setQueueData] = useState(null);
-const [showQueuePopup, setShowQueuePopup] = useState(false);
+//   const [queueData, setQueueData] = useState(null);
+// const [showQueuePopup, setShowQueuePopup] = useState(false);
 
   const intervalRef = useRef(null);
    const formatTime = (seconds) => {
@@ -192,7 +191,7 @@ const customer_recharge = () => {
     }
 
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
       amount: order.amount,
       currency: order.currency,
       name: "Dhwani Astro LLp",
@@ -252,15 +251,9 @@ const customer_recharge = () => {
   if (chatEnded) return; // prevent duplicate
   setChatEnded(true);
 
-  let activeSocket = socket;
+  if (!socket) return;
 
-  if (!activeSocket || !activeSocket.connected) {
-    activeSocket = connectSocket();
-  }
-
-  if (!activeSocket) return;
-
-  activeSocket.emit("chatCompleted", {
+  socket.emit("chatCompleted", {
     room_id: room_Id,
     astroId: astroid,
     userId: user_Id,
@@ -268,21 +261,15 @@ const customer_recharge = () => {
 };
 
   useEffect(() => {
-    let activeSocket = socket;
+    if (!socket) return;
 
-    if (!activeSocket || !activeSocket.connected) {
-      activeSocket = connectSocket();
-    }
-
-    if (!activeSocket) return;
-
-    activeSocket.emit("joinChat", {
+    socket.emit("joinChat", {
       username: "customer",
       room_id: room_Id,
       joinpersonid: user_Id,
     });
 
-    activeSocket.on("receive_message", (data) => {
+    socket.on("receive_message", (data) => {
       const normalizedMessage =
         typeof data.message === "object"
           ? data.message.message
@@ -301,16 +288,16 @@ const customer_recharge = () => {
       ]);
     });
 
-    activeSocket.on("typing", (data) => {
+    socket.on("typing", (data) => {
       setTypingStatus(data.typing ? `${data.user_name} typing...` : "");
     });
-     activeSocket.on("queue_position", (data) => {
-       console.log("Queue Data:", data);
-       setQueueData(data); // { position: 3, waitTime: 120 }
-       setShowQueuePopup(true);
-    });
+    //  socket.on("queue_position", (data) => {
+    //    console.log("Queue Data:", data);
+    //    setQueueData(data); // { position: 3, waitTime: 120 }
+    //    setShowQueuePopup(true);
+    // });
     //  Leave Chat
-    activeSocket.on("leave_chat", (data) => {
+    socket.on("leave_chat", (data) => {
       if (data.roomId === room_Id) {
         setLeaveMessage("Chat ended by astrologer");
         setShowPopup(true);
@@ -322,7 +309,7 @@ const customer_recharge = () => {
     });
 
     //  Completed Chat
-    activeSocket.on("chatCompleted", (data) => {
+    socket.on("chatCompleted", (data) => {
       if (data.roomId === room_Id) {
         setLeaveMessage("Chat completed successfully");
         setShowReviewPopup(true);
@@ -334,7 +321,7 @@ const customer_recharge = () => {
     });
 
     //  User Disconnected
-    activeSocket.on("user_disconnected", () => {
+    socket.on("user_disconnected", () => {
       setLeaveMessage("User disconnected");
       setShowPopup(true);
 
@@ -344,24 +331,18 @@ const customer_recharge = () => {
     });
 
     return () => {
-      activeSocket.off("receive_message");
-      activeSocket.off("typing");
-      activeSocket.off("leave_chat");
-      activeSocket.off("chatCompleted");
-      activeSocket.off("user_disconnected");
+      socket.off("receive_message");
+      socket.off("typing");
+      socket.off("leave_chat");
+      socket.off("chatCompleted");
+      socket.off("user_disconnected");
     };
   }, [socket, room_Id, user_Id]);
 
   // ================= TIMER =================
 
  useEffect(() => {
-  let activeSocket = socket;
-
-  if (!activeSocket || !activeSocket.connected) {
-    activeSocket = connectSocket();
-  }
-
-  if (!activeSocket) return;
+  if (!socket) return;
 
   if (intervalRef.current) return;
 
@@ -373,7 +354,7 @@ const customer_recharge = () => {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
 
-        activeSocket.emit("chatCompleted", {
+        socket.emit("chatCompleted", {
           room_id: room_Id,
           astroId: astroid,
           userId: user_Id,
@@ -398,12 +379,6 @@ const customer_recharge = () => {
   // ================= SEND MESSAGE =================
 
   const sendMessage = () => {
-    let activeSocket = socket;
-
-    if (!activeSocket || !activeSocket.connected) {
-      activeSocket = connectSocket();
-    }
-
     if (!message.trim()) return;
 
     const newMessage = {
@@ -417,7 +392,7 @@ const customer_recharge = () => {
   time: new Date().toISOString(),
 };
 
-  activeSocket.emit("send_message", {
+  socket.emit("send_message", {
   room_id: room_Id,
   msg_id: crypto.randomUUID(),
   sender_id: user?.id,
@@ -508,7 +483,7 @@ const handleSubmitReview = async () => {
 </button>
         </div>
       </div>
-        {/* ================= 🔥 RECHARGE SECTION ================= */}
+        {/* =================  RECHARGE SECTION ================= */}
       {timeLeft <= 60 && (
         <div className="bg-yellow-100 px-4 py-3">
 
@@ -630,46 +605,7 @@ const handleSubmitReview = async () => {
         </div>
       )}
 
-      {showQueuePopup && queueData && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-
-    <div className="bg-white w-[90%] max-w-sm rounded-2xl shadow-xl p-6 text-center">
-
-      {/* Header */}
-      <h2 className="text-lg font-semibold mb-2">
-        Waiting in Queue ⏳
-      </h2>
-
-      <p className="text-sm text-gray-500 mb-4">
-        Astrologer is busy, please wait...
-      </p>
-
-      {/* CARD */}
-      <div className="bg-gradient-to-r from-purple-100 to-purple-200 rounded-xl p-4 shadow">
-
-        <div className="text-3xl font-bold text-purple-700">
-          #{queueData.position}
-        </div>
-
-        <p className="text-sm text-gray-600 mt-1">
-          Your Position
-        </p>
-
-        {queueData.waitTime && (
-          <p className="text-xs text-gray-500 mt-2">
-            Approx wait: {Math.ceil(queueData.waitTime / 60)} min
-          </p>
-        )}
-      </div>
-
-      {/* Optional Loader */}
-      <div className="mt-4 text-xs text-gray-400">
-        Please stay on this page...
-      </div>
-
-    </div>
-  </div>
-)}
+     
 
       <AlertLoading show={isLoading} title="Loading..." />
     </div>

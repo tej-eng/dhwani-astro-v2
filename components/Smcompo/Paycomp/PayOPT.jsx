@@ -67,7 +67,7 @@ const searchParams = useSearchParams();
         return;
       }
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
         amount: order.amount,
         currency: order.currency,
         name: "Dhwani Astro LLp",

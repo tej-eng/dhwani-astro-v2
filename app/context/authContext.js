@@ -16,15 +16,20 @@ const [user, setUser] = useState(null);
   const [pendingRoute, setPendingRoute] = useState(null);
 
 useEffect(() => {
-  const storedUser = localStorage.getItem("user");
+  try {
+    if (typeof window === "undefined") return;
 
-  if (storedUser) {
-    setUser(JSON.parse(storedUser));
-    setIsLoggedIn(true);
-  } else {
-    setIsLoggedIn(false);
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  } catch (err) {
+    console.error("AuthContext localStorage error:", err);
   }
-
 }, []);
 
   const value = {

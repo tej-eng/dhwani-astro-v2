@@ -215,50 +215,6 @@ export default function RequestForm({ params }) {
           toast.error(err.message);
         }
 };
-  // useEffect(() => {
-  //   if (astrologer?.status === true) {
-  //     const roomid = "123456";
-  //     const requesttype = "chat";
-
-    
-  //     const chattimeInMin = chatData.chatTime;
-
-
-  //     let messageData = {
-  //       message: " sent a chat request!",
-  //       phoneNumber: "***********",
-  //       room_id: roomid,
-  //       astro_id: astro_id || "",
-  //       user_id: user?.id || "",
-  //       is_promotional: true,
-  //       astro_name: astrologer?.full_name || "",
-  //       maximum_time: chattimeInMin || 0,
-  //     };
-
-  //     socket.emit("chat_request", messageData);
-
-  //     const astrlogerdata = {
-  //       astro_id,
-  //       status: 2,
-  //     };
-
-  //   }
-  // }, [
-  //   name,
-  //   usergender,
-  //   dob,
-  //   time,
-  //   occupation,
-  //   place,
-  //   phone,
-  //   astro_id,
-  //   astrologer,
-  //   user,
-  //   router,
-  //   socket,
-  // ]);
-
-
 
   const gender = ["MALE", "FEMALE", "OTHER"];
   const occupation_list = [
