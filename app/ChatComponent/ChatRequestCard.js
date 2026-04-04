@@ -136,10 +136,12 @@ const ChatRequestCard = ({
 
     const handleReject = (data) => {
       if (data.roomid === room_Id) {
+        setShowQueuePopup(false);
+        setShowwaitingpopup(false);
         stopTimer();
         toast.error("The astrologer has rejected your chat request.");
         setTimeout(() => {
-          route.push("/homepage/chatAstro");
+          route.push("/chat-with-astrologer");
         }, 1000);
       }
     };
