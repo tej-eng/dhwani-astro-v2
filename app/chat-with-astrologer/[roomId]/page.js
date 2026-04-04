@@ -10,14 +10,14 @@ export default function ChatPage() {
   const { activeRequest } = useSelector((state) => state.send_request_chat);
 
   if (!activeRequest) {
-    return <div>No active chat found</div>;
+    return ;
   }
 
   return (
     <div className="w-full h-[calc(100vh-120px)]">
       <UserChat
         room_Id={roomId}
-        astroid={activeRequest?.astrologer?.id}
+        astroid={activeRequest?.astrologer?.id || 1233}
         user_Id={activeRequest?.userId}
         astro_Name={activeRequest?.astrologer?.full_name}
         astro_Image={activeRequest?.astrologer?.profile_image}

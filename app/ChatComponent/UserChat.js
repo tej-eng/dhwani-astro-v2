@@ -305,7 +305,6 @@ const UserChat = ({
       if (data.roomId === room_Id) {
         setLeaveMessage("Chat completed successfully");
         setShowReviewPopup(true);
-        dispatch(clearActiveRequest());
 
         setTimeout(() => {
           router.push("/chat-with-astrologer");
@@ -423,9 +422,10 @@ const UserChat = ({
       toast.success("Review submitted successfully");
 
       setShowReviewPopup(false);
+      dispatch(clearActiveRequest());
 
       setTimeout(() => {
-        router.push("/user/chat-history");
+        router.push("/chat-with-astrologer");
       }, 1000);
     } catch (error) {
       console.error("Review error:", error);
@@ -438,7 +438,7 @@ const UserChat = ({
   // ================= UI =================
 
   return (
-    <div className="flex flex-col h-[80vh] max-w-2xl mx-auto border rounded-xl shadow-lg overflow-hidden bg-white">
+    <div className="flex flex-col h-[80vh] max-w-2xl mx-auto border text-black rounded-xl shadow-lg overflow-hidden bg-white">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
       {/* HEADER */}

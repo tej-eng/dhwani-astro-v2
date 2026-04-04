@@ -44,7 +44,7 @@ const SignInModal = ({ onClose }) => {
   } = useOTP();
 
  const [phoneData, setPhoneData] = useState({
-  countryCode: "+91",
+  countryCode: "",
   mobile: "",
   isValid: false,
 });
@@ -56,9 +56,7 @@ const SignInModal = ({ onClose }) => {
 
   const { pendingRoute, setPendingRoute } = useAuth();
 
-  /* =============================
-     Disable background scroll
-  ============================= */
+ 
   console.log("comming step value:", step);
   useEffect(() => {
     const scrollY = window.scrollY;

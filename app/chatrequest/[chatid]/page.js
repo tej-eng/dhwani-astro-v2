@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import CustomInput from "@/components/Custom/CustomInput";
 import CustomSelect from "@/components/Custom/CustomSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,11 +21,10 @@ import { IntakeFromRequest } from "@/app/redux/reducer/auth/intakeStoreSlice";
 import { fetchIntakeRequest } from "@/app/redux/reducer/auth/intakeSlice";
 import { getIntakeDataRequest } from "@/app/redux/reducer/intake/getIntakeData";
 import { RequestAstrologerDetail } from "@/app/redux/reducer/astrologer/AstrologerDetail";
-//const { socket, connectSocket } = useContext(SocketContext);
 import { useMutation, useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
-import FloatingChatRequest from "@/components/Custom/FloatingChatRequest";
 import { setActiveRequest } from "../../redux/reducer/chat/sendRequestSlice";
+import metadata from "libphonenumber-js/metadata.min.json";
 
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
@@ -89,7 +88,6 @@ export default function RequestForm({ params }) {
   const [alert, setAlert] = useState(false);
   const [astrologer, setAstrologer] = useState(null);
   const [place, setPlace] = useState("");
-  const [countryCode, setCountryCode] = useState("+91");
   const [chatTime, setChatTime] = useState(0);
 
   const [user, setUser] = useState("");
@@ -101,6 +99,9 @@ export default function RequestForm({ params }) {
   const [intake_Id, setInatkeId] = useState(null);
   const [chatsend, setChatSend] = useState("");
   const [id, setId] = useState(null);
+  const [countryCode, setCountryCode] = useState("");
+  const [country, setCountry] = useState(null);
+  const countries = useMemo(() => getCountries(), []);
 
   const { userData } = useSelector((state) => state.getuserDetail);
   useEffect(() => {
@@ -127,22 +128,31 @@ export default function RequestForm({ params }) {
   useEffect(() => {
     if (astrologerInfo?.getAstrologerById) {
       setAstrologer(astrologerInfo.getAstrologerById);
+
+      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", astrologer);
     }
   }, [astrologerInfo]);
 
   useEffect(() => {
     if (userInfo?.getUserById) {
       const user = userInfo.getUserById;
-      console.log("Fetched user info:", user);
 
       setName(user?.name || "");
       setPhone(user?.mobile || "");
+      setCountryCode(user?.countryCode || "");
       setGender(user?.gender || "");
       setDob(user?.birthDate ? user.birthDate.split("T")[0] : "");
       setTime(user?.birthTime || "");
       setOccupation(user?.occupation || "");
+
+      if (user?.countryCode && countries.length > 0) {
+        const matched = countries.find((c) => c.dialCode === user.countryCode);
+        if (matched) {
+          setCountry(matched);
+        }
+      }
     }
-  }, [userInfo]);
+  }, [userInfo, countries]);
 
   const sendRequest = async () => {
     if (
@@ -169,7 +179,7 @@ export default function RequestForm({ params }) {
           input: {
             astrologerId: astro_id,
             name,
-            countryCode,
+            countryCode: countryCode || country?.dialCode,
             mobile: phone,
             gender: usergender,
             birthDate: dob,
@@ -225,6 +235,7 @@ export default function RequestForm({ params }) {
             chatTime,
             userId: id,
           }),
+          //
         );
       } else {
         activeSocket.on("connect", () => {
@@ -240,7 +251,7 @@ export default function RequestForm({ params }) {
           );
         });
       }
-      // 👉 Navigation should NOT block UI
+
       if (activeSocket) {
         router.push(`/chat-with-astrologer`);
       }
@@ -249,7 +260,6 @@ export default function RequestForm({ params }) {
     }
   };
 
-  const gender = ["MALE", "FEMALE", "OTHER"];
   const occupation_list = [
     "Private Job",
     "Govt Job",
@@ -261,6 +271,20 @@ export default function RequestForm({ params }) {
   const handleLocationSelect = (locationObj) => {
     setPlace(locationObj?.city || "");
   };
+
+  function getCountries() {
+    const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+    const countryCodes = Object.keys(metadata.countries);
+
+    return countryCodes.map((iso) => {
+      const dialCode = `+${metadata.countries[iso][0]}`;
+      return {
+        iso,
+        name: displayNames.of(iso),
+        dialCode,
+      };
+    });
+  }
 
   return (
     <div className="w-full">
@@ -288,9 +312,23 @@ export default function RequestForm({ params }) {
                 Mobile <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center w-full gap-2 overflow-hidden rounded-md">
-                <span className="w-[30%] px-2 py-1 text-black bg-gray-100 border-b rounded-full">
-                  {countryCode}
-                </span>
+                <select
+                  value={country?.iso || ""}
+                  onChange={(e) => {
+                    const selected = countries.find(
+                      (c) => c.iso === e.target.value,
+                    );
+                    setCountry(selected);
+                    setCountryCode(selected.dialCode);
+                  }}
+                  className="bg-transparent text-black outline-none text-sm w-fit"
+                >
+                  {countries.map((c) => (
+                    <option key={c.iso} value={c.iso}>
+                      ({c.dialCode})
+                    </option>
+                  ))}
+                </select>
                 <CustomInput
                   type="tel"
                   placeholder="Enter Phone Number"
@@ -362,7 +400,7 @@ export default function RequestForm({ params }) {
             </div>
 
             <div className="mt-4 text-center md:col-span-3">
-              <button  
+              <button
                 aria-label="Send Chat Request"
                 type="submit"
                 className="px-6 py-2 font-semibold text-black transition bg-yellow-400 rounded-full shadow-md hover:bg-yellow-500"
@@ -394,22 +432,6 @@ export default function RequestForm({ params }) {
           </div>
         )}
       </div>
-
-      {/* <div className="w-full place-self-center">
-        {request && (
-          <FloatingChatRequest>
-            <ChatRequestCard
-              room_Id={roomId}
-              astro_Name={astrologer?.full_name || ""}
-              user_Id={user?.id}
-              astroimage={astrologer?.profile_image || ""}
-              astro_id={astrologer?.id || ""}
-              chat_time={chatTime}
-              experts_price={astrologer?.price || 0}
-            />
-          </FloatingChatRequest>
-        )}
-      </div> */}
 
       <AlertLoading show={astrologerloading} title="Fetch Astrologer..." />
     </div>
