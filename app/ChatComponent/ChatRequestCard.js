@@ -80,7 +80,6 @@ const ChatRequestCard = ({
     dispatch(clearActiveRequest());
     setShowwaitingpopup(false);
 
-    console.log("yyyyyyyyyyyyyyyyyy", showchat);
   };
 
   const handleQueueCancel = () => {
@@ -90,7 +89,6 @@ const ChatRequestCard = ({
       user_id: user_Id,
     });
     dispatch(clearActiveRequest());
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
   };
 
   const formatTime = (seconds) => {
