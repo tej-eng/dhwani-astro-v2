@@ -78,12 +78,12 @@ const ChatRequestCard = ({
       user_id: user_Id,
     });
     dispatch(clearActiveRequest());
-    setShowwaitingpopup(false);
+    //setShowwaitingpopup(false);
 
   };
 
   const handleQueueCancel = () => {
-    socket?.emit("cancel_chat_request", {
+    socket?.emit("queue_cancel", {
       room_id: room_Id,
       astroid: astro_id,
       user_id: user_Id,
