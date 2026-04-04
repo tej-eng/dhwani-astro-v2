@@ -37,7 +37,14 @@ const ChatRequestCard = ({
   }, [room_Id]);
 
   useEffect(() => {
-    if (!socket || timerRef.current) return;
+    if (!socket) return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    setTimeLeft(60);
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -45,13 +52,17 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           timerRef.current = null;
 
+          console.log("⏱ Timer hit 0");
           socket.emit("autodisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
+          toast.success("Chat request timed out. Please try again.");
+          dispatch(clearActiveRequest());
 
           return 0;
         }
+
         return prevTime - 1;
       });
     }, 1000);
@@ -72,18 +83,18 @@ const ChatRequestCard = ({
   };
 
   const handleRequestCancel = () => {
+    stopTimer();
     socket?.emit("cancel_chat_request", {
       room_id: room_Id,
       astroid: astro_id,
       user_id: user_Id,
     });
     dispatch(clearActiveRequest());
-    //setShowwaitingpopup(false);
-
   };
 
   const handleQueueCancel = () => {
-    socket?.emit("queue_cancel", {
+    stopTimer();
+    socket?.emit("cancel_chat_request", {
       room_id: room_Id,
       astroid: astro_id,
       user_id: user_Id,
@@ -118,13 +129,9 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setQueueData(null);
         setShowwaitingpopup(false);
-        setTimeLeft(60);
+        setTimeLeft(0);
 
         route.push(`/chat-with-astrologer/${room_Id}`);
-
-        setTimeout(() => {
-          // dispatch(clearActiveRequest());
-        }, 1000);
       }
     };
 
@@ -139,7 +146,7 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setShowwaitingpopup(false);
         stopTimer();
-        toast.error("The astrologer has rejected your chat request.");
+        toast.success("The astrologer has rejected your chat request.");
         setTimeout(() => {
           route.push("/chat-with-astrologer");
         }, 1000);
