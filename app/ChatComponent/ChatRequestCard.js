@@ -52,7 +52,6 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           timerRef.current = null;
 
-          console.log("⏱ Timer hit 0");
           socket.emit("autodisconnect", {
             room_id: room_Id,
             astroid: astro_id,
