@@ -4,6 +4,7 @@ const initialState = {
   loading: false,
   chatData: [],
   chatStatusCode: null,
+  activeRequest: null,
 };
 
 const sendRequestSlice = createSlice({
@@ -26,9 +27,17 @@ const sendRequestSlice = createSlice({
     resetCode: (state) => {
       state.chatStatusCode = null;
     },
+    setActiveRequest: (state, action) => {
+      state.activeRequest = action.payload;
+    },
+
+    clearActiveRequest: (state) => {
+      state.activeRequest = null;
+    },
   },
 });
 
-export const { sendChatRequest, sendChatReqAdd, sendChatReqFail, resetCode }=sendRequestSlice.actions;
+export const { sendChatRequest, sendChatReqAdd, sendChatReqFail, resetCode,  setActiveRequest,clearActiveRequest, } =
+  sendRequestSlice.actions;
 
 export default sendRequestSlice.reducer;
