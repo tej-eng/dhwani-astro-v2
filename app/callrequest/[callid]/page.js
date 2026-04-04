@@ -397,7 +397,7 @@ export default function RequestForm({ params }) {
           )}
         </div>
       ) : (
-        <div className="w-[70%] place-self-center">
+        <div className="w-full place-self-center">
           <CallRequestCard
             room_Id={roomId}
             astro_Name={astrologer?.full_name || ""}

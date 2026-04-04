@@ -1,4 +1,3 @@
-
 import "@/app/styles/globals.css";
 
 import { Toaster } from "react-hot-toast";
@@ -13,8 +12,7 @@ import { LanguageProvider } from "./context/LangContext";
 import { Poppins, Sonsie_One } from "next/font/google";
 import ApolloWrapper from "./providers/ApolloWrapper";
 import { AuthProvider } from "./context/authContext";
-
-
+import GlobalChatPopup from "@/components/Custom/GlobalChatPopup";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,8 +29,6 @@ const sonsie = Sonsie_One({
   display: "swap",
   preload: false,
 });
-
-
 
 export const metadata = {
   title:
@@ -51,21 +47,22 @@ export default function RootLayout({ children }) {
       className={`scroll-smooth ${poppins.variable} ${sonsie.variable}`}
     >
       <body className="antialiased font-sans">
-
         <ApolloWrapper>
           <AuthProvider>
             <LanguageProvider>
               <Providers>
                 <SocketProvider>
                   <SignInModalWrapper>
+                    <SocketProvider>
+                      <main className="flex justify-center w-full pt-12 lg:pt-37 md:pt-37">
+                        {children}
+                        <div id="modal-root" />
+                        <ChatToast />
+                      </main>
 
-                    <main className="flex justify-center w-full pt-12 lg:pt-37 md:pt-37">
-                      {children}
-                      <div id="modal-root" />
-                      <ChatToast />
-                    </main>
-
-                    <Footerlinks />
+                      <Footerlinks />
+                      <GlobalChatPopup />
+                    </SocketProvider>
                   </SignInModalWrapper>
                   <Toaster position="top-center" reverseOrder={false} />
                 </SocketProvider>
@@ -74,8 +71,7 @@ export default function RootLayout({ children }) {
             </LanguageProvider>
           </AuthProvider>
         </ApolloWrapper>
-
       </body>
-    </html >
+    </html>
   );
 }
