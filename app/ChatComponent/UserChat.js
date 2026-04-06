@@ -68,7 +68,7 @@ const UserChat = ({
   room_Id,
   astro_Name,
   astro_Image,
-  chattime,
+  chatTime,
   user_Id,
   astroid,
   astro_price,
@@ -109,10 +109,9 @@ const UserChat = ({
       time: "",
     },
   ]);
-
   const [typingStatus, setTypingStatus] = useState("");
-  //const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
-  const [timeLeft, setTimeLeft] = useState(5 * 60);
+  const [timeLeft, setTimeLeft] = useState((chatTime || 0) * 60);
+  //const [timeLeft, setTimeLeft] = useState(5 * 60);
 
   const [showPopup, setShowPopup] = useState(false);
   const [leaveMessage, setLeaveMessage] = useState("");
