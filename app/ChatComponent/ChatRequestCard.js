@@ -145,9 +145,10 @@ const ChatRequestCard = ({
 
 
     const handleQueueUpdate = (data) => {
-      setQueueData(data);
-      debugger;
+     
+      //setQueueData(data);
       console.log("Queue update received:", data);
+      debugger;
       //setShowQueuePopup(true);
       //setShowwaitingpopup(false);
     };
@@ -173,6 +174,7 @@ const ChatRequestCard = ({
     return () => {
       socket.off("chatAcceptedByAstrologer", handleAccepted);
       socket.off("queue_position", handleQueue);
+      socket.off("queue_update", handleQueueUpdate);
       socket.off("chat_rejected", handleReject);
     };
   }, [socket, room_Id]);
