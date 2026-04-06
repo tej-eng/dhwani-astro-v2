@@ -140,11 +140,14 @@ const ChatRequestCard = ({
       setQueueData(data);
       setShowQueuePopup(true);
       setShowwaitingpopup(false);
+      setTimeLeft(chat_time*60);
     };
 
 
     const handleQueueUpdate = (data) => {
       setQueueData(data);
+      debugger;
+      console.log("Queue update received:", data);
       //setShowQueuePopup(true);
       //setShowwaitingpopup(false);
     };
