@@ -139,6 +139,13 @@ const ChatRequestCard = ({
       setShowwaitingpopup(false);
     };
 
+
+    const handleQueueUpdate = (data) => {
+      setQueueData(data);
+      //setShowQueuePopup(true);
+      //setShowwaitingpopup(false);
+    };
+   
     const handleReject = (data) => {
       if (data.roomid === room_Id) {
         setShowQueuePopup(false);
@@ -153,6 +160,8 @@ const ChatRequestCard = ({
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
     socket.on("queue_position", handleQueue);
+    socket.on("queue_update", handleQueueUpdate);
+    
     socket.on("chat_rejected", handleReject);
 
     return () => {
