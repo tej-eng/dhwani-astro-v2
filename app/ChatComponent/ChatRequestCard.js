@@ -52,7 +52,7 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           timerRef.current = null;
 
-          socket.emit("autodisconnect", {
+          socket.emit("autoDisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
@@ -128,6 +128,8 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setQueueData(null);
         setShowwaitingpopup(false);
+        setTimeLeft(chat_time);
+
 
         route.push(`/chat-with-astrologer/${room_Id}`);
       }
