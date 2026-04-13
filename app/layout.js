@@ -13,6 +13,7 @@ import { Poppins, Sonsie_One } from "next/font/google";
 import ApolloWrapper from "./providers/ApolloWrapper";
 import { AuthProvider } from "./context/authContext";
 import GlobalChatPopup from "@/components/Custom/GlobalChatPopup";
+import ChatWidget from "@/components/ai/ChatWidget";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
                         {children}
                         <div id="modal-root" />
                         <ChatToast />
+                          <ChatWidget />
                       </main>
 
                       <Footerlinks />

@@ -46,7 +46,7 @@ const spinWheel = () => {
   return (
     <>
       <div
-        className="fixed bottom-0 right-5 z-10 shake-cycle cursor-pointer"
+        className="fixed bottom-20 right-5 z-10 shake-cycle cursor-pointer"
         onClick={() => setOpen(true)}
       >
         <Image

@@ -4,11 +4,20 @@ import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
 /* =========================
+ENV BASE URL
+========================= */
+
+const GRAPHQL_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/graphql"
+    : "https://dhwaniastro.com/userAuth/graphql";
+
+/* =========================
 HTTP LINK
 ========================= */
 
 const httpLink = new HttpLink({
-  uri: "https://dhwaniastro.com/userAuth/graphql",
+  uri: GRAPHQL_URL,
   credentials: "include",
 });
 
@@ -36,7 +45,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         isRefreshing = true;
 
         return new Promise((resolve, reject) => {
-          fetch("https://dhwaniastro.com/userAuth/graphql", {
+          fetch(GRAPHQL_URL, {
             method: "POST",
             credentials: "include",
             headers: {

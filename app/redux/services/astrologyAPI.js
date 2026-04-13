@@ -352,13 +352,13 @@ export const astrologyApi = createApi({
       }),
     }),
 
-    getAdvPanchang: builder.mutation({
-      query: (body) => ({
-        url: 'advanced_panchang',
-        method: 'POST',
-        body,
-      }),
-    }),
+    // getAdvPanchang: builder.mutation({
+    //   query: (body) => ({
+    //     url: 'advanced_panchang',
+    //     method: 'POST',
+    //     body,
+    //   }),
+    // }),
 
     getChaugadiya: builder.mutation({
       query: (body) => ({
@@ -500,7 +500,7 @@ export const {
   useGetMatchAstroMutation,
   useGetMatchManglikMutation,
   useGetMatchMrepoMutation,
-  useGetAdvPanchangMutation,
+  // useGetAdvPanchangMutation,
   useGetChaugadiyaMutation,
   useGetHoraChartMutation,
   useGetSunSignPredTodayMutation,
