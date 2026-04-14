@@ -32,6 +32,7 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     // Reset queue state when new chat starts
+    console.log("--------------------------",chat_time);
     setQueueData(null);
     setShowQueuePopup(false);
   }, [room_Id]);
@@ -52,8 +53,7 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           timerRef.current = null;
 
-          console.log("⏱ Timer hit 0");
-          socket.emit("autodisconnect", {
+          socket.emit("autoDisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
@@ -129,7 +129,8 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setQueueData(null);
         setShowwaitingpopup(false);
-        setTimeLeft(0);
+        setTimeLeft(chat_time*60);
+
 
         route.push(`/chat-with-astrologer/${room_Id}`);
       }
@@ -139,8 +140,19 @@ const ChatRequestCard = ({
       setQueueData(data);
       setShowQueuePopup(true);
       setShowwaitingpopup(false);
+      setTimeLeft(chat_time*60);
     };
 
+
+    const handleQueueUpdate = (data) => {
+     
+      //setQueueData(data);
+      console.log("Queue update received:", data);
+      debugger;
+      //setShowQueuePopup(true);
+      //setShowwaitingpopup(false);
+    };
+   
     const handleReject = (data) => {
       if (data.roomid === room_Id) {
         setShowQueuePopup(false);
@@ -155,11 +167,14 @@ const ChatRequestCard = ({
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
     socket.on("queue_position", handleQueue);
+    socket.on("queue_update", handleQueueUpdate);
+    
     socket.on("chat_rejected", handleReject);
 
     return () => {
       socket.off("chatAcceptedByAstrologer", handleAccepted);
       socket.off("queue_position", handleQueue);
+      socket.off("queue_update", handleQueueUpdate);
       socket.off("chat_rejected", handleReject);
     };
   }, [socket, room_Id]);

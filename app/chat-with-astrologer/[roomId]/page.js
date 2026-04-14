@@ -22,6 +22,7 @@ export default function ChatPage() {
         astro_Name={activeRequest?.astrologer?.full_name}
         astro_Image={activeRequest?.astrologer?.profile_image}
         astro_price={activeRequest?.astrologer?.price}
+        chatTime={activeRequest?.chatTime} 
       />
     </div>
   );
