@@ -146,9 +146,9 @@ const ChatRequestCard = ({
 
     const handleQueueUpdate = (data) => {
      
-      //setQueueData(data);
-      console.log("Queue update received:", data);
-      debugger;
+      setQueueData(data);
+      console.log("Queue update received:#######################", data);
+      //debugger;
       //setShowQueuePopup(true);
       //setShowwaitingpopup(false);
     };
