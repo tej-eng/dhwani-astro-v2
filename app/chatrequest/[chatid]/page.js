@@ -32,6 +32,7 @@ const CREATE_INTAKE = gql`
       intakeId
       roomId
       chatTime
+      message
     }
   }
 `;
@@ -191,14 +192,18 @@ export default function RequestForm({ params }) {
         },
       });
 
-      const { roomId, chatTime, intakeId } = response.data.createIntake;
+      const { roomId, chatTime, intakeId, message } = response.data.createIntake;
       setChatTime(chatTime);
       setRoomId(roomId);
 
-      if (!intakeId) {
+      if (!intakeId ) {
         toast.error("Failed to create intake");
         return;
       }
+       if(message=="duplicate request. User is already in queue for this astrologer"){
+        toast.error("You already have a pending request for this astrologer. Please wait for it to be accepted or cancelled before sending a new request.");
+        return;
+       }
 
       console.log(" Intake created:", intakeId);
 
