@@ -138,20 +138,27 @@ const ChatRequestCard = ({
 
     const handleQueue = (data) => {
       setQueueData(data);
-      setShowQueuePopup(true);
-      setShowwaitingpopup(false);
-      setTimeLeft(chat_time*60);
+      if(data.position==0){
+        setShowQueuePopup(false);
+        setShowwaitingpopup(true);
+        setTimeLeft(60);
+      }
+      else{
+        setShowQueuePopup(true);
+        setShowwaitingpopup(false);
+        setTimeLeft(chat_time*60);
+
+      }
     };
 
 
-    const handleQueueUpdate = (data) => {
+    // const handleQueueUpdate = (data) => {
      
-      setQueueData(data);
-      console.log("Queue update received:#######################", data);
-      //debugger;
-      //setShowQueuePopup(true);
-      //setShowwaitingpopup(false);
-    };
+    //   setQueueData(data);
+
+    //   console.log("Queue update received:#######################", data);
+     
+    // };
    
     const handleReject = (data) => {
       if (data.roomid === room_Id) {
@@ -167,14 +174,14 @@ const ChatRequestCard = ({
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
     socket.on("queue_position", handleQueue);
-    socket.on("queue_update", handleQueueUpdate);
+   // socket.on("queue_update", handleQueueUpdate);
     
     socket.on("chat_rejected", handleReject);
 
     return () => {
       socket.off("chatAcceptedByAstrologer", handleAccepted);
       socket.off("queue_position", handleQueue);
-      socket.off("queue_update", handleQueueUpdate);
+     // socket.off("queue_update", handleQueueUpdate);
       socket.off("chat_rejected", handleReject);
     };
   }, [socket, room_Id]);
