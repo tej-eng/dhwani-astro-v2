@@ -123,6 +123,8 @@ const UserChat = ({
   const [createReview, { loading: reviewLoading }] = useMutation(CREATE_REVIEW);
   const [user, setUser] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [replyTo, setReplyTo] = useState(null);
+  const [hoveredMsgIndex, setHoveredMsgIndex] = useState(null);
 
   //   const [queueData, setQueueData] = useState(null);
   // const [showQueuePopup, setShowQueuePopup] = useState(false);
@@ -366,35 +368,32 @@ const UserChat = ({
   // ================= SEND MESSAGE =================
 
   const sendMessage = () => {
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    const newMessage = {
-      msg_id: crypto.randomUUID(),
-      sender_id: user?.id,
-      received_id: astroid,
-      image: null,
-      sender: "user",
-      replyTo: null,
-      message: message.trim(),
-      time: new Date().toISOString(),
-    };
-
-    socket.emit("send_message", {
-      room_id: room_Id,
-      msg_id: crypto.randomUUID(),
-      sender_id: user?.id,
-      received_id: astroid,
-      image: null,
-      sender: "user",
-      replyTo: null,
-      message: message.trim(),
-      time: new Date().toISOString(),
-    });
-
-    setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
+  const newMessage = {
+    msg_id: crypto.randomUUID(),
+    sender_id: user?.id,
+    received_id: astroid,
+    sender: "user",
+    message: message.trim(),
+    replyTo: replyTo
+      ? {
+          sender: replyTo.sender,
+          message: replyTo.message,
+        }
+      : null,
+    time: new Date().toISOString(),
   };
 
+  socket.emit("send_message", {
+    ...newMessage,
+    room_id: room_Id,
+  });
+
+  setMessages((prev) => [...prev, newMessage]);
+  setMessage("");
+  setReplyTo(null); //  clear after send
+};
   // ================= REVIEW =================
 
   const handleSubmitReview = async () => {
@@ -515,7 +514,15 @@ const UserChat = ({
           </div>
         ))}
       </div>
-
+      {replyTo && (
+  <div className="px-3 py-2 bg-blue-100 border-l-4 border-blue-500 text-sm flex justify-between items-center">
+    <span>
+      Reply to <b>{replyTo.sender}</b>:{" "}
+      {replyTo.message?.slice(0, 40)}
+    </span>
+    <button onClick={() => setReplyTo(null)}>✖</button>
+  </div>
+)}
       {/* INPUT */}
       <div className="flex gap-2 p-3 border-t">
         <input
@@ -587,6 +594,50 @@ const UserChat = ({
           </div>
         </div>
       )}
+      {messages.map((msg, i) => (
+  <div
+    key={i}
+    onMouseEnter={() => setHoveredMsgIndex(i)}
+    onMouseLeave={() => setHoveredMsgIndex(null)}
+    className={`flex ${
+      msg.sender === "user" ? "justify-end" : "justify-start"
+    }`}
+  >
+    <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
+
+      {/*Reply preview (if exists) */}
+      {msg.replyTo && (
+        <div className="text-xs bg-gray-100 p-2 mb-1 rounded border-l-4 border-blue-400">
+          <b>{msg.replyTo.sender}:</b>{" "}
+          {msg.replyTo.message?.slice(0, 30)}
+        </div>
+      )}
+
+      {msg.message}
+
+      {/*  Hover reply button */}
+      {hoveredMsgIndex === i && (
+        <button
+          onClick={() =>
+            setReplyTo({
+              sender: msg.sender,
+              message: msg.message,
+            })
+          }
+          className="absolute -left-8 top-1 text-blue-500 text-xs"
+        >
+          ↩
+        </button>
+      )}
+
+      {msg.time && (
+        <div className="text-[10px] text-gray-400 mt-1 text-right">
+          {msg.time}
+        </div>
+      )}
+    </div>
+  </div>
+))}
 
       <AlertLoading show={isLoading} title="Loading..." />
     </div>
