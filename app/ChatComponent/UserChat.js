@@ -261,21 +261,24 @@ const UserChat = ({
     });
 
     socket.on("receive_message", (data) => {
-      const normalizedMessage =
-        typeof data.message === "object" ? data.message.message : data.message;
+  const normalizedMessage =
+    typeof data.message === "object"
+      ? data.message.message
+      : data.message;
 
-      const messageTime =
-        typeof data.message === "object" ? data.message.time : "";
+  const messageTime =
+    typeof data.message === "object" ? data.message.time : "";
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: data.sender || "Astrologer",
-          message: normalizedMessage,
-          time: messageTime,
-        },
-      ]);
-    });
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: data.sender || "Astrologer",
+      message: normalizedMessage,
+      time: messageTime,
+      replyTo: data.replyTo || null, // ✅ important
+    },
+  ]);
+});
 
     socket.on("typing", (data) => {
       setTypingStatus(data.typing ? `${data.user_name} typing...` : "");
