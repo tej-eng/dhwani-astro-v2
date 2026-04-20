@@ -60,7 +60,7 @@ const GET_ASTROLOGER_BY_ID = gql`
 `;
 
 export default function RequestForm() {
-  const debounceRef = useRef(null); // ✅ debounce added
+  const debounceRef = useRef(null); //  debounce added
 
   const [createIntake] = useMutation(CREATE_INTAKE);
   const { chatid } = useParams();
@@ -73,10 +73,10 @@ export default function RequestForm() {
   const [astrologer, setAstrologer] = useState(null);
   const [country, setCountry] = useState(null);
   const [id, setId] = useState(null);
-
+  const [chatTime, setChatTime] = useState(0);
   const countries = useMemo(() => getCountries(), []);
 
-  // ✅ RHF
+  //  RHF
   const {
     control,
     handleSubmit,
@@ -98,7 +98,7 @@ export default function RequestForm() {
     },
   });
 
-  // ✅ DEBOUNCE WRAPPER (NO LOGIC CHANGE)
+  //  DEBOUNCE WRAPPER (NO LOGIC CHANGE)
   const handleDebouncedSubmit = (data) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -151,7 +151,6 @@ export default function RequestForm() {
     }
   }, [userInfo, countries, setValue]);
 
-  // ✅ YOUR ORIGINAL SUBMIT (UNCHANGED)
   const onSubmit = async (data) => {
     try {
       const response = await createIntake({
@@ -258,7 +257,7 @@ export default function RequestForm() {
 
   return (
     <div className="w-full">
-      {/* ✅ IMPORTANT CHANGE HERE */}
+      {/*  IMPORTANT CHANGE HERE */}
       <form onSubmit={handleSubmit(handleDebouncedSubmit)}>
         <div className="flex items-start justify-center gap-5 px-10 my-10 text-black">
           <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl">
@@ -279,7 +278,7 @@ export default function RequestForm() {
                 control={control}
                 render={({ field }) => (
                   <CustomInput
-                    {...field} // ✅ FIX
+                    {...field} 
                     label="Name"
                     placeholder="Enter your name here"
                     className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
