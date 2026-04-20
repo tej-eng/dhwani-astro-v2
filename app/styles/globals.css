@@ -165,6 +165,18 @@ element.style {
 }
 
 
+/* hide scollbar  */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
 /* kundli grab offer  */
 @keyframes redAlert {
   0% {

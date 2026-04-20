@@ -1,23 +1,27 @@
-import React from "react";
+"use client";
+import React, { forwardRef } from "react";
 
-export default function CustomInput({ label, type = "text", error, value, onChange, ...props }) {
-  return (
-    <div className="mb-0 w-full">
-      {label && (
-        <label className="block text-black text-sm mb-1">
-          {label}
-          {props.required && <span className="text-red-500">*</span>}
-        </label>
-      )}
-      <input
-        type={type}
-        value={value ?? ""}
-       onChange={onChange || (() => {})}
-        {...props}
-        className={`w-full text-gray-800 text-sm sm:text-sm px-4 py-1 border border-gray-300 placeholder:text-gray-300 bg-white rounded-full focus:outline-none focus:ring-0 ${error ? "border-red-500" : ""
-          } ${props.className || ""}`} />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-    </div>
-  );
-}
- 
+const CustomInput = forwardRef(
+  ({ label, type = "text", error, ...props }, ref) => {
+    return (
+      <div className="w-full space-y-1 flex flex-col">
+        {label && <label className="text-sm font-semibold">{label}</label>}
+
+        <input
+          ref={ref} // ✅ MUST for RHF
+          type={type}
+          className={`w-full border  shadow-2xl rounded-lg px-3 py-2 mt-1 outline-none 
+            ${error ? "border-red-500" : "border-gray-300"}`}
+          {...props}
+        />
+
+        {error && (
+          <p className="text-red-500 text-[10px]">{error}</p>
+        )}
+      </div>
+    );
+  }
+);
+
+CustomInput.displayName = "CustomInput";
+export default CustomInput;

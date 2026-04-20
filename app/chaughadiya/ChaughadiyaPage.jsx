@@ -136,7 +136,7 @@ export default function ChaughadiyaPage({ initialPanchang = null, initialChaugha
           </form>
         </div>
 
-        
+
         <div className="flex flex-col gap-3 md:flex-row items-center bg-linear-to-r from-pink-100 to-yellow-100 justify-between py-6 shadow-lg px-1 sm:px-6 mt-2 sm:mt-4 w-full rounded-2xl">
           <div className="flex items-center gap-2">
             <h3 className="font-bold">Current Chaughadiya:</h3>
@@ -152,7 +152,7 @@ export default function ChaughadiyaPage({ initialPanchang = null, initialChaugha
           </div>
         </div>
 
-    
+
         {loading ? (
           <p className="text-center py-5 animate-pulse">Loading Chaughadiya...</p>
         ) : (
@@ -191,4 +191,3 @@ export default function ChaughadiyaPage({ initialPanchang = null, initialChaugha
     </div>
   );
 }
-   

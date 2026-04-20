@@ -32,7 +32,6 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     // Reset queue state when new chat starts
-    console.log("--------------------------",chat_time);
     setQueueData(null);
     setShowQueuePopup(false);
   }, [room_Id]);
@@ -53,7 +52,8 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           timerRef.current = null;
 
-          socket.emit("autoDisconnect", {
+          console.log("⏱ Timer hit 0");
+          socket.emit("autodisconnect", {
             room_id: room_Id,
             astroid: astro_id,
           });
@@ -129,8 +129,7 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setQueueData(null);
         setShowwaitingpopup(false);
-        setTimeLeft(chat_time*60);
-
+        setTimeLeft(0);
 
         route.push(`/chat-with-astrologer/${room_Id}`);
       }

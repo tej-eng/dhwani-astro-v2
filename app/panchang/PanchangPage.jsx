@@ -306,7 +306,7 @@ export default function PanchangPage({ initialPanchang, initialChaughadiya, init
 
       {/* tabs */}
       <div className="mt-8 w-[95%] md:w-[90%]">
-        <h5 className="text-center text-xl font-semibold text-black mb-4"><span className="text-red-500">"Get to know about:"</span> Best Muhurata</h5>
+        <h5 className="text-center text-xl font-semibold text-black mb-4"><span className="text-red-500">"Get to know about:</span> Best Muhurata"</h5>
 
         <div className="flex items-center bg-purple-200 justify-center rounded-2xl py-4 px-2 gap-4">
           {[

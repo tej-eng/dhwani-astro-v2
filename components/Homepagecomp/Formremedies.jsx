@@ -116,6 +116,8 @@ export default function Formremedies({ slug }) {
                 <CustomInput
                   name="name"
                   label="Name"
+                  placeholder="Enter your name"
+                  className="bg-white rounded-full px-3 text-sm focus:outline-none  py-2"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -153,7 +155,7 @@ export default function Formremedies({ slug }) {
                         options={options[field]}
                         required
                         autofill={field}
-                        className="border border-gray-200 bg-white px-5 py-1 rounded-full ring-0 focus:outline-none focus:ring-0"
+                        className="border border-gray-200 bg-white px-5 py-1  rounded-full ring-0 focus:outline-none focus:ring-0"
 
                       />
                     ))}

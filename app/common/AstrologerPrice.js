@@ -22,6 +22,11 @@ function AstrologerPrice({ mode, astro }) {
 
   const isAuth = !!data?.me;
 
+    // const isAuth = !!data?.me;
+
+      // const isAuth = !!data?.me;
+
+
   // Prevent flicker while checking auth
   if (loading) return null;
 

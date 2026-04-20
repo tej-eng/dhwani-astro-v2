@@ -68,7 +68,7 @@ const UserChat = ({
   room_Id,
   astro_Name,
   astro_Image,
-  chatTime,
+  chattime,
   user_Id,
   astroid,
   astro_price,
@@ -109,9 +109,10 @@ const UserChat = ({
       time: "",
     },
   ]);
+
   const [typingStatus, setTypingStatus] = useState("");
-  const [timeLeft, setTimeLeft] = useState((chatTime || 0) * 60);
-  //const [timeLeft, setTimeLeft] = useState(5 * 60);
+  //const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
+  const [timeLeft, setTimeLeft] = useState(5 * 60);
 
   const [showPopup, setShowPopup] = useState(false);
   const [leaveMessage, setLeaveMessage] = useState("");
@@ -152,7 +153,9 @@ const UserChat = ({
   };
 
   const customer_recharge_completed = (due_time) => {
+    console.log("Emitting recharge completed with due_time:", due_time);
     if (!socket) return;
+    console.log("Emitting customer_recharge_completed for room:", room_Id);
     socket.emit("customer_recharge_completed", {
       room_id: room_Id,
       due_time: due_time,
@@ -200,6 +203,7 @@ const UserChat = ({
 
           if (selectedPack) {
             const newTime = timeLeft + selectedPack.talktime * 60;
+            console.log("New Time After Recharge:", newTime);
             customer_recharge_completed(newTime); // Send updated time to backend
 
             setTimeLeft(newTime); // Update local timer
@@ -211,6 +215,7 @@ const UserChat = ({
 
         modal: {
           ondismiss: function () {
+            console.log("Payment popup closed");
             customer_recharge_fail();
             //  USER CLOSED PAYMENT
             toast.error("Payment Cancelled");

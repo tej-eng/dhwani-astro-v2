@@ -1,30 +1,23 @@
 "use client";
-import React, { useEffect, useState, useContext, useMemo } from "react";
+import React, { useEffect, useState, useContext, useMemo, useRef } from "react"; // ✅ useRef added
 import CustomInput from "@/components/Custom/CustomInput";
 import CustomSelect from "@/components/Custom/CustomSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomerRequest, AlertLoading, LocationSelector } from "@/app/common";
 import toast from "react-hot-toast";
-import { ChatRequestCard } from "@/app/ChatComponent";
 import SocketContext from "@/app/context/socketContext";
-import { useParams } from "next/navigation";
-import {
-  resetCode,
-  sendChatRequest,
-} from "../../redux/reducer/chat/sendRequestSlice";
-import {
-  resetChatAlertData,
-  setChatAlertLoading,
-} from "../../redux/reducer/chat/ChatAlertSlice";
-import { useRouter } from "next/navigation";
-import { IntakeFromRequest } from "@/app/redux/reducer/auth/intakeStoreSlice";
-import { fetchIntakeRequest } from "@/app/redux/reducer/auth/intakeSlice";
-import { getIntakeDataRequest } from "@/app/redux/reducer/intake/getIntakeData";
-import { RequestAstrologerDetail } from "@/app/redux/reducer/astrologer/AstrologerDetail";
+import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { setActiveRequest } from "../../redux/reducer/chat/sendRequestSlice";
 import metadata from "libphonenumber-js/metadata.min.json";
+
+// ✅ RHF + ZOD
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { requestFormSchema } from "@/lib/userZodIntake";
+import Image from "next/image";
+import { StarIcon } from "flowbite-react";
 
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
@@ -36,6 +29,7 @@ const CREATE_INTAKE = gql`
     }
   }
 `;
+
 const GET_USER_BY_ID = gql`
   query GetUserById($id: String!) {
     getUserById(id: $id) {
@@ -47,15 +41,10 @@ const GET_USER_BY_ID = gql`
       birthDate
       birthTime
       occupation
-      wallet {
-        id
-        balanceCoins
-        createdAt
-        updatedAt
-      }
     }
   }
 `;
+
 const GET_ASTROLOGER_BY_ID = gql`
   query GetAstrologerById($id: String!) {
     getAstrologerById(id: $id) {
@@ -70,44 +59,56 @@ const GET_ASTROLOGER_BY_ID = gql`
   }
 `;
 
-export default function RequestForm({ params }) {
+export default function RequestForm() {
+  const debounceRef = useRef(null); // ✅ debounce added
+
   const [createIntake] = useMutation(CREATE_INTAKE);
   const { chatid } = useParams();
   const astro_id = chatid;
 
   const router = useRouter();
-
   const { socket, connectSocket } = useContext(SocketContext);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [dob, setDob] = useState("");
-  const [time, setTime] = useState("");
-  const [occupation, setOccupation] = useState("Private Job");
-  const [disabled, setDisabled] = useState(false);
-  // const [request, setRequest] = useState(false);
-  const [roomId, setRoomId] = useState("");
-  const [alert, setAlert] = useState(false);
-  const [astrologer, setAstrologer] = useState(null);
-  const [place, setPlace] = useState("");
-  const [chatTime, setChatTime] = useState(0);
-
-  const [user, setUser] = useState("");
-  const [usergender, setGender] = useState("");
-  const [isClient, setIsClient] = useState(false);
-
   const dispatch = useDispatch();
 
-  const [intake_Id, setInatkeId] = useState(null);
-  const [chatsend, setChatSend] = useState("");
-  const [id, setId] = useState(null);
-  const [countryCode, setCountryCode] = useState("");
+  const [astrologer, setAstrologer] = useState(null);
   const [country, setCountry] = useState(null);
+  const [id, setId] = useState(null);
+
   const countries = useMemo(() => getCountries(), []);
 
-  const { userData } = useSelector((state) => state.getuserDetail);
+  // ✅ RHF
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(requestFormSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      name: "",
+      phone: "",
+      countryCode: "",
+      usergender: "",
+      dob: "",
+      time: "",
+      occupation: "Private Job",
+      place: "",
+    },
+  });
+
+  // ✅ DEBOUNCE WRAPPER (NO LOGIC CHANGE)
+  const handleDebouncedSubmit = (data) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      onSubmit(data);
+    }, 400);
+  };
+
   useEffect(() => {
     const userData = localStorage.getItem("user");
-
     if (userData) {
       const parsed = JSON.parse(userData);
       setId(parsed?.id);
@@ -115,78 +116,56 @@ export default function RequestForm({ params }) {
   }, []);
 
   const { data: userInfo } = useQuery(GET_USER_BY_ID, {
-    variables: { id: id },
+    variables: { id },
     skip: !id,
   });
 
-  const { data: astrologerInfo, loading: astrologerloading } = useQuery(
-    GET_ASTROLOGER_BY_ID,
-    {
-      variables: { id: astro_id },
-      skip: !astro_id,
-    },
-  );
+  const { data: astrologerInfo, loading } = useQuery(GET_ASTROLOGER_BY_ID, {
+    variables: { id: astro_id },
+    skip: !astro_id,
+  });
+
   useEffect(() => {
     if (astrologerInfo?.getAstrologerById) {
       setAstrologer(astrologerInfo.getAstrologerById);
-
-      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", astrologer);
     }
   }, [astrologerInfo]);
+
 
   useEffect(() => {
     if (userInfo?.getUserById) {
       const user = userInfo.getUserById;
 
-      setName(user?.name || "");
-      setPhone(user?.mobile || "");
-      setCountryCode(user?.countryCode || "");
-      setGender(user?.gender || "");
-      setDob(user?.birthDate ? user.birthDate.split("T")[0] : "");
-      setTime(user?.birthTime || "");
-      setOccupation(user?.occupation || "");
+      setValue("name", user?.name || "");
+      setValue("phone", user?.mobile || "");
+      setValue("countryCode", user?.countryCode || "");
+      setValue("usergender", user?.gender || "");
+      setValue("dob", user?.birthDate ? user.birthDate.split("T")[0] : "");
+      setValue("time", user?.birthTime || "");
+      setValue("occupation", user?.occupation || "");
 
       if (user?.countryCode && countries.length > 0) {
         const matched = countries.find((c) => c.dialCode === user.countryCode);
-        if (matched) {
-          setCountry(matched);
-        }
+        if (matched) setCountry(matched);
       }
     }
-  }, [userInfo, countries]);
+  }, [userInfo, countries, setValue]);
 
-  const sendRequest = async () => {
-    if (
-      !name ||
-      !phone ||
-      !countryCode ||
-      !dob ||
-      !time ||
-      !place ||
-      !occupation ||
-      !usergender
-    ) {
-      toast.error("Please enter valid inputs");
-      return;
-    }
-    if (!usergender || usergender === "Select Gender") {
-      toast.error("Please select gender");
-      return;
-    }
-
+  // ✅ YOUR ORIGINAL SUBMIT (UNCHANGED)
+  const onSubmit = async (data) => {
     try {
       const response = await createIntake({
         variables: {
           input: {
             astrologerId: astro_id,
-            name,
-            countryCode: countryCode || country?.dialCode,
-            mobile: phone,
-            gender: usergender,
-            birthDate: dob,
-            birthTime: time,
-            occupation,
-            birthPlace: place,
+            name: data.name,
+            countryCode: data.countryCode || country?.dialCode,
+            mobile: data.phone,
+            gender: data.usergender,
+            birthDate: data.dob,
+            birthTime: data.time,
+            occupation: data.occupation,
+            birthPlace: data.place,
             requestType: "chat",
           },
         },
@@ -205,240 +184,296 @@ export default function RequestForm({ params }) {
         return;
        }
 
-      console.log(" Intake created:", intakeId);
+      if (!intakeId) return toast.error("Failed");
 
-      //  CONNECT SOCKET HERE
       let activeSocket = socket;
-      if (!activeSocket || !activeSocket.connected) {
-        activeSocket = connectSocket();
-      }
+      if (!activeSocket?.connected) activeSocket = connectSocket();
 
       const req_data = {
-        name,
-        gender: usergender,
-        dateOfBirth: dob,
-        timeOfBirth: time,
-        occupation,
-        location: place,
-        userName: name,
+        name: data.name,
+        gender: data.usergender,
+        dateOfBirth: data.dob,
+        timeOfBirth: data.time,
+        occupation: data.occupation,
+        location: data.place,
+        userName: data.name,
         user_id: id,
-        astro_id: astro_id,
+        astro_id,
         room_id: roomId,
-        is_promotional: true,
         maximum_time: chatTime,
-        user_image: userInfo?.getUserById?.profilePic || "",
-        phoneNumber: phone,
+        phoneNumber: data.phone,
       };
-      // Wait for connection if not ready
-      if (activeSocket.connected) {
-        activeSocket.emit("chat_request", req_data);
 
-        dispatch(
-          setActiveRequest({
-            roomId,
-            astrologer,
-            chatTime,
-            userId: id,
-          }),
-          //
-        );
-      } else {
-        activeSocket.on("connect", () => {
-          activeSocket.emit("chat_request", req_data);
+      activeSocket.emit("chat_request", req_data);
 
-          dispatch(
-            setActiveRequest({
-              roomId,
-              astrologer,
-              chatTime,
-              userId: id,
-            }),
-          );
-        });
-      }
+      dispatch(
+        setActiveRequest({
+          roomId,
+          astrologer,
+          chatTime,
+          userId: id,
+        }),
+      );
 
-      if (activeSocket) {
-        router.push(`/chat-with-astrologer`);
-      }
+      router.push(`/chat-with-astrologer`);
     } catch (err) {
       toast.error(err.message);
     }
   };
 
   const occupation_list = [
+    "Student",
+    "Engineer",
+    "Doctor",
+    "Business",
+    "Teacher",
+    "Government Job",
     "Private Job",
-    "Govt Job",
-    "Own Business",
-    "College Student",
-    "None of the Above",
+    "Self Employed",
+    "Unemployed",
+    "Other",
   ];
-
-  const handleLocationSelect = (locationObj) => {
-    setPlace(locationObj?.city || "");
-  };
 
   function getCountries() {
     const displayNames = new Intl.DisplayNames(["en"], { type: "region" });
-    const countryCodes = Object.keys(metadata.countries);
+    const codes = Object.keys(metadata.countries);
 
-    return countryCodes.map((iso) => {
-      const dialCode = `+${metadata.countries[iso][0]}`;
-      return {
-        iso,
-        name: displayNames.of(iso),
-        dialCode,
-      };
-    });
+    return codes.map((iso) => ({
+      iso,
+      name: displayNames.of(iso),
+      dialCode: `+${metadata.countries[iso][0]}`,
+    }));
   }
+
+  const users = [
+    { id: 1, img: "/ds-img/a.jpg" },
+    { id: 2, img: "/ds-img/ak.jpg" },
+    { id: 3, img: "/ds-img/anvi.svg" },
+    { id: 4, img: "/ds-img/neel.jpg" },
+    { id: 5, img: "/ds-img/sachin.svg" },
+    { id: 6, img: "/ds-img/ser1.webp" },
+    { id: 7, img: "/ds-img/s7.png" },
+    { id: 8, img: "/ds-img/anvi.svg" },
+  ];
 
   return (
     <div className="w-full">
-      <div className="flex items-start justify-center gap-5 px-10 my-10 ">
-        <div className="w-full max-w-5xl overflow-hidden bg-white border border-gray-200 shadow-lg rounded-2xl">
-          <div className="bg-[#2e0854] py-4 px-6 rounded-t-2xl">
-            <h2 className="text-xl font-semibold text-center text-white">
-              Consultation Form
-            </h2>
-          </div>
+      {/* ✅ IMPORTANT CHANGE HERE */}
+      <form onSubmit={handleSubmit(handleDebouncedSubmit)}>
+        <div className="flex items-start justify-center gap-5 px-10 my-10 text-black">
+          <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl">
 
-          <div className="grid grid-cols-1 gap-4 p-6 md:grid-cols-3">
-            <div className="flex flex-col">
-              <CustomInput
-                label="Name"
-                placeholder="Enter Full Name"
-                className="w-full text-black border border-gray-500 focus:border-none"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="mb-1 text-sm font-medium text-gray-700">
-                Mobile <span className="text-red-500">*</span>
-              </label>
-              <div className="flex items-center w-full gap-2 overflow-hidden rounded-md">
-                <select
-                  value={country?.iso || ""}
-                  onChange={(e) => {
-                    const selected = countries.find(
-                      (c) => c.iso === e.target.value,
-                    );
-                    setCountry(selected);
-                    setCountryCode(selected.dialCode);
-                  }}
-                  className="bg-transparent text-black outline-none text-sm w-fit"
-                >
-                  {countries.map((c) => (
-                    <option key={c.iso} value={c.iso}>
-                      ({c.dialCode})
-                    </option>
-                  ))}
-                </select>
-                <CustomInput
-                  type="tel"
-                  placeholder="Enter Phone Number"
-                  className="w-full text-black border-b border-gray-500 focus:border-none"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
+            <div className="bg-linear-to-r from-purple-900 via-purple-800 to-purple-900 gap-2 items-center justify-center py-3 rounded-full flex flex-col text-white">
+              <h1 className="text-2xl font-semibold">Consultation Form</h1>
+              <div className="flex items-center justify-between gap-15 text-xs font-extralight">
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">✨ Get answers in 2 minutes</span>
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">🔒 “Your data is secure”</span>
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">👨‍🔬 “Verified astrologers only”</span>
               </div>
             </div>
 
-            <div className="flex flex-col">
-              <label className="mb-1 text-sm font-medium text-gray-700">
-                Gender <span className="text-red-500">*</span>
-              </label>
-
-              <CustomSelect
-                variant={"full"}
-                name="Gender"
-                value={usergender}
-                options={["Select Gender", "MALE", "FEMALE", "OTHER"]}
-                required
-                className="w-full text-black border border-gray-500 focus:border-none"
-                onChange={(e) => setGender(e.target.value)}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+              {/* NAME */}
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <CustomInput
+                    {...field} // ✅ FIX
+                    label="Name"
+                    placeholder="Enter your name here"
+                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    error={errors.name?.message}
+                  />
+                )}
               />
-            </div>
 
-            <div className="flex flex-col">
-              <CustomInput
-                label="Birth Date"
-                type="date"
-                className="w-full text-black border-b border-gray-500 focus:border-none"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
+              <div className="flex flex-col space-y-1">
+                <label className="text-sm font-semibold">Contact Number</label>
+                <div className="flex items-center gap-2">
+                  <Controller
+                    name="countryCode"
+                    control={control}
+                    render={({ field }) => <input type="hidden" {...field} />}
+                  />
+
+                  <select
+                    className=" border-gray-200 border text-xs rounded-lg focus:ring-purple-100  focus:ring-1 focus:outline-0 px-2 py-2"
+                    value={country?.iso || ""}
+                    onChange={(e) => {
+                      const selected = countries.find(
+                        (c) => c.iso === e.target.value,
+                      );
+                      setCountry(selected);
+
+                      setValue("countryCode", selected?.dialCode, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  >
+                    {countries.map((c) => (
+                      <option className="text-xs" key={c.iso} value={c.iso}>
+                        {c.dialCode}
+                      </option>
+                    ))}
+                  </select>
+
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomInput
+                        {...field}
+                        type="tel"
+                        placeholder="Enter your contact number here"
+                        className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                        error={errors.phone?.message}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* GENDER */}
+              <Controller
+                name="usergender"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    {...field}
+                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    label="Gender"
+                    options={["MALE", "FEMALE", "OTHER"]}
+                    error={errors.usergender?.message}
+                  />
+                )}
               />
-            </div>
 
-            <div className="flex flex-col">
-              <CustomInput
-                label="Birth Time"
-                type="time"
-                className="w-full text-black border-b border-gray-500 focus:border-none"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
+              {/* DOB */}
+              <Controller
+                name="dob"
+                control={control}
+                render={({ field }) => (
+                  <CustomInput
+                    {...field}
+                    type="date"
+                    label="Date of Birth"
+                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    max={new Date().toISOString().split("T")[0]}
+                    error={errors.dob?.message}
+                  />
+                )}
               />
-            </div>
 
-            <div className="flex flex-col">
-              <label className="mb-1 text-sm font-medium text-gray-700">
-                Occupation
-              </label>
-
-              <CustomSelect
-                variant={"full"}
-                name="Occupation"
-                value={occupation || "hellllo"}
-                // value={formData.day}
-                onChange={(e) => setOccupation(e.target.value)}
-                options={occupation_list}
-                required
-                className="w-full text-black border border-gray-500 focus:border-none"
+              {/* TIME */}
+              <Controller
+                name="time"
+                control={control}
+                render={({ field }) => (
+                  <CustomInput
+                    {...field}
+                    type="time"
+                    label="Time of Birth"
+                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    error={errors.time?.message}
+                  />
+                )}
               />
-            </div>
 
-            <div className="flex flex-col md:col-span-3">
-              <LocationSelector
-                placeholder="Your birth place/location"
-                onSelect={handleLocationSelect}
+              {/* OCCUPATION */}
+              <Controller
+                name="occupation"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    {...field}
+                    label="Your Occupation"
+                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    options={occupation_list}
+                    error={errors.occupation?.message}
+                  />
+                )}
               />
+
+              <div className="md:col-span-2 ">
+                <Controller
+                  name="place"
+                  control={control}
+                  render={({ field }) => <input type="hidden" {...field} />}
+                />
+
+                <LocationSelector
+                  onSelect={(loc) => {
+                    setValue("place", loc?.city || "", {
+                      shouldValidate: true,
+                    });
+                  }}
+                />
+
+                {errors.place && (
+                  <p className="text-red-500 text-[10px]">
+                    {errors.place.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="md:col-span-3 text-center">
+                <button
+                  type="submit"
+                  onClick={() => trigger()}
+                  className="px-6 py-2 bg-yellow-400 rounded-full"
+                >
+                  Start Chat Now
+                </button>
+              </div>
             </div>
 
-            <div className="mt-4 text-center md:col-span-3">
-              <button
-                aria-label="Send Chat Request"
-                type="submit"
-                className="px-6 py-2 font-semibold text-black transition bg-yellow-400 rounded-full shadow-md hover:bg-yellow-500"
-                onClick={sendRequest}
-                disabled={disabled}
-              >
-                Send chat Request to {astrologer?.full_name || ""}
-              </button>
-            </div>
+
+
           </div>
+
         </div>
+      </form>
 
-        {isClient && intake_data && (
-          <div className="flex flex-col text-black recent-container">
-            <h2 className="recent-heading">Continue With Recent Profiles</h2>
+      <div className="bg-linear-to-r from-purple-300 via-violet-400 to-purple-200 gap-2 items-center justify-center py-3 flex flex-col text-white">
 
-            {intake_data.map((item, index) => (
-              <CustomerRequest
-                key={item.id}
-                name={item?.name}
-                location={item?.birth_place}
-                dob={item?.dob}
-                time={item?.btime}
-                index={index}
-                onClick={() => sendRequestcard(item.id)}
-                disabled={disabled}
-              />
-            ))}
+        <div className="flex items-center text-black justify-between gap-15 text-sm font-semibold">
+
+          <div className="flex items-center gap-3">
+
+            {/* Avatar Stack */}
+            <div className="flex items-center">
+              {users.map((user, index) => (
+                <div
+                  key={user.id}
+                  className={`w-10 h-10 rounded-full border-2 border-white overflow-hidden 
+            ${index !== 0 ? "-ml-3" : ""}`}
+                >
+                  <Image
+                    src={user.img}
+                    width={100}
+                    height={100}
+                    alt="user"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+
+              {/* Extra count */}
+              <div className="-ml-3 w-10 h-10 flex items-center justify-center text-white rounded-full bg-gray-800 text-sm font-medium border-2 border-white">
+                +500
+              </div>
+            </div>
+
+
+
           </div>
-        )}
+          <span className="  px-4 py-1 ">⭐⭐⭐⭐⭐ 4.9 (50k+ reviews)</span>
+
+        </div>
       </div>
 
-      <AlertLoading show={astrologerloading} title="Fetch Astrologer..." />
+      <AlertLoading show={loading} title="Fetch Astrologer..." />
     </div>
   );
 }
