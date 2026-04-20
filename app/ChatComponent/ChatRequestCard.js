@@ -167,7 +167,7 @@ const ChatRequestCard = ({
         toast.success("The astrologer has rejected your chat request.");
         setTimeout(() => {
           route.push("/chat-with-astrologer");
-        }, 1000);
+        }, 100);
       }
     };
 
