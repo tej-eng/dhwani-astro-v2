@@ -129,7 +129,7 @@ const ChatRequestCard = ({
         setShowQueuePopup(false);
         setQueueData(null);
         setShowwaitingpopup(false);
-        setTimeLeft(0);
+        setTimeLeft(chat_time*60);
 
         route.push(`/chat-with-astrologer/${room_Id}`);
       }
