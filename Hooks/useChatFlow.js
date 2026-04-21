@@ -63,6 +63,7 @@ export const useChatFlow = () => {
 
   const handleUserInput = async (input) => {
     const { messages } = useAIStore.getState();
+     const aiData = userData?.aiData;
     const cleanInput = input.trim();
     addMessage({ type: "user", text: input });
 
