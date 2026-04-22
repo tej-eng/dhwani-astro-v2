@@ -8,7 +8,7 @@ HTTP LINK
 ========================= */
 
 const httpLink = new HttpLink({
-  uri: "https://dhwaniastro.com/userAuth/graphql",
+uri: "http://localhost:5000/graphql",
   credentials: "include",
 });
 
@@ -36,7 +36,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         isRefreshing = true;
 
         return new Promise((resolve, reject) => {
-          fetch("https://dhwaniastro.com/userAuth/graphql", {
+          fetch("http://localhost:5000/graphql", {
             method: "POST",
             credentials: "include",
             headers: {
