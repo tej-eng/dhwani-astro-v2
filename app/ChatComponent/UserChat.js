@@ -175,6 +175,8 @@ const UserChat = ({
 };
 const uploadToServer = async (file) => {
   try {
+    console.log("Selected file:", imageFile);
+    console.log("Is File instance:", imageFile instanceof File);
     const res = await uploadImage({
       variables: { file },
     });
