@@ -441,7 +441,7 @@ const handleMessageChange = (e) => {
 
   // ================= SEND MESSAGE =================
 
- const sendMessage = () => {
+ const sendMessage = async () => {
   if (!message.trim() && !imageFile) return;
 
   socket.emit("typing", {
@@ -456,51 +456,44 @@ const handleMessageChange = (e) => {
 
   const msg_id = crypto.randomUUID();
 
-  const sendPayload = async (imageFile = null) => {
-    if (imageFile) {
-  const imageUrl = await uploadToServer(imageFile);
-  sendPayload(imageUrl);
-} else {
-  sendPayload();
-}
-    const newMessage = {
-      room_id: room_Id,
-      msg_id,
-      sender_id: user?.id,
-      received_id: astroid,
-      sender: "user",
-      message: message.trim(),
-      image: imageUrl,
-      replyTo: replyTo
-        ? {
-            sender: replyTo.sender,
-            message: replyTo.message,
-            image: replyTo.image || null,
-          }
-        : null,
-      time: new Date().toISOString(),
-    };
+  let imageUrl = null;
 
-    socket.emit("send_message", newMessage);
+  // Upload image FIRST (if exists)
+  if (imageFile) {
+    imageUrl = await uploadToServer(imageFile);
+    if (!imageUrl) {
+      toast.error("Image upload failed");
+      return;
+    }
+  }
 
-    setMessages((prev) => [...prev, newMessage]);
-
-    // reset
-    setMessage("");
-    setImageFile(null);
-    setImagePreview(null);
-    setReplyTo(null);
+  const newMessage = {
+    room_id: room_Id,
+    msg_id,
+    sender_id: user?.id,
+    received_id: astroid,
+    sender: "user",
+    message: message.trim(),
+    image: imageUrl, 
+    replyTo: replyTo
+      ? {
+          sender: replyTo.sender,
+          message: replyTo.message,
+          image: replyTo.image || null,
+        }
+      : null,
+    time: new Date().toISOString(),
   };
 
-  if (imageFile) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      sendPayload(reader.result);
-    };
-    reader.readAsDataURL(imageFile);
-  } else {
-    sendPayload();
-  }
+  socket.emit("send_message", newMessage);
+
+  setMessages((prev) => [...prev, newMessage]);
+
+  // reset
+  setMessage("");
+  setImageFile(null);
+  setImagePreview(null);
+  setReplyTo(null);
 };
 
   // ================= REVIEW =================
