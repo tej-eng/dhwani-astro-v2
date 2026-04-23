@@ -48,45 +48,49 @@ export default function AstrologerRegistration() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      await createApplication({
-        variables: {
-          input: {
-            name: form.name,
-            phoneNumber: form.phone,
-            email: form.email,
-            dob: form.dob,
-            gender: form.gender,
-            languages: form.languages,
-            skills: form.skills,
-            experience: Number(form.experience),
-            about: form.about,
-          },
+  if (!form.name || !form.email) {
+    return alert("Please fill required fields");
+  }
+
+  try {
+    await createApplication({
+      variables: {
+        input: {
+          name: form.name,
+          phoneNumber: form.phone,
+          email: form.email,
+          dob: new Date(form.dob).toISOString(),
+          gender: form.gender,
+          languages: form.languages,
+          skills: form.skills,
+          experience: Number(form.experience),
+          about: form.about,
         },
-      });
+      },
+    });
 
-      alert("Application Submitted 🚀");
+    alert("Application Submitted 🚀");
 
-      // reset form
-      setForm({
-        name: "",
-        dob: "",
-        gender: "",
-        languages: [],
-        skills: [],
-        experience: "",
-        email: "",
-        phone: "",
-        about: "",
-      });
-      setPreview(null);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    setForm({
+      name: "",
+      dob: "",
+      gender: "",
+      languages: [],
+      skills: [],
+      experience: "",
+      email: "",
+      phone: "",
+      about: "",
+    });
+
+    setPreview(null);
+  } catch (err) {
+    alert(err.message || "Submission failed");
+  }
+};
 
   // ------------------ UI ------------------
 
@@ -141,7 +145,7 @@ export default function AstrologerRegistration() {
           <div>
             <label className="block mb-2 font-medium">Gender</label>
             <div className="flex gap-6">
-              {["Male", "Female", "Other"].map((g) => (
+              {["MALE", "FEMALE", "OTHER"].map((g) => (
                 <label key={g} className="flex items-center gap-2">
                   <input
                     type="radio"
