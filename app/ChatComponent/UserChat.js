@@ -129,6 +129,7 @@ const UserChat = ({
   // const [showQueuePopup, setShowQueuePopup] = useState(false);
 
   const intervalRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -240,6 +241,35 @@ const UserChat = ({
       alert("Error: " + error.message);
     }
   };
+
+const handleMessageChange = (e) => {
+  const value = e.target.value;
+  setMessage(value);
+
+  if (!socket) return;
+
+  // Emit typing = true
+  socket.emit("typing", {
+    room_id: room_Id,
+    typing: true,
+    user_name: user?.name || "User",
+  });
+
+  // Clear previous timeout
+  if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
+
+  // Emit typing = false after 2 sec idle
+  typingTimeoutRef.current = setTimeout(() => {
+    socket.emit("typing", {
+      room_id: room_Id,
+      typing: false,
+      user_name: user?.name || "User",
+    });
+  }, 2000);
+};
+
   // ================= SOCKET =================
   const emitChatCompleted = () => {
     if (chatEnded) return; // prevent duplicate
@@ -328,6 +358,9 @@ const UserChat = ({
       socket.off("leave_chat");
       socket.off("chatCompleted");
       socket.off("user_disconnected");
+       if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
     };
   }, [socket, room_Id, user_Id]);
 
@@ -371,34 +404,35 @@ const UserChat = ({
   // ================= SEND MESSAGE =================
 
   const sendMessage = () => {
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    const newMessage = {
-      msg_id: crypto.randomUUID(),
-      sender_id: user?.id,
-      received_id: astroid,
-      image: null,
-      sender: "user",
-      replyTo: null,
-      message: message.trim(),
-      time: new Date().toISOString(),
-    };
+  // STOP typing immediately
+  socket.emit("typing", {
+    room_id: room_Id,
+    typing: false,
+    user_name: user?.name || "User",
+  });
 
-    socket.emit("send_message", {
-      room_id: room_Id,
-      msg_id: crypto.randomUUID(),
-      sender_id: user?.id,
-      received_id: astroid,
-      image: null,
-      sender: "user",
-      replyTo: null,
-      message: message.trim(),
-      time: new Date().toISOString(),
-    });
+  if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
 
-    setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
+  const newMessage = {
+    msg_id: crypto.randomUUID(),
+    sender_id: user?.id,
+    received_id: astroid,
+    message: message.trim(),
+    time: new Date().toISOString(),
   };
+
+  socket.emit("send_message", {
+    room_id: room_Id,
+    ...newMessage,
+  });
+
+  setMessages((prev) => [...prev, newMessage]);
+  setMessage("");
+};
 
   // ================= REVIEW =================
 
@@ -525,7 +559,7 @@ const UserChat = ({
       <div className="flex gap-2 p-3 border-t">
         <input
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleMessageChange}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
