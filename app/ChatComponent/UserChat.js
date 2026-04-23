@@ -62,6 +62,14 @@ const GET_INTAKE_BY_ID = gql`
     }
   }
 `;
+
+const UPLOAD_IMAGE = gql`
+  mutation UploadImage($file: Upload!) {
+    uploadImage(file: $file) {
+      url
+    }
+  }
+`;
 // ================= COMPONENT =================
 
 const UserChat = ({
@@ -124,9 +132,14 @@ const UserChat = ({
   const [createReview, { loading: reviewLoading }] = useMutation(CREATE_REVIEW);
   const [user, setUser] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
-
+  const [replyTo, setReplyTo] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   //   const [queueData, setQueueData] = useState(null);
   // const [showQueuePopup, setShowQueuePopup] = useState(false);
+  const [uploadImage] = useMutation(UPLOAD_IMAGE);
 
   const intervalRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -143,6 +156,35 @@ const UserChat = ({
     }
   }, []);
 
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    toast.error("Only images allowed");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setImagePreview(reader.result);
+  };
+
+  reader.readAsDataURL(file);
+  setImageFile(file);
+};
+const uploadToServer = async (file) => {
+  try {
+    const res = await uploadImage({
+      variables: { file },
+    });
+
+    return res.data.uploadImage.url;
+  } catch (err) {
+    toast.error("Upload failed");
+    return null;
+  }
+};
   const customer_recharge = () => {
     if (!socket) return;
     socket.emit("customer_recharge", { room_id: room_Id });
@@ -293,22 +335,18 @@ const handleMessageChange = (e) => {
       joinpersonid: user_Id,
     });
 
-    socket.on("receive_message", (data) => {
-      const normalizedMessage =
-        typeof data.message === "object" ? data.message.message : data.message;
-
-      const messageTime =
-        typeof data.message === "object" ? data.message.time : "";
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: data.sender || "Astrologer",
-          message: normalizedMessage,
-          time: messageTime,
-        },
-      ]);
-    });
+   socket.on("receive_message", (data) => {
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: data.sender,
+      message: data.message,
+      image: data.image || null,
+      replyTo: data.replyTo || null,
+      time: data.time,
+    },
+  ]);
+});
 
     socket.on("typing", (data) => {
       setTypingStatus(data.typing ? `${data.user_name} typing...` : "");
@@ -403,10 +441,9 @@ const handleMessageChange = (e) => {
 
   // ================= SEND MESSAGE =================
 
-  const sendMessage = () => {
-  if (!message.trim()) return;
+ const sendMessage = () => {
+  if (!message.trim() && !imageFile) return;
 
-  // STOP typing immediately
   socket.emit("typing", {
     room_id: room_Id,
     typing: false,
@@ -417,21 +454,53 @@ const handleMessageChange = (e) => {
     clearTimeout(typingTimeoutRef.current);
   }
 
-  const newMessage = {
-    msg_id: crypto.randomUUID(),
-    sender_id: user?.id,
-    received_id: astroid,
-    message: message.trim(),
-    time: new Date().toISOString(),
+  const msg_id = crypto.randomUUID();
+
+  const sendPayload = async (imageFile = null) => {
+    if (imageFile) {
+  const imageUrl = await uploadToServer(imageFile);
+  sendPayload(imageUrl);
+} else {
+  sendPayload();
+}
+    const newMessage = {
+      room_id: room_Id,
+      msg_id,
+      sender_id: user?.id,
+      received_id: astroid,
+      sender: "user",
+      message: message.trim(),
+      image: imageUrl,
+      replyTo: replyTo
+        ? {
+            sender: replyTo.sender,
+            message: replyTo.message,
+            image: replyTo.image || null,
+          }
+        : null,
+      time: new Date().toISOString(),
+    };
+
+    socket.emit("send_message", newMessage);
+
+    setMessages((prev) => [...prev, newMessage]);
+
+    // reset
+    setMessage("");
+    setImageFile(null);
+    setImagePreview(null);
+    setReplyTo(null);
   };
 
-  socket.emit("send_message", {
-    room_id: room_Id,
-    ...newMessage,
-  });
-
-  setMessages((prev) => [...prev, newMessage]);
-  setMessage("");
+  if (imageFile) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      sendPayload(reader.result);
+    };
+    reader.readAsDataURL(imageFile);
+  } else {
+    sendPayload();
+  }
 };
 
   // ================= REVIEW =================
@@ -534,48 +603,140 @@ const handleMessageChange = (e) => {
           )}
         </div>
       )}
-      {/* CHAT */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div className="px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
-              {msg.message}
-              {msg.time && (
-                <div className="text-[10px] text-gray-400 mt-1 text-right">
-                  {msg.time}
-                </div>
-              )}
-            </div>
+     {/* CHAT */}
+<div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50">
+  {messages.map((msg, i) => (
+    <div
+      key={i}
+      onMouseEnter={() => setHoveredIndex(i)}
+      onMouseLeave={() => setHoveredIndex(null)}
+      className={`flex ${
+        msg.sender === "user" ? "justify-end" : "justify-start"
+      }`}
+    >
+      <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
+
+        {/*  REPLY CONTEXT */}
+        {msg.replyTo && (
+          <div className="bg-gray-100 border-l-4 border-purple-500 p-2 mb-1 text-xs">
+            <strong>{msg.replyTo.sender}</strong>:{" "}
+            {msg.replyTo.message?.slice(0, 40)}
+            {msg.replyTo.image && (
+              <img
+                src={msg.replyTo.image}
+                className="w-10 h-10 mt-1 rounded"
+              />
+            )}
           </div>
-        ))}
+        )}
+
+        {/* MESSAGE TEXT */}
+        {msg.message && <div>{msg.message}</div>}
+
+        {/* IMAGE DISPLAY */}
+        {msg.image && (
+          <img
+            src={msg.image}
+            alt="chat-img"
+            className="mt-2 w-32 h-32 rounded-lg object-cover"
+          />
+        )}
+
+        {/* TIME */}
+        {msg.time && (
+          <div className="text-[10px] text-gray-400 mt-1 text-right">
+            {msg.time}
+          </div>
+        )}
+
+        {/*  REPLY BUTTON (hover) */}
+        {hoveredIndex === i && (
+          <button
+            onClick={() => setReplyTo(msg)}
+            className="absolute -left-10 top-2 text-xs bg-gray-200 px-2 py-1 rounded"
+          >
+            Reply
+          </button>
+        )}
       </div>
+    </div>
+  ))}
+</div>
+{/*  REPLY PREVIEW */}
+{replyTo && (
+  <div className="px-3 py-2 bg-blue-100 border-l-4 border-blue-500 text-xs flex justify-between items-center">
+    <div>
+      Replying to <b>{replyTo.sender}</b>:{" "}
+      {replyTo.message?.slice(0, 40)}
+      {replyTo.image && (
+        <img src={replyTo.image} className="w-8 h-8 inline ml-2 rounded" />
+      )}
+    </div>
+    <button onClick={() => setReplyTo(null)}>✖</button>
+  </div>
+)}
+
+{/*  IMAGE PREVIEW */}
+{imagePreview && (
+  <div className="px-3 py-2 flex items-center gap-2">
+    <img
+      src={imagePreview}
+      className="w-16 h-16 object-cover rounded"
+    />
+    <button
+      onClick={() => {
+        setImagePreview(null);
+        setImageFile(null);
+      }}
+      className="text-red-500"
+    >
+      Remove
+    </button>
+  </div>
+)}
 
       {/* INPUT */}
-      <div className="flex gap-2 p-3 border-t">
-        <input
-          value={message}
-          onChange={handleMessageChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          className="flex-1 border px-3 py-2 rounded-full"
-          placeholder="Type message..."
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-purple-700 text-white px-4 rounded-full"
-        >
-          Send
-        </button>
-      </div>
+<div className="flex gap-2 p-3 border-t items-center">
+
+  {/* FILE INPUT */}
+  <input
+    type="file"
+    accept="image/*"
+    ref={fileInputRef}
+    onChange={handleImageChange}
+    className="hidden"
+  />
+
+  {/* ATTACH BUTTON */}
+  <button
+    onClick={() => fileInputRef.current.click()}
+    className="text-purple-600"
+  >
+    📎
+  </button>
+
+  {/* TEXT INPUT */}
+  <input
+    value={message}
+    onChange={handleMessageChange}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    }}
+    className="flex-1 border px-3 py-2 rounded-full"
+    placeholder="Type message..."
+  />
+
+  {/* SEND BUTTON */}
+  <button
+    onClick={sendMessage}
+    className="bg-purple-700 text-white px-4 rounded-full"
+  >
+    Send
+  </button>
+</div>
 
       {/* POPUPS */}
       {showReviewPopup && (
