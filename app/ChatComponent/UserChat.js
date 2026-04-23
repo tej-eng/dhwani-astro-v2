@@ -167,10 +167,12 @@ const UserChat = ({
 
   const reader = new FileReader();
   reader.onloadend = () => {
+    console.log("Image preview generated");
     setImagePreview(reader.result);
   };
 
   reader.readAsDataURL(file);
+  console.log("Selected file:", file);
   setImageFile(file);
 };
 const uploadToServer = async (file) => {
