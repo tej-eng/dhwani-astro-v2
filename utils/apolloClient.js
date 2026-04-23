@@ -1,13 +1,14 @@
 "use client";
 
-import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
+import { ApolloClient, InMemoryCache, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { createUploadLink } from "apollo-upload-client";
 
 /* =========================
-HTTP LINK
+UPLOAD LINK (IMPORTANT)
 ========================= */
 
-const httpLink = new HttpLink({
+const uploadLink = createUploadLink({
   uri: "https://dhwaniastro.com/userAuth/graphql",
   credentials: "include",
 });
@@ -85,7 +86,7 @@ APOLLO CLIENT
 ========================= */
 
 const client = new ApolloClient({
-  link: from([errorLink, httpLink]),
+  link: from([errorLink, uploadLink]), // ✅ IMPORTANT CHANGE
   cache: new InMemoryCache(),
   connectToDevTools: process.env.NODE_ENV === "development",
 });
