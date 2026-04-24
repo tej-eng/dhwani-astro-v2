@@ -157,7 +157,9 @@ const UserChat = ({
   }, []);
 
   const handleImageChange = (e) => {
+    console.log("File input changed");
   const file = e.target.files[0];
+  console.log("Selected file:aaaaaaaaaaaaaaaaa", file);
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
@@ -460,16 +462,8 @@ const handleMessageChange = (e) => {
 
   const msg_id = crypto.randomUUID();
 
-  let imageUrl = null;
-
-  // Upload image FIRST (if exists)
-  if (imageFile) {
-    imageUrl = await uploadToServer(imageFile);
-    if (!imageUrl) {
-      toast.error("Image upload failed");
-      return;
-    }
-  }
+  //  USE PREVIEW INSTANTLY
+  const tempImage = imagePreview;
 
   const newMessage = {
     room_id: room_Id,
@@ -478,7 +472,7 @@ const handleMessageChange = (e) => {
     received_id: astroid,
     sender: "user",
     message: message.trim(),
-    image: imageUrl, 
+    image: tempImage, //  show instantly
     replyTo: replyTo
       ? {
           sender: replyTo.sender,
@@ -489,15 +483,38 @@ const handleMessageChange = (e) => {
     time: new Date().toISOString(),
   };
 
-  socket.emit("send_message", newMessage);
-
+  //SHOW IN UI IMMEDIATELY
   setMessages((prev) => [...prev, newMessage]);
 
-  // reset
+  // reset input instantly
   setMessage("");
   setImageFile(null);
   setImagePreview(null);
   setReplyTo(null);
+
+  //  Upload in background
+  let finalImageUrl = null;
+
+  if (imageFile) {
+    finalImageUrl = await uploadToServer(imageFile);
+  }
+
+  //  SEND FINAL MESSAGE WITH REAL URL
+  socket.emit("send_message", {
+    ...newMessage,
+    image: finalImageUrl,
+  });
+
+  //  OPTIONAL: replace preview with real URL
+  if (finalImageUrl) {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.msg_id === msg_id
+          ? { ...msg, image: finalImageUrl }
+          : msg
+      )
+    );
+  }
 };
 
   // ================= REVIEW =================

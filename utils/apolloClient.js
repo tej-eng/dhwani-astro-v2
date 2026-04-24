@@ -2,15 +2,18 @@
 
 import { ApolloClient, InMemoryCache, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-import { createUploadLink } from "apollo-upload-client";
+import UploadHttpLink from "apollo-upload-client/UploadHttpLink.mjs";
 
 /* =========================
 UPLOAD LINK (IMPORTANT)
 ========================= */
 
-const uploadLink = createUploadLink({
+const uploadLink = new UploadHttpLink({
   uri: "https://dhwaniastro.com/userAuth/graphql",
   credentials: "include",
+  headers: {
+    "apollo-require-preflight": "true", 
+  },
 });
 
 /* =========================
