@@ -89,7 +89,7 @@ APOLLO CLIENT
 ========================= */
 
 const client = new ApolloClient({
-  link: from([errorLink, uploadLink]), // ✅ IMPORTANT CHANGE
+  link: from([errorLink, uploadLink]), 
   cache: new InMemoryCache(),
   connectToDevTools: process.env.NODE_ENV === "development",
 });

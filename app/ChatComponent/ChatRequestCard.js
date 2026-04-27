@@ -28,7 +28,18 @@ const ChatRequestCard = ({
   const [queueData, setQueueData] = useState(null);
   const [showQueuePopup, setShowQueuePopup] = useState(false);
   const [showwaitingpopup, setShowwaitingpopup] = useState(true);
+  const [shouldRun, setShouldRun] = useState(true);
   const timerRef = useRef(null);
+
+
+useEffect(() => {
+  
+  //debugger;
+ const activeChatRoom = localStorage.getItem("activeChatRoom");
+  if(activeChatRoom){
+   setShowwaitingpopup(false);
+  }
+}, [room_Id]);
 
   useEffect(() => {
     // Reset queue state when new chat starts
@@ -39,11 +50,23 @@ const ChatRequestCard = ({
   useEffect(() => {
     if (!socket) return;
 
+    // const handleBeforeUnload = () => {
+    //   if (shouldRun) {
+    //     socket.emit("autodisconnect", {
+    //       room_id: room_Id,
+    //       astroid:  astro_id,
+    //     });
+    //   }
+    // };
+
+    //window.addEventListener("beforeunload", handleBeforeUnload);
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-
+   
+    
     setTimeLeft(60);
 
     timerRef.current = setInterval(() => {
@@ -81,6 +104,8 @@ const ChatRequestCard = ({
       timerRef.current = null;
     }
   };
+
+
 
   const handleRequestCancel = () => {
     stopTimer();
@@ -124,7 +149,9 @@ const ChatRequestCard = ({
     if (!socket) return;
 
     const handleAccepted = (data) => {
+      
       if (data.roomid === room_Id) {
+       localStorage.setItem("activeChatRoom", room_Id);
         setShowChat(false);
         setShowQueuePopup(false);
         setQueueData(null);
@@ -178,6 +205,7 @@ const ChatRequestCard = ({
     socket.on("chat_rejected", handleReject);
 
     return () => {
+     // window.removeEventListener("beforeunload", handleBeforeUnload);
       socket.off("chatAcceptedByAstrologer", handleAccepted);
       socket.off("queue_position", handleQueue);
      // socket.off("queue_update", handleQueueUpdate);
@@ -196,8 +224,8 @@ const ChatRequestCard = ({
 
   return (
     <div className="flex items-center justify-center rounded-full w-full">
-      {/* WAITING POPUP (DEFAULT) */}
-      {showwaitingpopup && (
+      {/* WAITING POPUP (DEFAULT) */ }
+      { showwaitingpopup && (
         <div className="h-full flex items-center rounded-full justify-center">
           <div className="w-full rounded-full gap-3 bg-purple-200 relative px-3 py-2 flex duration-300">
             {/* Avatar */}

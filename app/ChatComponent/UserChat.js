@@ -85,6 +85,11 @@ const UserChat = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const { socket, connectSocket } = useContext(SocketContext);
+  useEffect(() => {
+  if (!socket) {
+    connectSocket();
+  }
+}, [socket]);
 
   const { data: userRes, loading: userLoading } = useQuery(GET_USER_BY_ID, {
     variables: { id: user_Id },
@@ -98,7 +103,17 @@ const UserChat = ({
       skip: !userIntakeId,
     },
   );
-
+   const saved = localStorage.getItem("activeChatSession");
+   if(saved){
+    const parsed = JSON.parse(saved);
+    chattime = parsed.timeLeft / 60;
+    room_Id = parsed.room_Id;
+    astro_Name = parsed.astro_Name;
+    astro_Image = parsed.astro_Image;
+    user_Id = parsed.user_Id;
+    astroid = parsed.astroid;
+    astro_price = parsed.astro_price;
+   }
   const { data: rechargeData, loading: rechargePackLoading } =
     useQuery(GET_RECHARGE_PACKS);
 
@@ -107,20 +122,18 @@ const UserChat = ({
   const getintake = intakeRes?.getIntakeById;
 
   // ================= STATES =================
-
+   const WELCOME_MESSAGE = {
+  sender: "Astrologer",
+  message:
+    "Hey there! Welcome back 😊 Our consultant is reviewing your chat...",
+  time: new Date().toISOString(),
+};
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      sender: "Astrologer",
-      message:
-        "Hey there! Welcome to Dhwani Astro 😊 Our consultant is checking your details...",
-      time: "",
-    },
-  ]);
-
+ const [messages, setMessages] = useState([]);
+  //debugger;
   const [typingStatus, setTypingStatus] = useState("");
-  //const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
-  const [timeLeft, setTimeLeft] = useState(5 * 60);
+  const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
+ // const [timeLeft, setTimeLeft] = useState(5 * 60);
 
   const [showPopup, setShowPopup] = useState(false);
   const [leaveMessage, setLeaveMessage] = useState("");
@@ -140,16 +153,125 @@ const UserChat = ({
   //   const [queueData, setQueueData] = useState(null);
   // const [showQueuePopup, setShowQueuePopup] = useState(false);
   const [uploadImage] = useMutation(UPLOAD_IMAGE);
+  const chatEndedRef = useRef(false);
+  const hasJoinedRef = useRef(false);
 
   const intervalRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const savedSession = localStorage.getItem("activeChatSession");
+  if (!savedSession) return;
+
+  const parsed = JSON.parse(savedSession);
+
+  if (parsed.room_Id === room_Id && parsed.chatEnded) {
+    chatEndedRef.current = true;
+    setChatEnded(true);
+  }
+}, [room_Id]);
+
+useEffect(() => {
+  if (!room_Id) return;
+
+  localStorage.setItem("chatActive", "true");
+}, [room_Id]);
+
+  useEffect(() => {
+  if (!room_Id) return;
+
+  const chatSession = {
+    room_Id,
+    astroid,
+    user_Id,
+    astro_Name,
+    astro_Image,
+    timeLeft,
+    chatEnded,
+  };
+
+  localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
+}, [room_Id, timeLeft, chatEnded]);
+
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        if (!room_Id) return;
+
+        const res = await fetch(
+          "https://dhwaniastro.com/userAuth/graphql",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+                query GetChatMessages($roomId: String!) {
+                  getChatMessages(roomId: $roomId) {
+                    msg_id
+                    sender
+                    message
+                    image
+                    replyTo
+                    time
+                  }
+                }
+              `,
+              variables: {
+                roomId: room_Id,
+              },
+            }),
+          }
+        );
+
+        const result = await res.json();
+   const isReload =
+  performance.getEntriesByType("navigation")[0]?.type === "reload";
+
+if (result?.data?.getChatMessages?.length > 0) {
+  const history = result.data.getChatMessages;
+
+  if (isReload) {
+    setMessages((prev) => {
+      // prevent duplicate welcome message
+      const alreadyHasWelcome = prev.some(
+        (msg) => msg.message === WELCOME_MESSAGE.message
+      );
+
+      return alreadyHasWelcome
+        ? history
+        : [WELCOME_MESSAGE, ...history];
+    });
+  } else {
+    setMessages(history);
+  }
+} else {
+  // no history → show welcome message
+  setMessages([WELCOME_MESSAGE]);
+}
+
+      } catch (err) {
+        console.error("Fetch messages error:", err);
+      }
+    };
+
+    fetchMessages();
+  }, [room_Id]);
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
+
+
   // Get user from localStorage safely (client-side only)
   useEffect(() => {
+      
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user");
       setUser(storedUser ? JSON.parse(storedUser) : {});
@@ -163,6 +285,7 @@ const UserChat = ({
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
+    console.log("Selected file is not an image",file.type);
     toast.error("Only images allowed");
     return;
   }
@@ -320,38 +443,117 @@ const handleMessageChange = (e) => {
 
   // ================= SOCKET =================
   const emitChatCompleted = () => {
-    if (chatEnded) return; // prevent duplicate
-    setChatEnded(true);
+  if (chatEnded) return;
+  if (chatEndedRef.current) return;
+   chatEndedRef.current = true;
+   hasJoinedRef.current = true;
 
-    if (!socket) return;
-
-    socket.emit("chatCompleted", {
-      room_id: room_Id,
-      astroId: astroid,
-      userId: user_Id,
-    });
+  const session = {
+    room_Id,
+    chatEnded: true,
   };
 
+  if (!socket) return;
+
+  socket.emit("chatCompleted", {
+    room_id: room_Id,
+    astroId: astroid,
+    userId: user_Id,
+  });
+  socket?.emit("leave_room", { room_id: room_Id });
+
+  //localStorage.setItem("activeChatSession", JSON.stringify(session));
+  localStorage.setItem(`chatCompleted_${room_Id}`, "true");
+
+  localStorage.removeItem("chatActive");
+  localStorage.removeItem("activeChatRoom");
+  localStorage.removeItem("activeChatSession");
+};
+
+useEffect(() => {
+  if (!socket) return;
+
+  if (chatEndedRef.current) return;
+  if (hasJoinedRef.current) return;
+
+  if (!socket.connected) {
+    socket.connect();
+  }
+//debugger;
+  //const activeChatRoom = localStorage.getItem("activeChatRoom");
+    //  if(!activeChatRoom){
+      socket.emit("joinChat", {
+        username: "customer",
+        room_id: room_Id,
+        joinpersonid: user_Id,
+      });
+   // }
+
+  hasJoinedRef.current = true;
+
+}, [socket]);
+
+useEffect(() => {
+  if (!socket) return;
+
+  const handleReconnect = () => {
+    console.log("Socket reconnected");
+
+    if (chatEndedRef.current) {
+      console.log("Chat ended, skipping rejoin");
+      return;
+    }
+
+    if (!hasJoinedRef.current) {
+      //debugger;
+     // const activeChatRoom = localStorage.getItem("activeChatRoom");
+      //if(!activeChatRoom){
+      socket.emit("joinChat", {
+        username: "customer",
+        room_id: room_Id,
+        joinpersonid: user_Id,
+      });
+    //}
+
+      hasJoinedRef.current = true;
+    }
+  };
+
+  socket.on("connect", handleReconnect);
+
+  return () => {
+    socket.off("connect", handleReconnect);
+  };
+}, [socket, room_Id]);
+
+useEffect(() => {
+  hasJoinedRef.current = false;
+}, [room_Id]);
+
   useEffect(() => {
-    if (!socket) return;
+      if (!socket) return;
 
-    socket.emit("joinChat", {
-      username: "customer",
-      room_id: room_Id,
-      joinpersonid: user_Id,
-    });
+  socket.on("receive_message", (data) => {
+  setMessages((prev) => {
+    //  prevent duplicate
+    const alreadyExists = prev.some(
+      (msg) => msg.msg_id === data.msg_id
+    );
 
-   socket.on("receive_message", (data) => {
-  setMessages((prev) => [
-    ...prev,
-    {
-      sender: data.sender,
-      message: data.message,
-      image: data.image || null,
-      replyTo: data.replyTo || null,
-      time: data.time,
-    },
-  ]);
+    if (alreadyExists) return prev;
+
+    return [
+      ...prev,
+      {
+        msg_id: data.msg_id,
+        sender: data.sender,
+        message: data.message,
+        image: data.image || null,
+        replyTo: data.replyTo || null,
+        time: data.time,
+      },
+    ];
+  });
 });
 
     socket.on("typing", (data) => {
@@ -367,9 +569,12 @@ const handleMessageChange = (e) => {
       if (data.roomId === room_Id) {
         setLeaveMessage("Chat ended by astrologer");
         setShowPopup(true);
+const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
         setTimeout(() => {
+          if (!isReload) {
           router.push("/");
+         }
         }, 3000);
       }
     });
@@ -448,6 +653,10 @@ const handleMessageChange = (e) => {
   // ================= SEND MESSAGE =================
 
  const sendMessage = async () => {
+  if (!socket || !socket.connected) {
+  toast.error("Connecting... please wait");
+  return;
+}
   if (!message.trim() && !imageFile) return;
 
   socket.emit("typing", {
@@ -543,7 +752,7 @@ const handleMessageChange = (e) => {
 
       setTimeout(() => {
         router.push("/chat-with-astrologer");
-      }, 1000);
+      }, 100);
     } catch (error) {
       console.error("Review error:", error);
       toast.error("Failed to submit review");

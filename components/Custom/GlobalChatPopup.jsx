@@ -8,7 +8,7 @@ export default function GlobalChatPopup() {
     (state) => state.send_request_chat
   );
 
-  // 🔥 single source of truth
+  //  single source of truth
   if (!activeRequest) return null;
 
   return (
