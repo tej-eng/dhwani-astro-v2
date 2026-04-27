@@ -129,7 +129,7 @@ const UserChat = ({
   time: new Date().toISOString(),
 };
   const [message, setMessage] = useState("");
- const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   //debugger;
   const [typingStatus, setTypingStatus] = useState("");
   const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
@@ -158,7 +158,8 @@ const UserChat = ({
 
   const intervalRef = useRef(null);
   const typingTimeoutRef = useRef(null);
-
+const JOIN_KEY = `chatJoined_${room_Id}`;
+const END_KEY = `chatCompleted_${room_Id}`;
   useEffect(() => {
   if (typeof window === "undefined") return;
 
@@ -173,11 +174,11 @@ const UserChat = ({
   }
 }, [room_Id]);
 
-useEffect(() => {
-  if (!room_Id) return;
+// useEffect(() => {
+//   if (!room_Id) return;
 
-  localStorage.setItem("chatActive", "true");
-}, [room_Id]);
+//   localStorage.setItem("chatActive", "true");
+// }, [room_Id]);
 
   useEffect(() => {
   if (!room_Id) return;
@@ -191,8 +192,9 @@ useEffect(() => {
     timeLeft,
     chatEnded,
   };
-
+  //debugger;
   localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
+  localStorage.setItem("chatActive", "true");
 }, [room_Id, timeLeft, chatEnded]);
 
 
@@ -441,17 +443,19 @@ const handleMessageChange = (e) => {
   }, 2000);
 };
 
-  // ================= SOCKET =================
   const emitChatCompleted = () => {
-  if (chatEnded) return;
   if (chatEndedRef.current) return;
-   chatEndedRef.current = true;
-   hasJoinedRef.current = true;
 
-  const session = {
-    room_Id,
-    chatEnded: true,
-  };
+  chatEndedRef.current = true;
+
+  setChatEnded(true);
+
+  localStorage.setItem(`chatCompleted_${room_Id}`, "true");
+  localStorage.removeItem(`chatJoined_${room_Id}`);
+
+  ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+    localStorage.removeItem(key);
+  });
 
   if (!socket) return;
 
@@ -460,63 +464,71 @@ const handleMessageChange = (e) => {
     astroId: astroid,
     userId: user_Id,
   });
-  socket?.emit("leave_room", { room_id: room_Id });
 
-  //localStorage.setItem("activeChatSession", JSON.stringify(session));
-  localStorage.setItem(`chatCompleted_${room_Id}`, "true");
-
-  localStorage.removeItem("chatActive");
-  localStorage.removeItem("activeChatRoom");
-  localStorage.removeItem("activeChatSession");
+  socket.emit("leave_room", { room_id: room_Id });
 };
 
 useEffect(() => {
-  if (!socket) return;
+  if (!socket || !room_Id || !user_Id) return;
 
-  if (chatEndedRef.current) return;
-  if (hasJoinedRef.current) return;
+  const isEnded =
+    localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
-  if (!socket.connected) {
-    socket.connect();
+  if (isEnded) {
+    console.log("Chat already ended → skip join");
+    return;
   }
-//debugger;
-  //const activeChatRoom = localStorage.getItem("activeChatRoom");
-    //  if(!activeChatRoom){
-      socket.emit("joinChat", {
-        username: "customer",
-        room_id: room_Id,
-        joinpersonid: user_Id,
-      });
-   // }
 
-  hasJoinedRef.current = true;
+  const alreadyJoined =
+    localStorage.getItem(`chatJoined_${room_Id}`) === "true";
 
-}, [socket]);
+  const isReload =
+    performance.getEntriesByType("navigation")[0]?.type === "reload";
 
+  //  First time join
+  if (!alreadyJoined) {
+    console.log("First join");
+
+    socket.emit("joinChat", {
+      username: "customer",
+      room_id: room_Id,
+      joinpersonid: user_Id,
+    });
+
+    localStorage.setItem(`chatJoined_${room_Id}`, "true");
+    return;
+  }
+
+  //  Refresh → allow rejoin
+  if (isReload) {
+    console.log("Reload → rejoining");
+
+    socket.emit("joinChat", {
+      username: "customer",
+      room_id: room_Id,
+      joinpersonid: user_Id,
+    });
+  }
+}, [socket, room_Id, user_Id]);
 useEffect(() => {
-  if (!socket) return;
+  if (!socket || !room_Id || !user_Id) return;
 
   const handleReconnect = () => {
-    console.log("Socket reconnected");
+    const isEnded =
+      localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
-    if (chatEndedRef.current) {
-      console.log("Chat ended, skipping rejoin");
+    if (isEnded) {
+      console.log("Reconnect blocked → chat ended");
       return;
     }
 
-    if (!hasJoinedRef.current) {
-      //debugger;
-     // const activeChatRoom = localStorage.getItem("activeChatRoom");
-      //if(!activeChatRoom){
-      socket.emit("joinChat", {
-        username: "customer",
-        room_id: room_Id,
-        joinpersonid: user_Id,
-      });
-    //}
+    console.log("Reconnect → safe rejoin");
 
-      hasJoinedRef.current = true;
-    }
+    socket.emit("joinChat", {
+      username: "customer",
+      room_id: room_Id,
+      joinpersonid: user_Id,
+    });
   };
 
   socket.on("connect", handleReconnect);
@@ -524,7 +536,7 @@ useEffect(() => {
   return () => {
     socket.off("connect", handleReconnect);
   };
-}, [socket, room_Id]);
+}, [socket, room_Id, user_Id]);
 
 useEffect(() => {
   hasJoinedRef.current = false;
@@ -581,15 +593,19 @@ const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload
 
     //  Completed Chat
     socket.on("chatCompleted", (data) => {
-      if (data.roomId === room_Id) {
-        setLeaveMessage("Chat completed successfully");
-        setShowReviewPopup(true);
+  if (data.roomId !== room_Id) return;
 
-        setTimeout(() => {
-          router.push("/chat-with-astrologer");
-        }, 4000);
-      }
-    });
+  if (chatEndedRef.current) return; //  prevent duplicate
+
+  chatEndedRef.current = true;
+
+  setLeaveMessage("Chat completed successfully");
+  setShowReviewPopup(true);
+
+  setTimeout(() => {
+    router.push("/chat-with-astrologer");
+  }, 4000);
+});
 
     //  User Disconnected
     socket.on("user_disconnected", () => {
@@ -628,11 +644,7 @@ const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload
           clearInterval(intervalRef.current);
           intervalRef.current = null;
 
-          socket.emit("chatCompleted", {
-            room_id: room_Id,
-            astroId: astroid,
-            userId: user_Id,
-          });
+          emitChatCompleted();
 
           setShowReviewPopup(true);
           return 0;
@@ -729,35 +741,46 @@ const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload
   // ================= REVIEW =================
 
   const handleSubmitReview = async () => {
-    try {
-      emitChatCompleted();
+  if (chatEndedRef.current) {
+    console.log("Review already submitted blocked");
+    return;
+  }
 
-      await createReview({
-        variables: {
-          input: {
-            astro_id: String(astroid),
-            review_id: String(room_Id),
-            star: rating,
-            comment: reviewComment,
-            user_name: getintake?.name || "",
-            astro_name: astro_Name,
-          },
+  try {
+    chatEndedRef.current = true; 
+
+   socket.emit("chatCompleted", {
+    room_id: room_Id,
+    astroId: astroid,
+    userId: user_Id,
+  });
+
+    await createReview({
+      variables: {
+        input: {
+          astro_id: String(astroid),
+          review_id: String(room_Id),
+          star: rating,
+          comment: reviewComment,
+          user_name: getintake?.name || "",
+          astro_name: astro_Name,
         },
-      });
+      },
+    });
 
-      toast.success("Review submitted successfully");
+    toast.success("Review submitted successfully");
 
-      setShowReviewPopup(false);
-      dispatch(clearActiveRequest());
+    setShowReviewPopup(false);
+    dispatch(clearActiveRequest());
 
-      setTimeout(() => {
-        router.push("/chat-with-astrologer");
-      }, 100);
-    } catch (error) {
-      console.error("Review error:", error);
-      toast.error("Failed to submit review");
-    }
-  };
+    setTimeout(() => {
+      router.push("/chat-with-astrologer");
+    }, 100);
+  } catch (error) {
+    console.error("Review error:", error);
+    toast.error("Failed to submit review");
+  }
+};
 
   const isLoading = userLoading || intakeLoading;
 

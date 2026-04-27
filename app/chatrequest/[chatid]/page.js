@@ -205,6 +205,7 @@ export default function RequestForm() {
       };
 
       activeSocket.emit("chat_request", req_data);
+      localStorage.setItem("chat_request", JSON.stringify(req_data));
 
       dispatch(
         setActiveRequest({
