@@ -6,7 +6,7 @@ import { useMutation } from "@apollo/client/react";
 
 export default function AstrologerRegistration() {
   const [preview, setPreview] = useState(null);
-
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     name: "",
     dob: "",
@@ -17,6 +17,8 @@ export default function AstrologerRegistration() {
     email: "",
     phone: "",
     about: "",
+    address: "",
+    pincode: "",
   });
 
   const [createApplication, { loading, error }] =
@@ -48,49 +50,83 @@ export default function AstrologerRegistration() {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const validate = () => {
+    let newErrors = {};
 
-  if (!form.name || !form.email) {
-    return alert("Please fill required fields");
-  }
+    if (!form.name) newErrors.name = "Name is required";
+    if (!form.dob) newErrors.dob = "DOB is required";
+    if (!form.gender) newErrors.gender = "Gender is required";
+    if (form.languages.length === 0) newErrors.languages = "Select at least one language";
+    if (form.skills.length === 0) newErrors.skills = "Select at least one skill";
+    if (!form.experience) newErrors.experience = "Experience required";
+    if (!form.phone) newErrors.phone = "Phone required";
+    if (!form.address) newErrors.address = "Address required";
 
-  try {
-    await createApplication({
-      variables: {
-        input: {
-          name: form.name,
-          phoneNumber: form.phone,
-          email: form.email,
-          dob: new Date(form.dob).toISOString(),
-          gender: form.gender,
-          languages: form.languages,
-          skills: form.skills,
-          experience: Number(form.experience),
-          about: form.about,
+    // Optional: strict validation
+    if (form.pincode && !/^\d{6}$/.test(form.pincode)) {
+      newErrors.pincode = "Invalid pincode";
+    }
+
+    if (form.phone && !/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Invalid phone";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      const first = Object.keys(newErrors)[0];
+      document.querySelector(`[name="${first}"]`)?.focus();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) return;
+
+    try {
+      await createApplication({
+        variables: {
+          input: {
+            name: form.name,
+            phoneNumber: form.phone,
+            dob: new Date(form.dob).toISOString(),
+            gender: form.gender,
+            languages: form.languages,
+            skills: form.skills,
+            experience: Number(form.experience),
+            about: form.about,
+            address: form.address,
+
+            ...(form.email && { email: form.email }),
+            ...(form.pincode && { pincode: form.pincode }),
+          }
         },
-      },
-    });
+      });
 
-    alert("Application Submitted 🚀");
+      alert("Application Submitted 🚀");
 
-    setForm({
-      name: "",
-      dob: "",
-      gender: "",
-      languages: [],
-      skills: [],
-      experience: "",
-      email: "",
-      phone: "",
-      about: "",
-    });
+      setForm({
+        name: "",
+        dob: "",
+        gender: "",
+        languages: [],
+        skills: [],
+        experience: "",
+        email: "",
+        phone: "",
+        about: "",
+        address: "",
+        pincode: "",
+      });
 
-    setPreview(null);
-  } catch (err) {
-    alert(err.message || "Submission failed");
-  }
-};
+      setErrors({});
+      setPreview(null);
+    } catch (err) {
+      alert(err.message || "Submission failed");
+    }
+  };
 
   // ------------------ UI ------------------
 
@@ -115,7 +151,7 @@ export default function AstrologerRegistration() {
                 <span className="text-sm text-gray-400">Upload</span>
               )}
             </div>
-            <input type="file" className="hidden" onChange={handleImage} />
+            <input type="file" className="hidden" required onChange={handleImage} />
           </label>
           <p className="text-xs mt-2 text-gray-500">
             Profile Pic (.jpg, .png)
@@ -128,29 +164,33 @@ export default function AstrologerRegistration() {
           <div className="grid md:grid-cols-2 gap-4">
             <Input
               label="Name"
-              name="name"
+              name="name" required
               value={form.name}
               onChange={handleChange}
+              error={errors.name}
             />
             <Input
               label="Date of Birth"
               name="dob"
-              type="date"
+              type="date" required
               value={form.dob}
               onChange={handleChange}
+              error={errors.dob}
             />
           </div>
 
           {/* Gender */}
           <div>
-            <label className="block mb-2 font-medium">Gender</label>
+            <label className="block mb-2 font-medium">
+              Gender <span className="text-red-500">*</span>
+            </label>
             <div className="flex gap-6">
               {["MALE", "FEMALE", "OTHER"].map((g) => (
                 <label key={g} className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="gender"
-                    value={g}
+                    value={g} required
                     checked={form.gender === g}
                     onChange={handleChange}
                     className="accent-indigo-500"
@@ -159,33 +199,38 @@ export default function AstrologerRegistration() {
                 </label>
               ))}
             </div>
+            {errors.gender && (
+              <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+            )}
           </div>
 
           {/* Languages */}
           <MultiSelect
             label="Languages"
-            field="languages"
+            field="languages" required
             selected={form.languages}
             options={["English", "Hindi", "Gujarati", "Tamil", "Punjabi"]}
             handleCheckbox={handleCheckbox}
+            error={errors.languages}
           />
 
           {/* Skills + Experience */}
           <div className="grid md:grid-cols-2 gap-4">
             <MultiSelect
               label="Skills"
-              field="skills"
+              field="skills" required
               selected={form.skills}
               options={["Vedic", "Tarot", "Numerology", "Vastu"]}
               handleCheckbox={handleCheckbox}
+              error={errors.skills}
             />
 
             <Input
               label="Experience (years)"
               name="experience"
-              type="number"
-              value={form.experience}
+              type="number" required value={form.experience}
               onChange={handleChange}
+              error={errors.experience}
             />
           </div>
 
@@ -201,8 +246,26 @@ export default function AstrologerRegistration() {
             <Input
               label="Phone"
               name="phone"
-              type="tel"
+              type="tel" required
               value={form.phone}
+              onChange={handleChange}
+              error={errors.phone}
+            />
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input
+              label="Address"
+              name="address" required
+              type="text"
+              value={form.address}
+              onChange={handleChange}
+              error={errors.address}
+            />
+            <Input
+              label="Pincode"
+              name="pincode"
+              type="tel"
+              value={form.pincode}
               onChange={handleChange}
             />
           </div>
@@ -214,7 +277,7 @@ export default function AstrologerRegistration() {
               name="about"
               value={form.about}
               onChange={handleChange}
-              className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-400 outline-none"
+              className="w-full p-3 border border-gray-200 rounded-xl focus:ring-1 focus:ring-indigo-400 outline-none"
               rows="4"
             />
           </div>
@@ -230,11 +293,10 @@ export default function AstrologerRegistration() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl text-white transition ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
-            }`}
+            className={`w-full py-3 rounded-xl text-white transition ${loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
@@ -245,17 +307,21 @@ export default function AstrologerRegistration() {
 }
 
 /* Input Component */
-function Input({ label, name, value, onChange, type = "text" }) {
+function Input({ label, name, value, onChange, type = "text", error, required }) {
   return (
     <div>
-      <label className="block mb-2 font-medium">{label}</label>
+      <label className="block mb-2 font-medium">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <input
         name={name}
         type={type}
         value={value}
         onChange={onChange}
-        className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-400 outline-none"
+        className={`w-full p-3 rounded-xl outline-none border ${error ? "border-red-500" : "border-gray-200"
+          }`}
       />
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -267,11 +333,19 @@ function MultiSelect({
   field,
   selected,
   handleCheckbox,
+  error,
+  required 
 }) {
   return (
     <div>
-      <label className="block mb-2 font-medium">{label}</label>
-      <div className="grid grid-cols-2 gap-2 border p-3 rounded-xl">
+      <label className="block mb-2 font-medium">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      <div
+        className={`grid grid-cols-2 gap-2 rounded-xl p-3 border ${error ? "border-red-500" : "border-gray-200"
+          }`}
+      >
         {options.map((opt) => (
           <label key={opt} className="flex items-center gap-2">
             <input
@@ -284,6 +358,8 @@ function MultiSelect({
           </label>
         ))}
       </div>
+
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 }
