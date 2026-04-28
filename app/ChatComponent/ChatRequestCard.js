@@ -48,6 +48,7 @@ const ChatRequestCard = ({
     const activeChatRoom = localStorage.getItem("activeChatRoom");
 
     if (activeChatRoom || isCompleted) {
+      console.log("Chat already active or completed, showing waiting popup");
       setShowwaitingpopup(false);
     } else {
       setShowwaitingpopup(true);
