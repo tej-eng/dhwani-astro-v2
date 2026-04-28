@@ -154,8 +154,9 @@ const ChatRequestCard = ({
     };
 
     const handleQueue = (data) => {
+      console.log("Queue updateuuuuuuu:", data);
       setQueueData(data);
-
+      
       if (data.position === 0) {
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
