@@ -193,7 +193,6 @@ const UserChat = ({
       chatEnded,
     };
    localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
-    localStorage.setItem("chatActive", "true");
   }, [room_Id, timeLeft, chatEnded]);
 
   useEffect(() => {
