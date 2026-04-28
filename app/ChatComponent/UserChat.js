@@ -578,16 +578,20 @@ useEffect(() => {
     // });
     //  Leave Chat
     socket.on("leave_chat", (data) => {
+      debugger;
       if (data.roomId === room_Id) {
         setLeaveMessage("Chat ended by astrologer");
-        setShowPopup(true);
-const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
+        setShowReviewPopup(true);
+         setTimeout(() => {
+    router.push("/chat-with-astrologer");
+  }, 4000);
+// const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
-        setTimeout(() => {
-          if (!isReload) {
-          router.push("/");
-         }
-        }, 3000);
+//         setTimeout(() => {
+//           if (!isReload) {
+//           router.push("/");
+//          }
+//         }, 3000);
       }
     });
 
