@@ -439,7 +439,7 @@ const UserChat = ({
   const emitChatCompleted = () => {
     if (chatEndedRef.current) return;
 
-    chatEndedRef.current = true;
+    //chatEndedRef.current = true;
 
     setChatEnded(true);
 
