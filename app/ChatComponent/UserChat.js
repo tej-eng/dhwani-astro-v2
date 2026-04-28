@@ -445,7 +445,7 @@ const handleMessageChange = (e) => {
 
   const emitChatCompleted = () => {
   if (chatEndedRef.current) return;
-   debugger;
+  
   chatEndedRef.current = true;
 
   setChatEnded(true);
@@ -822,6 +822,7 @@ useEffect(() => {
 
           <button
             onClick={() => {
+              emitChatCompleted();
               setShowReviewPopup(true);
             }}
             className="bg-red-500 px-3 py-1 rounded text-sm"
