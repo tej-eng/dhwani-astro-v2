@@ -602,7 +602,7 @@ const UserChat = ({
 
       setTimeout(() => {
         router.push("/chat-with-astrologer");
-      }, 4000);
+      }, 10000);
     });
 
     //  User Disconnected
