@@ -183,18 +183,18 @@ const UserChat = ({
   useEffect(() => {
     if (!room_Id) return;
 
-    const chatSession = {
-      room_Id,
-      astroid,
-      user_Id,
-      astro_Name,
-      astro_Image,
-      timeLeft,
-      chatEnded,
-    };
+    // const chatSession = {
+    //   room_Id,
+    //   astroid,
+    //   user_Id,
+    //   astro_Name,
+    //   astro_Image,
+    //   timeLeft,
+    //   chatEnded,
+    // };
     //debugger;
-    localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
-    localStorage.setItem("chatActive", "true");
+   // localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
+    //localStorage.setItem("chatActive", "true");
   }, [room_Id, timeLeft, chatEnded]);
 
   useEffect(() => {
