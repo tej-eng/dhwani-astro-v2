@@ -51,6 +51,7 @@ const ChatRequestCard = ({
       console.log("Chat already active or completed, showing waiting popup");
       setShowwaitingpopup(false);
     } else {
+      console.log("No active chat, showing waiting popup");
       setShowwaitingpopup(true);
     }
   }, [room_Id]);
