@@ -147,14 +147,22 @@ const ChatRequestCard = ({
         localStorage.removeItem(key)
       );
 
+
+      //   room_Id,
+    //   astroid,
+    //   user_Id,
+    //   astro_Name,
+    //   astro_Image,
+    //   timeLeft,
+    //   chatEnded,
       const chatSession = {
-      room_Id,
-      astroid,
-      user_Id,
-      astro_Name,
-      astro_Image,
-      timeLeft,
-      chatEnded,
+       room_Id:room_Id,
+       astro_Name:astro_Name,
+       user_Id:user_Id,
+       astro_Image:astroimage,
+       astroid:astro_id,
+       timeLeft:chat_time,
+       chatEnded:false,
     };
 
       localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
