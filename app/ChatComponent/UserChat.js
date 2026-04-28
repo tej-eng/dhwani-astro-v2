@@ -440,7 +440,7 @@ const UserChat = ({
 
     //chatEndedRef.current = true;
 
-    //setChatEnded(true);
+    setChatEnded(true);
 
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
     localStorage.removeItem(`chatJoined_${room_Id}`);
