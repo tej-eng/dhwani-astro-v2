@@ -169,6 +169,7 @@ const UserChat = ({
     const parsed = JSON.parse(savedSession);
 
     if (parsed.room_Id === room_Id && parsed.chatEnded) {
+      console.log("Chat already marked as ended in localStorage");
       chatEndedRef.current = true;
       setChatEnded(true);
     }
@@ -439,7 +440,7 @@ const UserChat = ({
 
     //chatEndedRef.current = true;
 
-    setChatEnded(true);
+    //setChatEnded(true);
 
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
     localStorage.removeItem(`chatJoined_${room_Id}`);
