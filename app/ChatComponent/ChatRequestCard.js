@@ -171,7 +171,7 @@ const ChatRequestCard = ({
         setShowwaitingpopup(false);
         setTimeLeft(chat_time * 60);
       }
-      startTimer(newTime);
+      startTimer(chat_time * 60);
     };
 
     const handleReject = (data) => {
