@@ -445,7 +445,7 @@ const handleMessageChange = (e) => {
 
   const emitChatCompleted = () => {
   if (chatEndedRef.current) return;
-
+   debugger;
   chatEndedRef.current = true;
 
   setChatEnded(true);
