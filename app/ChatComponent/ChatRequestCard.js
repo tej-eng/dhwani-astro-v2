@@ -143,31 +143,12 @@ const ChatRequestCard = ({
     const handleAccepted = (data) => {
       if (data.roomid !== room_Id) return;
 
-["chatActive", "chat_request", "activeChatSession"].forEach((key) =>
+      console.log("Chat accepted:", data);
+
+      ["chatActive", "chat_request", "activeChatSession"].forEach((key) =>
         localStorage.removeItem(key)
       );
 
-
-      //   room_Id,
-    //   astroid,
-    //   user_Id,
-    //   astro_Name,
-    //   astro_Image,
-    //   timeLeft,
-    //   chatEnded,
-      const chatSession = {
-       room_Id:room_Id,
-       astro_Name:astro_Name,
-       user_Id:user_Id,
-       astro_Image:astroimage,
-       astroid:astro_id,
-       timeLeft:chat_time,
-       chatEnded:false,
-    };
-
-      localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
-      localStorage.setItem("chatActive", "true");
-      console.log("Chat accepted:", data);
       localStorage.setItem("activeChatRoom", room_Id);
       localStorage.removeItem(`chatCompleted_${room_Id}`);
 
