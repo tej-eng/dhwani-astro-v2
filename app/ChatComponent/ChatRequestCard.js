@@ -58,35 +58,35 @@ const ChatRequestCard = ({
   // TIMER START (BLOCK WHEN NOT NEEDED)
   // =========================================================
   useEffect(() => {
-    if (!socket) return;
+  if (!socket) return;
 
-    //  DO NOT START TIMER
-    if (isChatActive || isCompleted) {
-      console.log(" Timer blocked");
-      return;
-    }
+  if (isChatActive || isCompleted) return;
 
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
+  startTimer(60);
 
-    setTimeLeft(60);
+  return () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+}, [room_Id, socket]);
 
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const startTimer = (seconds) => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+  }
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [room_Id, socket]);
+  setTimeLeft(seconds);
+
+  timerRef.current = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+};
 
   // =========================================================
   //  TIMEOUT HANDLER (ONLY ONCE)
@@ -166,6 +166,7 @@ const ChatRequestCard = ({
         setShowwaitingpopup(false);
         setTimeLeft(chat_time * 60);
       }
+      startTimer(newTime);
     };
 
     const handleReject = (data) => {
