@@ -86,10 +86,10 @@ const UserChat = ({
   const dispatch = useDispatch();
   const { socket, connectSocket } = useContext(SocketContext);
   useEffect(() => {
-  if (!socket) {
-    connectSocket();
-  }
-}, [socket]);
+    if (!socket) {
+      connectSocket();
+    }
+  }, [socket]);
 
   const { data: userRes, loading: userLoading } = useQuery(GET_USER_BY_ID, {
     variables: { id: user_Id },
@@ -103,8 +103,8 @@ const UserChat = ({
       skip: !userIntakeId,
     },
   );
-   const saved = localStorage.getItem("activeChatSession");
-   if(saved){
+  const saved = localStorage.getItem("activeChatSession");
+  if (saved) {
     const parsed = JSON.parse(saved);
     chattime = parsed.timeLeft / 60;
     room_Id = parsed.room_Id;
@@ -113,7 +113,7 @@ const UserChat = ({
     user_Id = parsed.user_Id;
     astroid = parsed.astroid;
     astro_price = parsed.astro_price;
-   }
+  }
   const { data: rechargeData, loading: rechargePackLoading } =
     useQuery(GET_RECHARGE_PACKS);
 
@@ -122,18 +122,18 @@ const UserChat = ({
   const getintake = intakeRes?.getIntakeById;
 
   // ================= STATES =================
-   const WELCOME_MESSAGE = {
-  sender: "Astrologer",
-  message:
-    "Hey there! Welcome back 😊 Our consultant is reviewing your chat...",
-  time: new Date().toISOString(),
-};
+  const WELCOME_MESSAGE = {
+    sender: "Astrologer",
+    message:
+      "Hey there! Welcome back 😊 Our consultant is reviewing your chat...",
+    time: new Date().toISOString(),
+  };
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   //debugger;
   const [typingStatus, setTypingStatus] = useState("");
   const [timeLeft, setTimeLeft] = useState((chattime || 0) * 60);
- // const [timeLeft, setTimeLeft] = useState(5 * 60);
+  // const [timeLeft, setTimeLeft] = useState(5 * 60);
 
   const [showPopup, setShowPopup] = useState(false);
   const [leaveMessage, setLeaveMessage] = useState("");
@@ -158,61 +158,58 @@ const UserChat = ({
 
   const intervalRef = useRef(null);
   const typingTimeoutRef = useRef(null);
-const JOIN_KEY = `chatJoined_${room_Id}`;
-const END_KEY = `chatCompleted_${room_Id}`;
+  const JOIN_KEY = `chatJoined_${room_Id}`;
+  const END_KEY = `chatCompleted_${room_Id}`;
   useEffect(() => {
-  if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
-  const savedSession = localStorage.getItem("activeChatSession");
-  if (!savedSession) return;
+    const savedSession = localStorage.getItem("activeChatSession");
+    if (!savedSession) return;
 
-  const parsed = JSON.parse(savedSession);
+    const parsed = JSON.parse(savedSession);
 
-  if (parsed.room_Id === room_Id && parsed.chatEnded) {
-    chatEndedRef.current = true;
-    setChatEnded(true);
-  }
-}, [room_Id]);
+    if (parsed.room_Id === room_Id && parsed.chatEnded) {
+      chatEndedRef.current = true;
+      setChatEnded(true);
+    }
+  }, [room_Id]);
 
-// useEffect(() => {
-//   if (!room_Id) return;
+  // useEffect(() => {
+  //   if (!room_Id) return;
 
-//   localStorage.setItem("chatActive", "true");
-// }, [room_Id]);
+  //   localStorage.setItem("chatActive", "true");
+  // }, [room_Id]);
 
   useEffect(() => {
-  if (!room_Id) return;
+    if (!room_Id) return;
 
-  const chatSession = {
-    room_Id,
-    astroid,
-    user_Id,
-    astro_Name,
-    astro_Image,
-    timeLeft,
-    chatEnded,
-  };
-  //debugger;
-  localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
-  localStorage.setItem("chatActive", "true");
-}, [room_Id, timeLeft, chatEnded]);
-
+    const chatSession = {
+      room_Id,
+      astroid,
+      user_Id,
+      astro_Name,
+      astro_Image,
+      timeLeft,
+      chatEnded,
+    };
+    //debugger;
+    localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
+    localStorage.setItem("chatActive", "true");
+  }, [room_Id, timeLeft, chatEnded]);
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         if (!room_Id) return;
 
-        const res = await fetch(
-          "https://dhwaniastro.com/userAuth/graphql",
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              query: `
+        const res = await fetch("https://dhwaniastro.com/userAuth/graphql", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
                 query GetChatMessages($roomId: String!) {
                   getChatMessages(roomId: $roomId) {
                     msg_id
@@ -224,39 +221,37 @@ const END_KEY = `chatCompleted_${room_Id}`;
                   }
                 }
               `,
-              variables: {
-                roomId: room_Id,
-              },
-            }),
-          }
-        );
+            variables: {
+              roomId: room_Id,
+            },
+          }),
+        });
 
         const result = await res.json();
-   const isReload =
-  performance.getEntriesByType("navigation")[0]?.type === "reload";
+        const isReload =
+          performance.getEntriesByType("navigation")[0]?.type === "reload";
 
-if (result?.data?.getChatMessages?.length > 0) {
-  const history = result.data.getChatMessages;
+        if (result?.data?.getChatMessages?.length > 0) {
+          const history = result.data.getChatMessages;
 
-  if (isReload) {
-    setMessages((prev) => {
-      // prevent duplicate welcome message
-      const alreadyHasWelcome = prev.some(
-        (msg) => msg.message === WELCOME_MESSAGE.message
-      );
+          if (isReload) {
+            setMessages((prev) => {
+              // prevent duplicate welcome message
+              const alreadyHasWelcome = prev.some(
+                (msg) => msg.message === WELCOME_MESSAGE.message,
+              );
 
-      return alreadyHasWelcome
-        ? history
-        : [WELCOME_MESSAGE, ...history];
-    });
-  } else {
-    setMessages(history);
-  }
-} else {
-  // no history → show welcome message
-  setMessages([WELCOME_MESSAGE]);
-}
-
+              return alreadyHasWelcome
+                ? history
+                : [WELCOME_MESSAGE, ...history];
+            });
+          } else {
+            setMessages(history);
+          }
+        } else {
+          // no history → show welcome message
+          setMessages([WELCOME_MESSAGE]);
+        }
       } catch (err) {
         console.error("Fetch messages error:", err);
       }
@@ -270,10 +265,8 @@ if (result?.data?.getChatMessages?.length > 0) {
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
-
   // Get user from localStorage safely (client-side only)
   useEffect(() => {
-      
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user");
       setUser(storedUser ? JSON.parse(storedUser) : {});
@@ -282,40 +275,40 @@ if (result?.data?.getChatMessages?.length > 0) {
 
   const handleImageChange = (e) => {
     console.log("File input changed");
-  const file = e.target.files[0];
-  console.log("Selected file:aaaaaaaaaaaaaaaaa", file);
-  if (!file) return;
+    const file = e.target.files[0];
+    console.log("Selected file:aaaaaaaaaaaaaaaaa", file);
+    if (!file) return;
 
-  if (!file.type.startsWith("image/")) {
-    console.log("Selected file is not an image",file.type);
-    toast.error("Only images allowed");
-    return;
-  }
+    if (!file.type.startsWith("image/")) {
+      console.log("Selected file is not an image", file.type);
+      toast.error("Only images allowed");
+      return;
+    }
 
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    console.log("Image preview generated");
-    setImagePreview(reader.result);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      console.log("Image preview generated");
+      setImagePreview(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+    console.log("Selected file:", file);
+    setImageFile(file);
   };
+  const uploadToServer = async (file) => {
+    try {
+      console.log("Selected file:", imageFile);
+      console.log("Is File instance:", imageFile instanceof File);
+      const res = await uploadImage({
+        variables: { file },
+      });
 
-  reader.readAsDataURL(file);
-  console.log("Selected file:", file);
-  setImageFile(file);
-};
-const uploadToServer = async (file) => {
-  try {
-    console.log("Selected file:", imageFile);
-    console.log("Is File instance:", imageFile instanceof File);
-    const res = await uploadImage({
-      variables: { file },
-    });
-
-    return res.data.uploadImage.url;
-  } catch (err) {
-    toast.error("Upload failed");
-    return null;
-  }
-};
+      return res.data.uploadImage.url;
+    } catch (err) {
+      toast.error("Upload failed");
+      return null;
+    }
+  };
   const customer_recharge = () => {
     if (!socket) return;
     socket.emit("customer_recharge", { room_id: room_Id });
@@ -415,158 +408,156 @@ const uploadToServer = async (file) => {
     }
   };
 
-const handleMessageChange = (e) => {
-  const value = e.target.value;
-  setMessage(value);
+  const handleMessageChange = (e) => {
+    const value = e.target.value;
+    setMessage(value);
 
-  if (!socket) return;
+    if (!socket) return;
 
-  // Emit typing = true
-  socket.emit("typing", {
-    room_id: room_Id,
-    typing: true,
-    user_name: user?.name || "User",
-  });
-
-  // Clear previous timeout
-  if (typingTimeoutRef.current) {
-    clearTimeout(typingTimeoutRef.current);
-  }
-
-  // Emit typing = false after 2 sec idle
-  typingTimeoutRef.current = setTimeout(() => {
+    // Emit typing = true
     socket.emit("typing", {
       room_id: room_Id,
-      typing: false,
+      typing: true,
       user_name: user?.name || "User",
     });
-  }, 2000);
-};
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Emit typing = false after 2 sec idle
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("typing", {
+        room_id: room_Id,
+        typing: false,
+        user_name: user?.name || "User",
+      });
+    }, 2000);
+  };
 
   const emitChatCompleted = () => {
-  if (chatEndedRef.current) return;
-  
-  chatEndedRef.current = true;
+    if (chatEndedRef.current) return;
 
-  setChatEnded(true);
+    chatEndedRef.current = true;
 
-  localStorage.setItem(`chatCompleted_${room_Id}`, "true");
-  localStorage.removeItem(`chatJoined_${room_Id}`);
+    setChatEnded(true);
 
-  ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
-    localStorage.removeItem(key);
-  });
+    localStorage.setItem(`chatCompleted_${room_Id}`, "true");
+    localStorage.removeItem(`chatJoined_${room_Id}`);
 
-  if (!socket) return;
-
-  socket.emit("chatCompleted", {
-    room_id: room_Id,
-    astroId: astroid,
-    userId: user_Id,
-  });
-
-  socket.emit("leave_room", { room_id: room_Id });
-};
-
-useEffect(() => {
-  if (!socket || !room_Id || !user_Id) return;
-
-  const isEnded =
-    localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
-
-  if (isEnded) {
-    console.log("Chat already ended → skip join");
-    return;
-  }
-
-  const alreadyJoined =
-    localStorage.getItem(`chatJoined_${room_Id}`) === "true";
-
-  const isReload =
-    performance.getEntriesByType("navigation")[0]?.type === "reload";
-
-  //  First time join
-  if (!alreadyJoined) {
-    console.log("First join");
-
-    socket.emit("joinChat", {
-      username: "customer",
-      room_id: room_Id,
-      joinpersonid: user_Id,
+    ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+      console.log("Removing localStorage key:", key);
+      localStorage.removeItem(key);
     });
 
-    localStorage.setItem(`chatJoined_${room_Id}`, "true");
-    return;
-  }
+    if (!socket) return;
 
-  //  Refresh → allow rejoin
-  if (isReload) {
-    console.log("Reload → rejoining");
-
-    socket.emit("joinChat", {
-      username: "customer",
+    socket.emit("chatCompleted", {
       room_id: room_Id,
-      joinpersonid: user_Id,
+      astroId: astroid,
+      userId: user_Id,
     });
-  }
-}, [socket, room_Id, user_Id]);
-useEffect(() => {
-  if (!socket || !room_Id || !user_Id) return;
 
-  const handleReconnect = () => {
-    const isEnded =
-      localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
+    socket.emit("leave_room", { room_id: room_Id });
+  };
+
+  useEffect(() => {
+    if (!socket || !room_Id || !user_Id) return;
+
+    const isEnded = localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
     if (isEnded) {
-      console.log("Reconnect blocked → chat ended");
+      console.log("Chat already ended → skip join");
       return;
     }
 
-    console.log("Reconnect → safe rejoin");
+    const alreadyJoined =
+      localStorage.getItem(`chatJoined_${room_Id}`) === "true";
 
-    socket.emit("joinChat", {
-      username: "customer",
-      room_id: room_Id,
-      joinpersonid: user_Id,
-    });
-  };
+    const isReload =
+      performance.getEntriesByType("navigation")[0]?.type === "reload";
 
-  socket.on("connect", handleReconnect);
+    //  First time join
+    if (!alreadyJoined) {
+      console.log("First join");
 
-  return () => {
-    socket.off("connect", handleReconnect);
-  };
-}, [socket, room_Id, user_Id]);
+      socket.emit("joinChat", {
+        username: "customer",
+        room_id: room_Id,
+        joinpersonid: user_Id,
+      });
 
-useEffect(() => {
-  hasJoinedRef.current = false;
-}, [room_Id]);
+      localStorage.setItem(`chatJoined_${room_Id}`, "true");
+      return;
+    }
+
+    //  Refresh → allow rejoin
+    if (isReload) {
+      console.log("Reload → rejoining");
+
+      socket.emit("joinChat", {
+        username: "customer",
+        room_id: room_Id,
+        joinpersonid: user_Id,
+      });
+    }
+  }, [socket, room_Id, user_Id]);
+  useEffect(() => {
+    if (!socket || !room_Id || !user_Id) return;
+
+    const handleReconnect = () => {
+      const isEnded =
+        localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
+
+      if (isEnded) {
+        console.log("Reconnect blocked → chat ended");
+        return;
+      }
+
+      console.log("Reconnect → safe rejoin");
+
+      socket.emit("joinChat", {
+        username: "customer",
+        room_id: room_Id,
+        joinpersonid: user_Id,
+      });
+    };
+
+    socket.on("connect", handleReconnect);
+
+    return () => {
+      socket.off("connect", handleReconnect);
+    };
+  }, [socket, room_Id, user_Id]);
 
   useEffect(() => {
-      if (!socket) return;
+    hasJoinedRef.current = false;
+  }, [room_Id]);
 
-  socket.on("receive_message", (data) => {
-  setMessages((prev) => {
-    //  prevent duplicate
-    const alreadyExists = prev.some(
-      (msg) => msg.msg_id === data.msg_id
-    );
+  useEffect(() => {
+    if (!socket) return;
 
-    if (alreadyExists) return prev;
+    socket.on("receive_message", (data) => {
+      setMessages((prev) => {
+        //  prevent duplicate
+        const alreadyExists = prev.some((msg) => msg.msg_id === data.msg_id);
 
-    return [
-      ...prev,
-      {
-        msg_id: data.msg_id,
-        sender: data.sender,
-        message: data.message,
-        image: data.image || null,
-        replyTo: data.replyTo || null,
-        time: data.time,
-      },
-    ];
-  });
-});
+        if (alreadyExists) return prev;
+
+        return [
+          ...prev,
+          {
+            msg_id: data.msg_id,
+            sender: data.sender,
+            message: data.message,
+            image: data.image || null,
+            replyTo: data.replyTo || null,
+            time: data.time,
+          },
+        ];
+      });
+    });
 
     socket.on("typing", (data) => {
       setTypingStatus(data.typing ? `${data.user_name} typing...` : "");
@@ -581,38 +572,38 @@ useEffect(() => {
       if (data.roomId === room_Id) {
         localStorage.removeItem(`chatJoined_${room_Id}`);
         ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
-       localStorage.removeItem(key);
-       });
+          localStorage.removeItem(key);
+        });
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
-         setTimeout(() => {
-    router.push("/chat-with-astrologer");
-  }, 4000);
-// const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
+        setTimeout(() => {
+          router.push("/chat-with-astrologer");
+        }, 4000);
+        // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
-//         setTimeout(() => {
-//           if (!isReload) {
-//           router.push("/");
-//          }
-//         }, 3000);
+        //         setTimeout(() => {
+        //           if (!isReload) {
+        //           router.push("/");
+        //          }
+        //         }, 3000);
       }
     });
 
     //  Completed Chat
     socket.on("chatCompleted", (data) => {
-  if (data.roomId !== room_Id) return;
+      if (data.roomId !== room_Id) return;
 
-  if (chatEndedRef.current) return; //  prevent duplicate
+      if (chatEndedRef.current) return; //  prevent duplicate
 
-  chatEndedRef.current = true;
+      chatEndedRef.current = true;
 
-  setLeaveMessage("Chat completed successfully");
-  setShowReviewPopup(true);
+      setLeaveMessage("Chat completed successfully");
+      setShowReviewPopup(true);
 
-  setTimeout(() => {
-    router.push("/chat-with-astrologer");
-  }, 4000);
-});
+      setTimeout(() => {
+        router.push("/chat-with-astrologer");
+      }, 4000);
+    });
 
     //  User Disconnected
     socket.on("user_disconnected", () => {
@@ -630,9 +621,9 @@ useEffect(() => {
       socket.off("leave_chat");
       socket.off("chatCompleted");
       socket.off("user_disconnected");
-       if (typingTimeoutRef.current) {
-    clearTimeout(typingTimeoutRef.current);
-  }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
     };
   }, [socket, room_Id, user_Id]);
 
@@ -671,123 +662,121 @@ useEffect(() => {
 
   // ================= SEND MESSAGE =================
 
- const sendMessage = async () => {
-  if (!socket || !socket.connected) {
-  toast.error("Connecting... please wait");
-  return;
-}
-  if (!message.trim() && !imageFile) return;
+  const sendMessage = async () => {
+    if (!socket || !socket.connected) {
+      toast.error("Connecting... please wait");
+      return;
+    }
+    if (!message.trim() && !imageFile) return;
 
-  socket.emit("typing", {
-    room_id: room_Id,
-    typing: false,
-    user_name: user?.name || "User",
-  });
+    socket.emit("typing", {
+      room_id: room_Id,
+      typing: false,
+      user_name: user?.name || "User",
+    });
 
-  if (typingTimeoutRef.current) {
-    clearTimeout(typingTimeoutRef.current);
-  }
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
 
-  const msg_id = crypto.randomUUID();
+    const msg_id = crypto.randomUUID();
 
-  //  USE PREVIEW INSTANTLY
-  const tempImage = imagePreview;
+    //  USE PREVIEW INSTANTLY
+    const tempImage = imagePreview;
 
-  const newMessage = {
-    room_id: room_Id,
-    msg_id,
-    sender_id: user?.id,
-    received_id: astroid,
-    sender: "user",
-    message: message.trim(),
-    image: tempImage, //  show instantly
-    replyTo: replyTo
-      ? {
-          sender: replyTo.sender,
-          message: replyTo.message,
-          image: replyTo.image || null,
-        }
-      : null,
-    time: new Date().toISOString(),
+    const newMessage = {
+      room_id: room_Id,
+      msg_id,
+      sender_id: user?.id,
+      received_id: astroid,
+      sender: "user",
+      message: message.trim(),
+      image: tempImage, //  show instantly
+      replyTo: replyTo
+        ? {
+            sender: replyTo.sender,
+            message: replyTo.message,
+            image: replyTo.image || null,
+          }
+        : null,
+      time: new Date().toISOString(),
+    };
+
+    //SHOW IN UI IMMEDIATELY
+    setMessages((prev) => [...prev, newMessage]);
+
+    // reset input instantly
+    setMessage("");
+    setImageFile(null);
+    setImagePreview(null);
+    setReplyTo(null);
+
+    //  Upload in background
+    let finalImageUrl = null;
+
+    if (imageFile) {
+      finalImageUrl = await uploadToServer(imageFile);
+    }
+
+    //  SEND FINAL MESSAGE WITH REAL URL
+    socket.emit("send_message", {
+      ...newMessage,
+      image: finalImageUrl,
+    });
+
+    //  OPTIONAL: replace preview with real URL
+    if (finalImageUrl) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.msg_id === msg_id ? { ...msg, image: finalImageUrl } : msg,
+        ),
+      );
+    }
   };
-
-  //SHOW IN UI IMMEDIATELY
-  setMessages((prev) => [...prev, newMessage]);
-
-  // reset input instantly
-  setMessage("");
-  setImageFile(null);
-  setImagePreview(null);
-  setReplyTo(null);
-
-  //  Upload in background
-  let finalImageUrl = null;
-
-  if (imageFile) {
-    finalImageUrl = await uploadToServer(imageFile);
-  }
-
-  //  SEND FINAL MESSAGE WITH REAL URL
-  socket.emit("send_message", {
-    ...newMessage,
-    image: finalImageUrl,
-  });
-
-  //  OPTIONAL: replace preview with real URL
-  if (finalImageUrl) {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.msg_id === msg_id
-          ? { ...msg, image: finalImageUrl }
-          : msg
-      )
-    );
-  }
-};
 
   // ================= REVIEW =================
 
   const handleSubmitReview = async () => {
-  if (chatEndedRef.current) {
-    console.log("Review already submitted blocked");
-    return;
-  }
+    if (chatEndedRef.current) {
+      console.log("Review already submitted blocked");
+      return;
+    }
 
-  try {
-    chatEndedRef.current = true; 
+    try {
+      chatEndedRef.current = true;
 
-   socket.emit("chatCompleted", {
-    room_id: room_Id,
-    astroId: astroid,
-    userId: user_Id,
-  });
+      // socket.emit("chatCompleted", {
+      //   room_id: room_Id,
+      //   astroId: astroid,
+      //   userId: user_Id,
+      // });
 
-    await createReview({
-      variables: {
-        input: {
-          astro_id: String(astroid),
-          review_id: String(room_Id),
-          star: rating,
-          comment: reviewComment,
-          user_name: getintake?.name || "",
-          astro_name: astro_Name,
+      await createReview({
+        variables: {
+          input: {
+            astro_id: String(astroid),
+            review_id: String(room_Id),
+            star: rating,
+            comment: reviewComment,
+            user_name: getintake?.name || "",
+            astro_name: astro_Name,
+          },
         },
-      },
-    });
+      });
 
-    toast.success("Review submitted successfully");
+      toast.success("Review submitted successfully");
 
-    setShowReviewPopup(false);
-    dispatch(clearActiveRequest());
+      setShowReviewPopup(false);
+      dispatch(clearActiveRequest());
 
-    setTimeout(() => {
-      router.push("/chat-with-astrologer");
-    }, 100);
-  } catch (error) {
-    console.error("Review error:", error);
-    toast.error("Failed to submit review");
-  }
-};
+      setTimeout(() => {
+        router.push("/chat-with-astrologer");
+      }, 100);
+    } catch (error) {
+      console.error("Review error:", error);
+      toast.error("Failed to submit review");
+    }
+  };
 
   const isLoading = userLoading || intakeLoading;
 
@@ -857,140 +846,137 @@ useEffect(() => {
           )}
         </div>
       )}
-     {/* CHAT */}
-<div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50">
-  {messages.map((msg, i) => (
-    <div
-      key={i}
-      onMouseEnter={() => setHoveredIndex(i)}
-      onMouseLeave={() => setHoveredIndex(null)}
-      className={`flex ${
-        msg.sender === "user" ? "justify-end" : "justify-start"
-      }`}
-    >
-      <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
+      {/* CHAT */}
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50">
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            onMouseEnter={() => setHoveredIndex(i)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={`flex ${
+              msg.sender === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
+              {/*  REPLY CONTEXT */}
+              {msg.replyTo && (
+                <div className="bg-gray-100 border-l-4 border-purple-500 p-2 mb-1 text-xs">
+                  <strong>{msg.replyTo.sender}</strong>:{" "}
+                  {msg.replyTo.message?.slice(0, 40)}
+                  {msg.replyTo.image && (
+                    <img
+                      src={msg.replyTo.image}
+                      className="w-10 h-10 mt-1 rounded"
+                    />
+                  )}
+                </div>
+              )}
 
-        {/*  REPLY CONTEXT */}
-        {msg.replyTo && (
-          <div className="bg-gray-100 border-l-4 border-purple-500 p-2 mb-1 text-xs">
-            <strong>{msg.replyTo.sender}</strong>:{" "}
-            {msg.replyTo.message?.slice(0, 40)}
-            {msg.replyTo.image && (
+              {/* MESSAGE TEXT */}
+              {msg.message && <div>{msg.message}</div>}
+
+              {/* IMAGE DISPLAY */}
+              {msg.image && (
+                <img
+                  src={msg.image}
+                  alt="chat-img"
+                  className="mt-2 w-32 h-32 rounded-lg object-cover"
+                />
+              )}
+
+              {/* TIME */}
+              {msg.time && (
+                <div className="text-[10px] text-gray-400 mt-1 text-right">
+                  {msg.time}
+                </div>
+              )}
+
+              {/*  REPLY BUTTON (hover) */}
+              {hoveredIndex === i && (
+                <button
+                  onClick={() => setReplyTo(msg)}
+                  className="absolute -left-10 top-2 text-xs bg-gray-200 px-2 py-1 rounded"
+                >
+                  Reply
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      {/*  REPLY PREVIEW */}
+      {replyTo && (
+        <div className="px-3 py-2 bg-blue-100 border-l-4 border-blue-500 text-xs flex justify-between items-center">
+          <div>
+            Replying to <b>{replyTo.sender}</b>: {replyTo.message?.slice(0, 40)}
+            {replyTo.image && (
               <img
-                src={msg.replyTo.image}
-                className="w-10 h-10 mt-1 rounded"
+                src={replyTo.image}
+                className="w-8 h-8 inline ml-2 rounded"
               />
             )}
           </div>
-        )}
-
-        {/* MESSAGE TEXT */}
-        {msg.message && <div>{msg.message}</div>}
-
-        {/* IMAGE DISPLAY */}
-        {msg.image && (
-          <img
-            src={msg.image}
-            alt="chat-img"
-            className="mt-2 w-32 h-32 rounded-lg object-cover"
-          />
-        )}
-
-        {/* TIME */}
-        {msg.time && (
-          <div className="text-[10px] text-gray-400 mt-1 text-right">
-            {msg.time}
-          </div>
-        )}
-
-        {/*  REPLY BUTTON (hover) */}
-        {hoveredIndex === i && (
-          <button
-            onClick={() => setReplyTo(msg)}
-            className="absolute -left-10 top-2 text-xs bg-gray-200 px-2 py-1 rounded"
-          >
-            Reply
-          </button>
-        )}
-      </div>
-    </div>
-  ))}
-</div>
-{/*  REPLY PREVIEW */}
-{replyTo && (
-  <div className="px-3 py-2 bg-blue-100 border-l-4 border-blue-500 text-xs flex justify-between items-center">
-    <div>
-      Replying to <b>{replyTo.sender}</b>:{" "}
-      {replyTo.message?.slice(0, 40)}
-      {replyTo.image && (
-        <img src={replyTo.image} className="w-8 h-8 inline ml-2 rounded" />
+          <button onClick={() => setReplyTo(null)}>✖</button>
+        </div>
       )}
-    </div>
-    <button onClick={() => setReplyTo(null)}>✖</button>
-  </div>
-)}
 
-{/*  IMAGE PREVIEW */}
-{imagePreview && (
-  <div className="px-3 py-2 flex items-center gap-2">
-    <img
-      src={imagePreview}
-      className="w-16 h-16 object-cover rounded"
-    />
-    <button
-      onClick={() => {
-        setImagePreview(null);
-        setImageFile(null);
-      }}
-      className="text-red-500"
-    >
-      Remove
-    </button>
-  </div>
-)}
+      {/*  IMAGE PREVIEW */}
+      {imagePreview && (
+        <div className="px-3 py-2 flex items-center gap-2">
+          <img src={imagePreview} className="w-16 h-16 object-cover rounded" />
+          <button
+            onClick={() => {
+              setImagePreview(null);
+              setImageFile(null);
+            }}
+            className="text-red-500"
+          >
+            Remove
+          </button>
+        </div>
+      )}
 
       {/* INPUT */}
-<div className="flex gap-2 p-3 border-t items-center">
+      <div className="flex gap-2 p-3 border-t items-center">
+        {/* FILE INPUT */}
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageChange}
+          className="hidden"
+        />
 
-  {/* FILE INPUT */}
-  <input
-    type="file"
-    accept="image/*"
-    ref={fileInputRef}
-    onChange={handleImageChange}
-    className="hidden"
-  />
+        {/* ATTACH BUTTON */}
+        <button
+          onClick={() => fileInputRef.current.click()}
+          className="text-purple-600"
+        >
+          📎
+        </button>
 
-  {/* ATTACH BUTTON */}
-  <button
-    onClick={() => fileInputRef.current.click()}
-    className="text-purple-600"
-  >
-    📎
-  </button>
+        {/* TEXT INPUT */}
+        <input
+          value={message}
+          onChange={handleMessageChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+          className="flex-1 border px-3 py-2 rounded-full"
+          placeholder="Type message..."
+        />
 
-  {/* TEXT INPUT */}
-  <input
-    value={message}
-    onChange={handleMessageChange}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
-    }}
-    className="flex-1 border px-3 py-2 rounded-full"
-    placeholder="Type message..."
-  />
-
-  {/* SEND BUTTON */}
-  <button
-    onClick={sendMessage}
-    className="bg-purple-700 text-white px-4 rounded-full"
-  >
-    Send
-  </button>
-</div>
+        {/* SEND BUTTON */}
+        <button
+          onClick={sendMessage}
+          className="bg-purple-700 text-white px-4 rounded-full"
+        >
+          Send
+        </button>
+      </div>
 
       {/* POPUPS */}
       {showReviewPopup && (
