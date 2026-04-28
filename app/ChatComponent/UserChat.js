@@ -595,7 +595,7 @@ const UserChat = ({
 
       if (chatEndedRef.current) return; //  prevent duplicate
 
-      chatEndedRef.current = true;
+      //chatEndedRef.current = true;
 
       setLeaveMessage("Chat completed successfully");
       setShowReviewPopup(true);
