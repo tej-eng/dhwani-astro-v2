@@ -169,7 +169,6 @@ const UserChat = ({
     const parsed = JSON.parse(savedSession);
 
     if (parsed.room_Id === room_Id && parsed.chatEnded) {
-      console.log("Chat already marked as ended in localStorage");
       chatEndedRef.current = true;
       setChatEnded(true);
     }
@@ -273,13 +272,10 @@ const UserChat = ({
   }, []);
 
   const handleImageChange = (e) => {
-    console.log("File input changed");
     const file = e.target.files[0];
-    console.log("Selected file:aaaaaaaaaaaaaaaaa", file);
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      console.log("Selected file is not an image", file.type);
       toast.error("Only images allowed");
       return;
     }
@@ -296,8 +292,6 @@ const UserChat = ({
   };
   const uploadToServer = async (file) => {
     try {
-      console.log("Selected file:", imageFile);
-      console.log("Is File instance:", imageFile instanceof File);
       const res = await uploadImage({
         variables: { file },
       });
@@ -319,9 +313,7 @@ const UserChat = ({
   };
 
   const customer_recharge_completed = (due_time) => {
-    console.log("Emitting recharge completed with due_time:", due_time);
     if (!socket) return;
-    console.log("Emitting customer_recharge_completed for room:", room_Id);
     socket.emit("customer_recharge_completed", {
       room_id: room_Id,
       due_time: due_time,

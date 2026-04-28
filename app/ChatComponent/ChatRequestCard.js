@@ -48,15 +48,9 @@ const ChatRequestCard = ({
     const activeChatRoom = localStorage.getItem("activeChatRoom");
 
     if (activeChatRoom || isCompleted) {
-      console.log("Chat already active or completed, showing waiting popup");
       setShowwaitingpopup(false);
     } else {
-      console.log(
-        "No active chat, showing waiting popup111111111111111111",
-        room_Id,
-      );
       if (!!room_Id) {
-        console.log("Valid room_Id, showing waiting popup");
         setShowwaitingpopup(true);
       }
     }
@@ -108,8 +102,6 @@ const ChatRequestCard = ({
     if (isChatActive) return;
     if (isCompleted) return;
     if (!showwaitingpopup) return;
-
-    console.log("⏱ Timer hit 0");
 
     timeoutHandledRef.current = true; //  VERY IMPORTANT
 
