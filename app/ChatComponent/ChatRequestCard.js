@@ -51,13 +51,14 @@ const ChatRequestCard = ({
       console.log("Chat already active or completed, showing waiting popup");
       setShowwaitingpopup(false);
     } else {
-      console.log("No active chat, showing waiting popup111111111111111111",room_Id);
-      if (room_Id !=="undefined")
-      {
-        console.log("Valid room_Id, showing waiting popup2222222222222");
+      console.log(
+        "No active chat, showing waiting popup111111111111111111",
+        room_Id,
+      );
+      if (!!room_Id) {
+        console.log("Valid room_Id, showing waiting popup");
         setShowwaitingpopup(true);
       }
-      
     }
   }, [room_Id]);
 
@@ -65,35 +66,35 @@ const ChatRequestCard = ({
   // TIMER START (BLOCK WHEN NOT NEEDED)
   // =========================================================
   useEffect(() => {
-  if (!socket) return;
+    if (!socket) return;
 
-  if (isChatActive || isCompleted) return;
+    if (isChatActive || isCompleted) return;
 
-  startTimer(60);
+    startTimer(60);
 
-  return () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
-}, [room_Id, socket]);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [room_Id, socket]);
 
   const startTimer = (seconds) => {
-  if (timerRef.current) {
-    clearInterval(timerRef.current);
-  }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
 
-  setTimeLeft(seconds);
+    setTimeLeft(seconds);
 
-  timerRef.current = setInterval(() => {
-    setTimeLeft((prev) => {
-      if (prev <= 1) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
-};
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   // =========================================================
   //  TIMEOUT HANDLER (ONLY ONCE)
@@ -121,10 +122,9 @@ const ChatRequestCard = ({
     });
 
     localStorage.removeItem(`chatJoined_${room_Id}`);
-        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
-       localStorage.removeItem(key);
+    ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+      localStorage.removeItem(key);
     });
-
 
     toast.success("Chat request timed out. Please try again.");
 
@@ -153,7 +153,7 @@ const ChatRequestCard = ({
       console.log("Chat accepted:", data);
 
       ["chatActive", "chat_request", "activeChatSession"].forEach((key) =>
-        localStorage.removeItem(key)
+        localStorage.removeItem(key),
       );
 
       localStorage.setItem("activeChatRoom", room_Id);
@@ -169,7 +169,7 @@ const ChatRequestCard = ({
     const handleQueue = (data) => {
       console.log("Queue updateuuuuuuu:", data);
       setQueueData(data);
-      
+
       if (data.position === 0) {
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
@@ -188,7 +188,7 @@ const ChatRequestCard = ({
       localStorage.setItem(`chatCompleted_${room_Id}`, "true");
 
       ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) =>
-        localStorage.removeItem(key)
+        localStorage.removeItem(key),
       );
 
       setShowQueuePopup(false);
@@ -226,8 +226,8 @@ const ChatRequestCard = ({
       user_id: user_Id,
     });
     localStorage.removeItem(`chatJoined_${room_Id}`);
-        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
-       localStorage.removeItem(key);
+    ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+      localStorage.removeItem(key);
     });
 
     dispatch(clearActiveRequest());
@@ -247,11 +247,9 @@ const ChatRequestCard = ({
   // =========================================================
   return (
     <div className="flex items-center justify-center w-full">
-
       {/* WAITING */}
       {showwaitingpopup && (
         <div className="w-full bg-purple-200 px-3 py-2 rounded-full flex relative">
-
           <Image
             src={`/ds-img/${astroimage}`}
             width={50}
