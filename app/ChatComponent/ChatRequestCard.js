@@ -113,6 +113,12 @@ const ChatRequestCard = ({
       astroid: astro_id,
     });
 
+    localStorage.removeItem(`chatJoined_${room_Id}`);
+        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+       localStorage.removeItem(key);
+    });
+
+
     toast.success("Chat request timed out. Please try again.");
 
     setTimeout(() => {
@@ -211,6 +217,10 @@ const ChatRequestCard = ({
       room_id: room_Id,
       astroid: astro_id,
       user_id: user_Id,
+    });
+    localStorage.removeItem(`chatJoined_${room_Id}`);
+        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+       localStorage.removeItem(key);
     });
 
     dispatch(clearActiveRequest());

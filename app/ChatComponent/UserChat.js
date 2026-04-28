@@ -578,8 +578,11 @@ useEffect(() => {
     // });
     //  Leave Chat
     socket.on("leave_chat", (data) => {
-      debugger;
       if (data.roomId === room_Id) {
+        localStorage.removeItem(`chatJoined_${room_Id}`);
+        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+       localStorage.removeItem(key);
+       });
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
          setTimeout(() => {
