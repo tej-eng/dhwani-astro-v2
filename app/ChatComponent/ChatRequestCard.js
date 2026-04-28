@@ -27,11 +27,11 @@ const ChatRequestCard = ({
 
   const timerRef = useRef(null);
 
-  // ✅ Prevent repeated timeout firing
+  //  Prevent repeated timeout firing
   const timeoutHandledRef = useRef(false);
 
   // =========================================================
-  // ✅ LOCAL STORAGE FLAGS
+  //  LOCAL STORAGE FLAGS
   // =========================================================
   const isChatActive =
     typeof window !== "undefined" &&
@@ -42,7 +42,7 @@ const ChatRequestCard = ({
     localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
   // =========================================================
-  // ✅ INITIAL UI STATE
+  //  INITIAL UI STATE
   // =========================================================
   useEffect(() => {
     const activeChatRoom = localStorage.getItem("activeChatRoom");
@@ -55,14 +55,14 @@ const ChatRequestCard = ({
   }, [room_Id]);
 
   // =========================================================
-  // ✅ TIMER START (BLOCK WHEN NOT NEEDED)
+  // TIMER START (BLOCK WHEN NOT NEEDED)
   // =========================================================
   useEffect(() => {
     if (!socket) return;
 
-    // 🚫 DO NOT START TIMER
+    //  DO NOT START TIMER
     if (isChatActive || isCompleted) {
-      console.log("⛔ Timer blocked");
+      console.log(" Timer blocked");
       return;
     }
 
@@ -89,13 +89,13 @@ const ChatRequestCard = ({
   }, [room_Id, socket]);
 
   // =========================================================
-  // ✅ TIMEOUT HANDLER (ONLY ONCE)
+  //  TIMEOUT HANDLER (ONLY ONCE)
   // =========================================================
   useEffect(() => {
     if (timeLeft !== 0) return;
     if (!socket) return;
 
-    // 🚫 BLOCK CONDITIONS
+    //  BLOCK CONDITIONS
     if (timeoutHandledRef.current) return;
     if (isChatActive) return;
     if (isCompleted) return;
@@ -103,7 +103,7 @@ const ChatRequestCard = ({
 
     console.log("⏱ Timer hit 0");
 
-    timeoutHandledRef.current = true; // ✅ VERY IMPORTANT
+    timeoutHandledRef.current = true; //  VERY IMPORTANT
 
     // mark completed BEFORE doing anything
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
@@ -159,7 +159,7 @@ const ChatRequestCard = ({
       if (data.position === 0) {
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
-        setTimeLeft(60);
+        setTimeLeft(chat_time * 60);
       } else {
         setShowQueuePopup(true);
         setShowwaitingpopup(false);
