@@ -12,6 +12,7 @@ export default function AstrologerRegistration() {
     dob: "",
     gender: "",
     languages: [],
+    problems: [],
     skills: [],
     experience: "",
     email: "",
@@ -57,6 +58,8 @@ export default function AstrologerRegistration() {
     if (!form.dob) newErrors.dob = "DOB is required";
     if (!form.gender) newErrors.gender = "Gender is required";
     if (form.languages.length === 0) newErrors.languages = "Select at least one language";
+    if (form.problems.length === 0) newErrors.problems = "Select at least one problems";
+
     if (form.skills.length === 0) newErrors.skills = "Select at least one skill";
     if (!form.experience) newErrors.experience = "Experience required";
     if (!form.phone) newErrors.phone = "Phone required";
@@ -94,6 +97,7 @@ export default function AstrologerRegistration() {
             dob: new Date(form.dob).toISOString(),
             gender: form.gender,
             languages: form.languages,
+            problems: form.problems,
             skills: form.skills,
             experience: Number(form.experience),
             about: form.about,
@@ -112,6 +116,7 @@ export default function AstrologerRegistration() {
         dob: "",
         gender: "",
         languages: [],
+        problems: [],
         skills: [],
         experience: "",
         email: "",
@@ -137,30 +142,11 @@ export default function AstrologerRegistration() {
           Astrologer Registration
         </h2>
 
-        {/* Profile Upload */}
-        <div className="flex flex-col items-center mb-6">
-          <label className="cursor-pointer">
-            <div className="w-28 h-28 rounded-full bg-gray-100 overflow-hidden border-2 border-dashed flex items-center justify-center">
-              {preview ? (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-sm text-gray-400">Upload</span>
-              )}
-            </div>
-            <input type="file" className="hidden" required onChange={handleImage} />
-          </label>
-          <p className="text-xs mt-2 text-gray-500">
-            Profile Pic (.jpg, .png)
-          </p>
-        </div>
 
-        {/* FORM */}
+
+
         <form onSubmit={handleSubmit} className="space-y-6 text-black">
-          {/* Name + DOB */}
+
           <div className="grid md:grid-cols-2 gap-4">
             <Input
               label="Name"
@@ -179,51 +165,32 @@ export default function AstrologerRegistration() {
             />
           </div>
 
-          {/* Gender */}
-          <div>
-            <label className="block mb-2 font-medium">
-              Gender <span className="text-red-500">*</span>
-            </label>
-            <div className="flex gap-6">
-              {["MALE", "FEMALE", "OTHER"].map((g) => (
-                <label key={g} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={g} required
-                    checked={form.gender === g}
-                    onChange={handleChange}
-                    className="accent-indigo-500"
-                  />
-                  {g}
-                </label>
-              ))}
-            </div>
-            {errors.gender && (
-              <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
-            )}
-          </div>
-
-          {/* Languages */}
-          <MultiSelect
-            label="Languages"
-            field="languages" required
-            selected={form.languages}
-            options={["English", "Hindi", "Gujarati", "Tamil", "Punjabi"]}
-            handleCheckbox={handleCheckbox}
-            error={errors.languages}
-          />
-
-          {/* Skills + Experience */}
           <div className="grid md:grid-cols-2 gap-4">
-            <MultiSelect
-              label="Skills"
-              field="skills" required
-              selected={form.skills}
-              options={["Vedic", "Tarot", "Numerology", "Vastu"]}
-              handleCheckbox={handleCheckbox}
-              error={errors.skills}
-            />
+
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Gender <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-6">
+                {["MALE", "FEMALE", "OTHER"].map((g) => (
+                  <label key={g} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value={g} required
+                      checked={form.gender === g}
+                      onChange={handleChange}
+                      className="accent-indigo-500"
+                    />
+                    {g}
+                  </label>
+                ))}
+              </div>
+              {errors.gender && (
+                <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+              )}
+            </div>
 
             <Input
               label="Experience (years)"
@@ -234,7 +201,37 @@ export default function AstrologerRegistration() {
             />
           </div>
 
-          {/* Email + Phone */}
+
+
+          <MultiSelect
+            label="Languages"
+            field="languages" required
+            selected={form.languages}
+            options={["English", "Hindi", "Gujarati", "Tamil", "Punjabi"]}
+            handleCheckbox={handleCheckbox}
+            error={errors.languages}
+          />
+
+          <MultiSelect
+            label="Handle Problems "
+            field="problems" required
+            selected={form.problems}
+            options={["Love", "Career", "Finance", "Marriage"]}
+            handleCheckbox={handleCheckbox}
+            error={errors.problems}
+          />
+
+          <MultiSelect
+            label="Skills"
+            field="skills" required
+            selected={form.skills}
+            options={["Vedic", "Tarot", "Numerology", "Vastu"]}
+            handleCheckbox={handleCheckbox}
+            error={errors.skills}
+          />
+
+
+
           <div className="grid md:grid-cols-2 gap-4">
             <Input
               label="Email"
@@ -270,7 +267,7 @@ export default function AstrologerRegistration() {
             />
           </div>
 
-          {/* About */}
+
           <div>
             <label className="block mb-2 font-medium">About Yourself</label>
             <textarea
@@ -282,14 +279,14 @@ export default function AstrologerRegistration() {
             />
           </div>
 
-          {/* Error */}
+
           {error && (
             <p className="text-red-500 text-sm">
               {error.message || "Something went wrong"}
             </p>
           )}
 
-          {/* Button */}
+
           <button
             type="submit"
             disabled={loading}
@@ -306,7 +303,7 @@ export default function AstrologerRegistration() {
   );
 }
 
-/* Input Component */
+
 function Input({ label, name, value, onChange, type = "text", error, required }) {
   return (
     <div>
@@ -326,7 +323,7 @@ function Input({ label, name, value, onChange, type = "text", error, required })
   );
 }
 
-/* MultiSelect */
+
 function MultiSelect({
   label,
   options,
@@ -334,7 +331,7 @@ function MultiSelect({
   selected,
   handleCheckbox,
   error,
-  required 
+  required
 }) {
   return (
     <div>
