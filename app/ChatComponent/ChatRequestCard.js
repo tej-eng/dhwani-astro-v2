@@ -88,7 +88,10 @@ const ChatRequestCard = ({
           clearInterval(timerRef.current);
           console.log("Timer cleared, setting time left to zero66666666666");
           timerRef.current = null;
-          console.log("TimerRef after clearing:777777777777777", timerRef.current);
+          console.log(
+            "TimerRef after clearing:777777777777777",
+            timerRef.current,
+          );
           return 0;
         }
         console.log("Decrementing time left88888888888:", prev - 1);
@@ -278,8 +281,19 @@ const ChatRequestCard = ({
       {/* QUEUE */}
       {!showwaitingpopup && showQueuePopup && (
         <div className="bg-purple-200 px-4 py-2 rounded-full w-full text-black">
-          <p>Position: {queueData?.position}</p>
-          <p>Wait: {formatTime(timeLeft)}</p>
+          <p className="text-sm font-medium">
+            {" "}
+            You're in line! ⏳ Position #{queueData?.position}
+          </p>
+          <p className="text-xs text-gray-600">
+            Estimated wait time: {formatTime(timeLeft)}
+          </p>
+          <button
+            onClick={handleRequestCancel}
+            className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>
