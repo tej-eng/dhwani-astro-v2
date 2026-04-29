@@ -169,11 +169,14 @@ const ChatRequestCard = ({
     };
 
     const handleQueue = (data) => {
-      debugger;
+      //debugger;
       console.log("Queue updateuuuuuuu:", data);
       setQueueData(data);
 
       if (data.position === 0) {
+         console.log("Position is zero, chat should be active now. Datassssssssssssssssss:", data);
+         localStorage.setItem("activeChatRoom", room_Id);
+         localStorage.removeItem(`chatCompleted_${room_Id}`);
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
         console.log("Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:", 60);
