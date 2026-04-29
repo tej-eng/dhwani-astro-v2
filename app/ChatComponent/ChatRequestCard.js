@@ -182,6 +182,7 @@ const ChatRequestCard = ({
         console.log("Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:", 60);
         startTimer(60);
       } else {
+          console.log("Position in queue:", data.position, "Estimated wait time:ccccccccccccccccccccc", data.waitTime);
         setShowQueuePopup(true);
         setShowwaitingpopup(false);
         //setTimeLeft(chat_time * 60);
