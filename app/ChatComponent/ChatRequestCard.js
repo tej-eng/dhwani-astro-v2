@@ -72,17 +72,23 @@ const ChatRequestCard = ({
   }, [room_Id, socket]);
 
   const startTimer = (seconds) => {
+    console.log("Starting timer with seconds:1111111", seconds);
     if (timerRef.current) {
+      console.log("Clearing existing timer22222222222");
       clearInterval(timerRef.current);
     }
-
+    console.log("Setting time left to333333333333333:", seconds);
     setTimeLeft(seconds);
 
     timerRef.current = setInterval(() => {
+      console.log("Timer tick, time left44444444444:", timeLeft);
       setTimeLeft((prev) => {
         if (prev <= 1) {
+          console.log("Timer reached zero, clearing timer55555555555");
           clearInterval(timerRef.current);
+          console.log("Timer cleared, setting time left to zero66666666666");
           timerRef.current = null;
+          console.log("TimerRef after clearing:777777777777777", timerRef.current);
           return 0;
         }
         return prev - 1;
@@ -159,6 +165,7 @@ const ChatRequestCard = ({
     };
 
     const handleQueue = (data) => {
+      debugger;
       console.log("Queue updateuuuuuuu:", data);
       setQueueData(data);
 
