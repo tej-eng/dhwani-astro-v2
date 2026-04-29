@@ -176,6 +176,7 @@ const ChatRequestCard = ({
       if (data.position === 0) {
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
+        console.log("Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:", 60);
         startTimer(60);
       } else {
         setShowQueuePopup(true);
