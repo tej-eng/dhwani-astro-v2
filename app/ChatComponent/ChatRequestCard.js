@@ -96,15 +96,15 @@ const ChatRequestCard = ({
             room_id: room_Id,
             astroid: astro_id,
           });
-          console.log("Emitted autodisconnect event88888888888999999999999999999999999");
-          if(showQueuePopup){
+          console.log("Emitted autodisconnect event88888888888999999999999999999999999",showQueuePopup,showwaitingpopup);
+          //if(showQueuePopup){
             console.log("Hiding queue popup101010101010101010101010101010101010");
             setShowQueuePopup(false);
-          }
-          if(showwaitingpopup){
+          //}
+         // if(showwaitingpopup){
             console.log("Hiding waiting popu99999999999999999");
              setShowwaitingpopup(false);
-          }
+          //}
         
          toast.success("Chat request timed out. Please try again.");
           return 0;
