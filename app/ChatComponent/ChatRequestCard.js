@@ -98,9 +98,11 @@ const ChatRequestCard = ({
           });
           console.log("Emitted autodisconnect event88888888888999999999999999999999999");
           if(showQueuePopup){
+            console.log("Hiding queue popup101010101010101010101010101010101010");
             setShowQueuePopup(false);
           }
           if(showwaitingpopup){
+            console.log("Hiding waiting popu99999999999999999");
              setShowwaitingpopup(false);
           }
         
