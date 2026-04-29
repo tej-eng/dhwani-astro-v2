@@ -96,11 +96,8 @@ const ChatRequestCard = ({
             room_id: room_Id,
             astroid: astro_id,
           });
-          toast.success("The astrologer has rejected your chat request.");
-
-          setTimeout(() => {
-            route.push("/chat-with-astrologer");
-          }, 100);
+          console.log("Emitted autodisconnect event88888888888999999999999999999999999");
+         setShowwaitingpopup(false);
           return 0;
         }
         console.log("Decrementing time left88888888888:", prev - 1);
