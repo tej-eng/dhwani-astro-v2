@@ -98,6 +98,7 @@ const ChatRequestCard = ({
           });
           console.log("Emitted autodisconnect event88888888888999999999999999999999999");
          setShowwaitingpopup(false);
+         toast.success("Chat request timed out. Please try again.");
           return 0;
         }
         console.log("Decrementing time left88888888888:", prev - 1);
@@ -192,7 +193,12 @@ const ChatRequestCard = ({
           "Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:",
           60,
         );
-        startTimer(60);
+        if(data.active){
+          startTimer(chat_time * 60);
+        }else{
+         startTimer(60);
+        }
+        
       } else {
         console.log(
           "Position in queue:",
