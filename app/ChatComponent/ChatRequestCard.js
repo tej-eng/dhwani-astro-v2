@@ -170,7 +170,7 @@ const ChatRequestCard = ({
 
     const handleQueue = (data) => {
       //debugger;
-      console.log("Queue updateuuuuuuu:", data);
+      console.log("Queueupdating code:", data);
       setQueueData(data);
 
       if (data.position === 0) {
