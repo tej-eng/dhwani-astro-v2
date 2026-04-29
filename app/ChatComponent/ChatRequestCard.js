@@ -176,14 +176,15 @@ const ChatRequestCard = ({
       if (data.position === 0) {
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
-        setTimeLeft(chat_time * 60);
+        startTimer(60);
       } else {
         setShowQueuePopup(true);
         setShowwaitingpopup(false);
-        setTimeLeft(chat_time * 60);
+        //setTimeLeft(chat_time * 60);
+        startTimer(data.waitTime);
       }
       console.log("Starting timer for queue update with time:", chat_time * 60);
-      startTimer(data.waitTime);
+      
     };
 
     const handleReject = (data) => {
