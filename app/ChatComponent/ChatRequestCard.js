@@ -277,9 +277,9 @@ const ChatRequestCard = ({
 
       {/* QUEUE */}
       {!showwaitingpopup && showQueuePopup && (
-        <div className="bg-purple-200 px-4 py-2 rounded-full w-full">
+        <div className="bg-purple-200 px-4 py-2 rounded-full w-full text-black">
           <p>Position: {queueData?.position}</p>
-          <p>Wait: {formatTime(queueData?.waitTime || 0)}</p>
+          <p>Wait: {formatTime(timeLeft)}</p>
         </div>
       )}
     </div>
