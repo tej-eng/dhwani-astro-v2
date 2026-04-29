@@ -171,6 +171,7 @@ const ChatRequestCard = ({
         setShowwaitingpopup(false);
         setTimeLeft(chat_time * 60);
       }
+      console.log("Starting timer for queue update with time:", chat_time * 60);
       startTimer(chat_time * 60);
     };
 
