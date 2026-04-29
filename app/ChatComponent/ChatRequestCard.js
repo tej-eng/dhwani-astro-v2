@@ -91,6 +91,7 @@ const ChatRequestCard = ({
           console.log("TimerRef after clearing:777777777777777", timerRef.current);
           return 0;
         }
+        console.log("Decrementing time left88888888888:", prev - 1);
         return prev - 1;
       });
     }, 1000);
