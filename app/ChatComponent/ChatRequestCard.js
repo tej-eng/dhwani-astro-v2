@@ -92,6 +92,15 @@ const ChatRequestCard = ({
             "TimerRef after clearing:777777777777777",
             timerRef.current,
           );
+          socket.emit("autodisconnect", {
+            room_id: room_Id,
+            astroid: astro_id,
+          });
+          toast.success("The astrologer has rejected your chat request.");
+
+          setTimeout(() => {
+            route.push("/chat-with-astrologer");
+          }, 100);
           return 0;
         }
         console.log("Decrementing time left88888888888:", prev - 1);
@@ -174,22 +183,32 @@ const ChatRequestCard = ({
       setQueueData(data);
 
       if (data.position === 0) {
-         console.log("Position is zero, chat should be active now. Datassssssssssssssssss:", data);
-         localStorage.setItem("activeChatRoom", room_Id);
-         localStorage.removeItem(`chatCompleted_${room_Id}`);
+        console.log(
+          "Position is zero, chat should be active now. Datassssssssssssssssss:",
+          data,
+        );
+        localStorage.setItem("activeChatRoom", room_Id);
+        localStorage.removeItem(`chatCompleted_${room_Id}`);
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
-        console.log("Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:", 60);
+        console.log(
+          "Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:",
+          60,
+        );
         startTimer(60);
       } else {
-          console.log("Position in queue:", data.position, "Estimated wait time:ccccccccccccccccccccc", data.waitTime);
+        console.log(
+          "Position in queue:",
+          data.position,
+          "Estimated wait time:ccccccccccccccccccccc",
+          data.waitTime,
+        );
         setShowQueuePopup(true);
         setShowwaitingpopup(false);
         //setTimeLeft(chat_time * 60);
         startTimer(data.waitTime);
       }
       console.log("Starting timer for queue update with time:", chat_time * 60);
-      
     };
 
     const handleReject = (data) => {
