@@ -135,8 +135,9 @@ const ChatRequestCard = ({
     if (!isHydrated) return;
 
     console.log("🟢 INITIAL STATE EFFECT");
-
+   debugger;
     const saved = localStorage.getItem("queue_state");
+    console.log("📦 Checking queue_state for initial state:", saved);
     if (saved) {
       console.log("⛔ Skipping initial state (queue exists)");
       return;
@@ -164,7 +165,7 @@ const ChatRequestCard = ({
   useEffect(() => {
     if (!socket) return;
     if (!isHydrated) return;
-
+    
     const saved = localStorage.getItem("queue_state");
     if (saved) {
       console.log("⛔ Skipping default timer (queue exists)");
