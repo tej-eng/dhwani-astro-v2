@@ -189,31 +189,21 @@ const ChatRequestCard = ({
       setQueueData(data);
 
       if (data.position === 0) {
-        console.log(
-          "Position is zero, chat should be active now. Datassssssssssssssssss:",
-          data,
-        );
+       
         localStorage.setItem("activeChatRoom", room_Id);
         localStorage.removeItem(`chatCompleted_${room_Id}`);
         setShowQueuePopup(false);
         setShowwaitingpopup(true);
-        console.log(
-          "Chat is now active, starting waiting timer with timhhhhhhhhhhhhhhhhhhhe:",
-          60,
-        );
-        if(data.active){
-          startTimer(chat_time * 60);
-        }else{
-         startTimer(60);
-        }
+        startTimer(60);
+       
+        // if(data.active){
+        //   startTimer(chat_time * 60);
+        // }else{
+        //  startTimer(60);
+        // }
         
       } else {
-        console.log(
-          "Position in queue:",
-          data.position,
-          "Estimated wait time:ccccccccccccccccccccc",
-          data.waitTime,
-        );
+        
         setShowQueuePopup(true);
         setShowwaitingpopup(false);
         //setTimeLeft(chat_time * 60);
