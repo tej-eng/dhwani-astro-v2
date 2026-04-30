@@ -309,7 +309,7 @@ const ChatRequestCard = ({
         <div className="bg-purple-200 px-4 py-2 rounded-full w-full text-black">
           <p className="text-sm font-medium">
             {" "}
-            You're in line! ⏳ Position #{queueData?.position}
+            You are in line! ⏳ Position #{queueData?.position}
           </p>
           <p className="text-xs text-gray-600">
             Estimated wait time: {formatTime(timeLeft)}
