@@ -71,49 +71,36 @@ const ChatRequestCard = ({
     };
   }, [room_Id, socket]);
 
-  const startTimer = (seconds) => {
-    console.log("Starting timer with seconds:1111111", seconds);
-    if (timerRef.current) {
-      console.log("Clearing existing timer22222222222");
-      clearInterval(timerRef.current);
-    }
-    console.log("Setting time left to333333333333333:", seconds);
-    setTimeLeft(seconds);
+ const startTimer = (seconds) => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+  }
 
-    timerRef.current = setInterval(() => {
-      console.log("Timer tick, time left44444444444:", timeLeft);
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          console.log("Timer reached zero, clearing timer55555555555");
-          clearInterval(timerRef.current);
-          console.log("Timer cleared, setting time left to zero66666666666");
-          timerRef.current = null;
-          console.log(
-            "TimerRef after clearing:777777777777777",
-            timerRef.current,
-          );
-          socket.emit("autodisconnect", {
-            room_id: room_Id,
-            astroid: astro_id,
-          });
-          console.log("Emitted autodisconnect event88888888888999999999999999999999999",showQueuePopup,showwaitingpopup);
-          //if(showQueuePopup){
-            console.log("Hiding queue popup101010101010101010101010101010101010");
-            setShowQueuePopup(false);
-          //}
-         // if(showwaitingpopup){
-            console.log("Hiding waiting popu99999999999999999");
-             setShowwaitingpopup(false);
-          //}
-        
-         toast.success("Chat request timed out. Please try again.");
-          return 0;
-        }
-        console.log("Decrementing time left88888888888:", prev - 1);
-        return prev - 1;
-      });
-    }, 1000);
-  };
+  setTimeLeft(seconds);
+
+  timerRef.current = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+
+        localStorage.removeItem("queue_state"); // ✅ cleanup
+
+        socket.emit("autodisconnect", {
+          room_id: room_Id,
+          astroid: astro_id,
+        });
+
+        setShowQueuePopup(false);
+        setShowwaitingpopup(false);
+
+        toast.success("Chat request timed out. Please try again.");
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+};
 
   // =========================================================
   //  TIMEOUT HANDLER (ONLY ONCE)
@@ -158,6 +145,36 @@ const ChatRequestCard = ({
     setShowQueuePopup(false);
   }, [room_Id]);
 
+  useEffect(() => {
+  const saved = localStorage.getItem("queue_state");
+
+  if (!saved) return;
+
+  const parsed = JSON.parse(saved);
+
+  const now = Date.now();
+  const remaining = Math.floor((parsed.expiresAt - now) / 1000);
+
+  if (remaining <= 0) {
+    localStorage.removeItem("queue_state");
+    return;
+  }
+
+  console.log("Restoring queue state:", parsed);
+
+  setQueueData(parsed.data);
+
+  if (parsed.type === "waiting") {
+    setShowwaitingpopup(true);
+    setShowQueuePopup(false);
+  } else {
+    setShowQueuePopup(true);
+    setShowwaitingpopup(false);
+  }
+
+  startTimer(remaining);
+}, []);
+
   // =========================================================
   // SOCKET EVENTS
   // =========================================================
@@ -168,6 +185,7 @@ const ChatRequestCard = ({
       if (data.roomid !== room_Id) return;
 
       console.log("Chat accepted:", data);
+      
 
       ["chatActive", "chat_request", "activeChatSession"].forEach((key) =>
         localStorage.removeItem(key),
@@ -179,38 +197,39 @@ const ChatRequestCard = ({
       setShowwaitingpopup(false);
       setShowQueuePopup(false);
       setQueueData(null);
+      localStorage.removeItem("queue_state");
 
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
 
-    const handleQueue = (data) => {
-      //debugger;
-      console.log("Queueupdating code:", data);
-      setQueueData(data);
+   const handleQueue = (data) => {
+  const now = Date.now();
 
-      if (data.position === 0) {
-       
-        localStorage.setItem("activeChatRoom", room_Id);
-        localStorage.removeItem(`chatCompleted_${room_Id}`);
-        setShowQueuePopup(false);
-        setShowwaitingpopup(true);
-        startTimer(60);
-       
-        // if(data.active){
-        //   startTimer(chat_time * 60);
-        // }else{
-        //  startTimer(60);
-        // }
-        
-      } else {
-        
-        setShowQueuePopup(true);
-        setShowwaitingpopup(false);
-        //setTimeLeft(chat_time * 60);
-        startTimer(data.waitTime);
-      }
-      console.log("Starting timer for queue update with time:", chat_time * 60);
-    };
+  let duration = data.position === 0 ? 60 : data.waitTime;
+
+  const stateToStore = {
+    data,
+    type: data.position === 0 ? "waiting" : "queue",
+    expiresAt: now + duration * 1000, // ✅ KEY FIX
+  };
+
+  localStorage.setItem("queue_state", JSON.stringify(stateToStore));
+
+  setQueueData(data);
+
+  if (data.position === 0) {
+    localStorage.setItem("activeChatRoom", room_Id);
+    localStorage.removeItem(`chatCompleted_${room_Id}`);
+
+    setShowQueuePopup(false);
+    setShowwaitingpopup(true);
+  } else {
+    setShowQueuePopup(true);
+    setShowwaitingpopup(false);
+  }
+
+  startTimer(duration);
+};
 
     const handleReject = (data) => {
       if (data.roomid !== room_Id) return;
@@ -227,6 +246,7 @@ const ChatRequestCard = ({
       if (timerRef.current) clearInterval(timerRef.current);
 
       toast.success("The astrologer has rejected your chat request.");
+      localStorage.removeItem("queue_state");
 
       setTimeout(() => {
         route.push("/chat-with-astrologer");
