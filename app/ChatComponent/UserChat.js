@@ -436,6 +436,7 @@ const UserChat = ({
 
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
     localStorage.removeItem(`chatJoined_${room_Id}`);
+    localStorage.removeItem("activeRequest");
 
     ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
       console.log("Removing localStorage key:", key);
@@ -590,6 +591,7 @@ const UserChat = ({
 
       setLeaveMessage("Chat completed successfully");
       setShowReviewPopup(true);
+      localStorage.removeItem("activeRequest");
 
       setTimeout(() => {
         router.push("/chat-with-astrologer");

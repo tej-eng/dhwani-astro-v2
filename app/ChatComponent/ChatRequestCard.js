@@ -188,6 +188,7 @@ const ChatRequestCard = ({
       setShowwaitingpopup(false);
       setShowQueuePopup(false);
       setQueueData(null);
+      localStorage.removeItem("activeRequest");
 
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
@@ -229,6 +230,7 @@ const handleQueue = (data) => {
 
       setShowQueuePopup(false);
       setShowwaitingpopup(false);
+      localStorage.removeItem("activeRequest");
 
       if (timerRef.current) clearInterval(timerRef.current);
 
