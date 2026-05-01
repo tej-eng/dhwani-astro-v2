@@ -72,63 +72,80 @@ const ChatRequestCard = ({
   }, [room_Id, socket]);
 
   const startTimer = (seconds) => {
-    if (timerRef.current) clearInterval(timerRef.current);
+  // ✅ Always clear old interval first
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
 
-    const expiry = Date.now() + seconds * 1000;
+  const expiry = Date.now() + seconds * 1000;
 
-    localStorage.setItem(`timer_${room_Id}`, expiry); // ✅ STORE
+  localStorage.setItem(`timer_${room_Id}`, expiry);
+  setTimeLeft(seconds);
 
-    setTimeLeft(seconds);
+  timerRef.current = setInterval(() => {
+    const remaining = Math.floor((expiry - Date.now()) / 1000);
 
-    timerRef.current = setInterval(() => {
-      const remaining = Math.floor(
-        (expiry - Date.now()) / 1000
-      );
-
-      if (remaining <= 0) {
+    if (remaining <= 0) {
+      // ✅ DOUBLE SAFETY: clear + null
+      if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
-
-        localStorage.removeItem(`timer_${room_Id}`); // cleanup
-        if (socket && socket.connected) {
-          socket.emit("autodisconnect", {
-            room_id: room_Id,
-            astroid: astro_id,
-          });
-          ["chatActive", "activeChatRoom", "activeChatSession", "chat_request", "activeRequest"].forEach((key) => {
-            localStorage.removeItem(key);
-          });
-
-
-        }
-
-        setShowQueuePopup(false);
-        setShowwaitingpopup(false);
-
-        toast.success("Chat request timed out.");
-        return;
       }
 
-      setTimeLeft(remaining);
-    }, 1000);
-  };
+      localStorage.removeItem(`timer_${room_Id}`);
 
+      // ✅ prevent duplicate emits
+      if (socket?.connected) {
+        socket.emit("autodisconnect", {
+          room_id: room_Id,
+          astroid: astro_id,
+        });
+      }
 
-  useEffect(() => {
-    const expiry = localStorage.getItem(`timer_${room_Id}`);
+      // ✅ clear all related storage
+      [
+        "chatActive",
+        "activeChatRoom",
+        "activeChatSession",
+        "chat_request",
+        "activeRequest",
+      ].forEach((key) => localStorage.removeItem(key));
 
-    if (!expiry) return;
+      setShowQueuePopup(false);
+      setShowwaitingpopup(false);
 
-    const remaining = Math.floor(
-      (expiry - Date.now()) / 1000
-    );
+      setTimeLeft(0); // ✅ force UI sync
+
+      toast.success("Chat request timed out.");
+
+      return; // ✅ stop execution
+    }
+
+    setTimeLeft(remaining);
+  }, 1000);
+};
+
+useEffect(() => {
+  const savedExpiry = localStorage.getItem(`timer_${room_Id}`);
+
+  if (savedExpiry) {
+    const remaining = Math.floor((savedExpiry - Date.now()) / 1000);
 
     if (remaining > 0) {
       startTimer(remaining);
     } else {
       localStorage.removeItem(`timer_${room_Id}`);
     }
-  }, [room_Id]);
+  }
+
+  return () => {
+    // ✅ cleanup on unmount
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  };
+}, [room_Id]);
 
   // =========================================================
   //  TIMEOUT HANDLER (ONLY ONCE)
