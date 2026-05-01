@@ -192,7 +192,7 @@ const UserChat = ({
       timeLeft,
       chatEnded,
     };
-   localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
+    localStorage.setItem("activeChatSession", JSON.stringify(chatSession));
   }, [room_Id, timeLeft, chatEnded]);
 
   useEffect(() => {
@@ -437,6 +437,8 @@ const UserChat = ({
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
     localStorage.removeItem(`chatJoined_${room_Id}`);
     localStorage.removeItem("activeRequest");
+    localStorage.removeItem("chat_request");
+
 
     ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
       console.log("Removing localStorage key:", key);
@@ -592,6 +594,10 @@ const UserChat = ({
       setLeaveMessage("Chat completed successfully");
       setShowReviewPopup(true);
       localStorage.removeItem("activeRequest");
+      localStorage.removeItem("chat_request");
+      localStorage.removeItem("activeChatSession");
+
+
 
       setTimeout(() => {
         router.push("/chat-with-astrologer");
@@ -687,10 +693,10 @@ const UserChat = ({
       image: tempImage, //  show instantly
       replyTo: replyTo
         ? {
-            sender: replyTo.sender,
-            message: replyTo.message,
-            image: replyTo.image || null,
-          }
+          sender: replyTo.sender,
+          message: replyTo.message,
+          image: replyTo.image || null,
+        }
         : null,
       time: new Date().toISOString(),
     };
@@ -727,7 +733,7 @@ const UserChat = ({
     }
   };
 
-  // ================= REVIEW =================
+    // ================= REVIEW =================
 
   const handleSubmitReview = async () => {
     if (chatEndedRef.current) {
@@ -846,9 +852,8 @@ const UserChat = ({
             key={i}
             onMouseEnter={() => setHoveredIndex(i)}
             onMouseLeave={() => setHoveredIndex(null)}
-            className={`flex ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
           >
             <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
               {/*  REPLY CONTEXT */}
