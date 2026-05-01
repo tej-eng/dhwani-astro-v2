@@ -4,7 +4,10 @@ const initialState = {
   loading: false,
   chatData: [],
   chatStatusCode: null,
-  activeRequest: null,
+  activeRequest:
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("activeRequest")) || null
+      : null,
 };
 
 const sendRequestSlice = createSlice({
@@ -15,29 +18,52 @@ const sendRequestSlice = createSlice({
       state.loading = true;
       state.chatStatusCode = 0;
     },
+
     sendChatReqAdd: (state, action) => {
       state.loading = false;
       state.chatStatusCode = 200;
       state.chatData = action.payload;
     },
-    sendChatReqFail: (state, action) => {
+
+    sendChatReqFail: (state) => {
       state.loading = false;
       state.chatStatusCode = 400;
     },
+
     resetCode: (state) => {
       state.chatStatusCode = null;
     },
+
+    // ✅ STORE + PERSIST
     setActiveRequest: (state, action) => {
       state.activeRequest = action.payload;
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "activeRequest",
+          JSON.stringify(action.payload)
+        );
+      }
     },
 
+    // ✅ CLEAR + REMOVE
     clearActiveRequest: (state) => {
       state.activeRequest = null;
+
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("activeRequest");
+      }
     },
   },
 });
 
-export const { sendChatRequest, sendChatReqAdd, sendChatReqFail, resetCode,  setActiveRequest,clearActiveRequest, } =
-  sendRequestSlice.actions;
+export const {
+  sendChatRequest,
+  sendChatReqAdd,
+  sendChatReqFail,
+  resetCode,
+  setActiveRequest,
+  clearActiveRequest,
+} = sendRequestSlice.actions;
 
 export default sendRequestSlice.reducer;
