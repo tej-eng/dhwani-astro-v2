@@ -121,7 +121,9 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
       .forEach((key) => localStorage.removeItem(key));
 
     setShowQueuePopup(false);
-    setShowWaitingPopup(false);
+    setShowWaitingPopup(false)  ;
+    console.log();
+    
 
     toast.success("Chat request timed out. Please try again.");
     dispatch(clearActiveRequest());
@@ -137,7 +139,7 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   // =========================================================
 
   useEffect(() => {
-    console.log("♻️ RESTORE STATE");
+    console.log("♻️ RESTORE STATE abcd");
     const activeRoom = localStorage.getItem("activeChatRoom");
 
 
