@@ -87,6 +87,7 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
         localStorage.removeItem(`timer_${room_Id}`);
+        socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
         setTimeLeft(0);
         return;
       }

@@ -226,14 +226,6 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                         <h5 className="text-white">{buttonLabel}</h5>
                       </CustomButton>
 
-                      <CustomButton aria-label={`Select Astrologer ${astro.name}`}
-                        variant="green"
-
-                        onClick={() => handleClick(astro?.id, mode === "call" ? astro?.price : "")}
-                      >
-                        <h5 className="text-white">Call</h5>
-                      </CustomButton>
-
                       {/* {sameUser === astro?.id ? (
                         <CustomButton aria-label={`Select Astrologer ${astro.name}`}
                           variant="green"
@@ -316,12 +308,6 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                         onClick={() => handleClick(astro?.id, mode === "chat" ? astro?.price : "")}
                       >
                         <h5 className="text-white">{buttonLabel}</h5>
-                      </CustomButton>
-                      <CustomButton aria-label={`Select Astrologer ${astro.name}`}
-                        variant="green"
-                        onClick={() => handleClick(astro?.id, mode === "call" ? astro?.price : "")}
-                      >
-                        <h5 className="text-white">call</h5>
                       </CustomButton>
 
                       {/* {sameUser === astro?.id ? (
