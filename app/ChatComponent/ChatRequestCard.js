@@ -13,8 +13,8 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   const route = useRouter();
   const { socket, connectSocket } = useContext(SocketContext);
 
-  const timerIntervalRef = useRef(null);   
-  const startTimerRef = useRef(null);      
+  const timerIntervalRef = useRef(null);
+  const startTimerRef = useRef(null);
   const timeoutHandledRef = useRef(false);
   const queueRef = useRef(null);
 
@@ -87,7 +87,15 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
         localStorage.removeItem(`timer_${room_Id}`);
-        socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+        if (socket) {
+          if (socket.connected) {
+            socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+          } else {
+            socket.once("connect", () => {
+              socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+            });
+          }
+        }
         setTimeLeft(0);
         return;
       }
@@ -105,27 +113,49 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   // TIMEOUT HANDLER — fires when countdown hits 0
   // =========================================================
   useEffect(() => {
-    if (timeLeft !== 0) return;
-    if (!socket?.connected) return;
+    if (timeLeft > 0) return;
     if (chatActive) return;
     if (timeoutHandledRef.current) return;
-    if (!showWaitingPopup && !showQueuePopup) return;
+
+    const hasActiveRequest =
+      localStorage.getItem(`queue_${room_Id}`) ||
+      localStorage.getItem("chat_request");
+
+    if (!hasActiveRequest) return;
 
     timeoutHandledRef.current = true;
 
-    socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+    const emitDisconnect = () => {
+      socket.emit("autodisconnect", {
+        room_id: room_Id,
+        astroid: astro_id,
+      });
+
+      toast.success("Chat request timed out. Please try again.");
+    };
+
+    if (!socket?.connected) {
+      socket?.once("connect", emitDisconnect);
+    } else {
+      emitDisconnect();
+    }
+
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
 
-    ["chatActive", "activeChatRoom", "activeChatSession", "chat_request", "activeRequest",
-      `chatJoined_${room_Id}`, `queue_${room_Id}`, `timer_${room_Id}`]
-      .forEach((key) => localStorage.removeItem(key));
+    [
+      "chatActive",
+      "activeChatRoom",
+      "activeChatSession",
+      "chat_request",
+      "activeRequest",
+      `chatJoined_${room_Id}`,
+      `queue_${room_Id}`,
+      `timer_${room_Id}`,
+    ].forEach((key) => localStorage.removeItem(key));
 
     setShowQueuePopup(false);
-    setShowWaitingPopup(false)  ;
-    console.log();
-    
+    setShowWaitingPopup(false);
 
-    toast.success("Chat request timed out. Please try again.");
     dispatch(clearActiveRequest());
   }, [timeLeft]);
 
@@ -275,14 +305,14 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
         return;
       }
 
-      if(!room_Id){
+      if (!room_Id) {
         console.log("fffffffffffffffffffffffffffffffff", room_Id);
 
         return;
 
       }
 
-      console.log("🆕 NEW REQUEST, xxxxxxxxxxxxxxxxxx",activeRoom, room_Id );
+      console.log("🆕 NEW REQUEST, xxxxxxxxxxxxxxxxxx", activeRoom, room_Id);
 
       socket.emit("chat_request", {
         room_id: room_Id,
