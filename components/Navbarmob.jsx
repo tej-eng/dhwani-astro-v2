@@ -13,8 +13,8 @@ export default function Navbarmob() {
   const [isFreeOpen, setIsFreeOpen] = useState(false);
 
   const navbaritems = [
-    { id: 1, src: "/ds-img/chatx.png", alt: "Chat", ulname: `${t.navbar.n1}`, href: "/chat-with-astrologer" },
-    { id: 2, src: "/ds-img/telephonex.png", alt: "Talk", ulname: `${t.navbar.n2}`, href: "/talk-to-astrologer" },
+    { id: 1, src: "/ds-img/chatx.png", alt: "Chat", ulname: `${t.navbar.n1}`, href: "/astrologer/chat" },
+    { id: 2, src: "/ds-img/telephonex.png", alt: "Talk", ulname: `${t.navbar.n2}`, href: "/astrologer/call" },
     { id: 3, src: "/ds-img/instagram-live.png", alt: "live", ulname: `${t.navbar.n3}`, href: "" },
     { id: 4, src: "/ds-img/muladharax.png", alt: "Protect", ulname: `${t.navbar.n4}`, href: "https://shop.dhwaniastro.com/collections/kavach" },
     { id: 5, src: "/prblm/healingnw.png", alt: "Heal", ulname: `${t.navbar.n5}`, href: "/inHealing" },
