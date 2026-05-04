@@ -9,7 +9,6 @@ import SocketContext from "@/app/context/socketContext";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
-import { setActiveRequest } from "../../redux/reducer/chat/sendRequestSlice";
 import metadata from "libphonenumber-js/metadata.min.json";
 
 // ✅ RHF + ZOD
@@ -18,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { requestFormSchema } from "@/lib/userZodIntake";
 import Image from "next/image";
 import { StarIcon } from "flowbite-react";
+import { setActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
@@ -59,12 +59,11 @@ const GET_ASTROLOGER_BY_ID = gql`
   }
 `;
 
-export default function RequestForm() {
+export default function RequestForm({ mode = "chat", astroId }) {
   const debounceRef = useRef(null); //  debounce added
 
   const [createIntake] = useMutation(CREATE_INTAKE);
-  const { chatid } = useParams();
-  const astro_id = chatid;
+  const astro_id = astroId;
 
   const router = useRouter();
   const { socket, connectSocket } = useContext(SocketContext);
@@ -75,7 +74,7 @@ export default function RequestForm() {
   const [id, setId] = useState(null);
   const [chatTime, setChatTime] = useState(0);
   const countries = useMemo(() => getCountries(), []);
-    const [roomId, setRoomId] = useState("");
+  const [roomId, setRoomId] = useState("");
 
   //  RHF
   const {
@@ -166,7 +165,7 @@ export default function RequestForm() {
             birthTime: data.time,
             occupation: data.occupation,
             birthPlace: data.place,
-            requestType: "chat",
+            requestType: mode === "call" ? "call" : "chat",
           },
         },
       });
@@ -175,14 +174,14 @@ export default function RequestForm() {
       setChatTime(chatTime);
       setRoomId(roomId);
 
-      if (!intakeId ) {
+      if (!intakeId) {
         toast.error("Failed to create intake");
         return;
       }
-       if(message=="duplicate request. User is already in queue for this astrologer"){
+      if (message == "duplicate request. User is already in queue for this astrologer") {
         toast.error("You already have a pending request for this astrologer. Please wait for it to be accepted or cancelled before sending a new request.");
         return;
-       }
+      }
 
       if (!intakeId) return toast.error("Failed");
 
@@ -204,8 +203,11 @@ export default function RequestForm() {
         phoneNumber: data.phone,
       };
 
-      activeSocket.emit("chat_request", req_data);
-      localStorage.setItem("chat_request", JSON.stringify(req_data));
+      const eventName = mode === "call" ? "call_request" : "chat_request";
+
+      activeSocket.emit(eventName, req_data);
+
+     localStorage.setItem(`${mode}_request`, JSON.stringify(req_data));
 
       dispatch(
         setActiveRequest({
@@ -216,7 +218,7 @@ export default function RequestForm() {
         }),
       );
 
-      router.push(`/chat-with-astrologer`);
+     router.push(`/astrologer/${mode}`);
     } catch (err) {
       toast.error(err.message);
     }
@@ -280,7 +282,7 @@ export default function RequestForm() {
                 control={control}
                 render={({ field }) => (
                   <CustomInput
-                    {...field} 
+                    {...field}
                     label="Name"
                     placeholder="Enter your name here"
                     className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
@@ -424,7 +426,7 @@ export default function RequestForm() {
                   onClick={() => trigger()}
                   className="px-6 py-2 bg-yellow-400 rounded-full"
                 >
-                  Start Chat Now
+                  {mode === "call" ? "Start Call Now" : "Start Chat Now"}
                 </button>
               </div>
             </div>

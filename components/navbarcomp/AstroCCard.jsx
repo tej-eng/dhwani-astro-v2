@@ -34,7 +34,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
   const [alert, setAlert] = useState(false);
 
 
-  const[userData,setUserData] = useState({user_status:0,balance_amount:0});
+  const [userData, setUserData] = useState({ user_status: 0, balance_amount: 0 });
 
   useEffect(() => {
 
@@ -110,29 +110,33 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
 
   }, [visibleCount, data.length]);
 
- const handleClick = (id, price) => {
-  console.log("handleClick triggered");
+const handleClick = ({ id, mode, price }) => {
+  console.log("handleClick triggered", { id, mode, price });
 
   if (!userData) {
     toast.error("User data not loaded yet");
     return;
   }
 
+const goToRequest = () => {
+  if (!mode || !id) return;
+
+  router.push(`/request/${mode}/${id}`);
+};
+
+  // ❌ Chat already running
   if (userData.user_status === 0) {
     if (code === 200) {
       toast.error("Astrologer selected by Your Chat Running Already!");
     } else {
-      if (mode === "call") {
-        router.push(`/callrequest/${id}`);
-      } else {
-        router.push(`/chatrequest/${id}`);
-      }
+      goToRequest();
     }
     return;
   }
 
+  // 💰 Balance check
   if (userData.user_status === 1 || userData.user_status === 2) {
-    const astro_price = price * 5;
+    const astro_price = (price || 0) * 5;
 
     if (astro_price > userData.balance_amount) {
       setQuick(true);
@@ -141,18 +145,14 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
       if (code === 200) {
         toast.error("Astrologer selected by Your Chat Running Already!");
       } else {
-        if (mode === "call") {
-          router.push(`/callrequest/${id}`);
-        } else {
-          router.push(`/chatrequest/${id}`);
-        }
+        goToRequest();
       }
     }
     return;
   }
 
-  // 🔥 Fallback
-  router.push(`/chatrequest/${id}`);
+  // 🔥 fallback
+  goToRequest();
 };
 
   const astrologeroffline = () => {
@@ -218,12 +218,20 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                     />
                     <div className="hidden md:flex space-x-4 justify-around w-[80%]">
 
-                      <CustomButton aria-label={`Select Astrologer ${astro.name}`}
+                      <CustomButton
+                        aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
-
-                        onClick={() => handleClick(astro?.id, mode === "chat" ? astro?.price : "")}
+                        onClick={() =>
+                          handleClick({
+                            id: astro?.id,
+                            mode,
+                            price: astro?.price,
+                          })
+                        }
                       >
-                        <h5 className="text-white">{buttonLabel}</h5>
+                        <h5 className="text-white">
+                          {mode === "chat" ? "Start Chat" : "Start Call"}
+                        </h5>
                       </CustomButton>
 
                       {/* {sameUser === astro?.id ? (

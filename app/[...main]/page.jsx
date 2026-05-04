@@ -49,7 +49,6 @@ import PrivacyP from "@/components/Homepagecomp/FootPages/PrivacyP";
 import RefundP from "@/components/Homepagecomp/FootPages/RefundP";
 import Disclaimer from "@/components/Homepagecomp/FootPages/Disclaimer";
 import Userchatscr from "@/components/Smcompo/Userchatscr";
-import RequestForm from "../chatrequest/[chatid]/page";
 import AstrowaitPop from "@/components/Smcompo/AstrowaitPop";
 import Lalkitab from "@/app/inKundli/getKundlipage/lalkitab/LalkitabClient";
 import CallOptionModal from "@/components/Smcompo/CallOptionModal";
@@ -114,7 +113,6 @@ export default function ServicePage() {
         getKundlipage: <Kuninter />,
 
         inblog: <Inblog />,
-        chat: <RequestForm />,
         repack: <RePack />,
         signin: <SignInModal />,
         astrowaitpop: <AstrowaitPop />,
