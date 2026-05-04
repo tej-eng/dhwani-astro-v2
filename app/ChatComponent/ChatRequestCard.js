@@ -8,7 +8,13 @@ import Image from "next/image";
 import { clearActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { useDispatch } from "react-redux";
 
-const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id }) => {
+const ChatRequestCard = ({
+  room_Id,
+  astro_Name,
+  user_Id,
+  astroimage,
+  astro_id,
+}) => {
   const dispatch = useDispatch();
   const route = useRouter();
   const { socket, connectSocket } = useContext(SocketContext);
@@ -24,13 +30,9 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   const [chatActive, setChatActive] = useState(false);
   const [queueData, setQueueData] = useState(null);
 
-  useEffect(() => { queueRef.current = queueData; }, [queueData]);
-
-
-
-
-
-
+  useEffect(() => {
+    queueRef.current = queueData;
+  }, [queueData]);
 
   useEffect(() => {
     if (!socket) return;
@@ -89,10 +91,16 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
         localStorage.removeItem(`timer_${room_Id}`);
         if (socket) {
           if (socket.connected) {
-            socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+            socket.emit("autodisconnect", {
+              room_id: room_Id,
+              astroid: astro_id,
+            });
           } else {
             socket.once("connect", () => {
-              socket.emit("autodisconnect", { room_id: room_Id, astroid: astro_id });
+              socket.emit("autodisconnect", {
+                room_id: room_Id,
+                astroid: astro_id,
+              });
             });
           }
         }
@@ -159,9 +167,7 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
     dispatch(clearActiveRequest());
   }, [timeLeft]);
 
-
-  // check active chat 
-
+  // check active chat
 
   // =========================================================
   // RESTORE STATE ON MOUNT (runs before socket connects)
@@ -171,7 +177,6 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   useEffect(() => {
     console.log("♻️ RESTORE STATE abcd");
     const activeRoom = localStorage.getItem("activeChatRoom");
-
 
     if (activeRoom === room_Id) {
       console.log("✅ RESTORE ACTIVE CHAT — NO POPUP");
@@ -267,7 +272,11 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
       // ✅ 2. QUEUE REJOIN
       if (localStorage.getItem(`queue_${room_Id}`)) {
         console.log("♻️ REJOIN QUEUE");
-        socket.emit("rejoin_queue", { room_id: room_Id, astro_id, user_id: user_Id });
+        socket.emit("rejoin_queue", {
+          room_id: room_Id,
+          astro_id,
+          user_id: user_Id,
+        });
         return;
       }
 
@@ -275,7 +284,11 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
       if (localStorage.getItem("chat_request")) {
         console.log("♻️ REJOIN REQUEST");
 
-        socket.emit("rejoin_queue", { room_id: room_Id, astro_id, user_id: user_Id });
+        socket.emit("rejoin_queue", {
+          room_id: room_Id,
+          astro_id,
+          user_id: user_Id,
+        });
 
         setTimeout(() => {
           if (
@@ -287,7 +300,10 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
             const fallbackQueue = { position: 0, waitTime: 60 };
 
             setQueueData(fallbackQueue);
-            localStorage.setItem(`queue_${room_Id}`, JSON.stringify(fallbackQueue));
+            localStorage.setItem(
+              `queue_${room_Id}`,
+              JSON.stringify(fallbackQueue),
+            );
 
             setShowWaitingPopup(true);
             setShowQueuePopup(false);
@@ -309,7 +325,6 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
         console.log("fffffffffffffffffffffffffffffffff", room_Id);
 
         return;
-
       }
 
       console.log("🆕 NEW REQUEST, xxxxxxxxxxxxxxxxxx", activeRoom, room_Id);
@@ -346,7 +361,10 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
     const handleAccepted = (data) => {
       if (data.roomid !== room_Id) return;
 
-      if (timerIntervalRef.current) { clearInterval(timerIntervalRef.current); timerIntervalRef.current = null; }
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
       timeoutHandledRef.current = true;
 
       setChatActive(true);
@@ -355,9 +373,15 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
       setQueueData(null);
 
       localStorage.setItem("activeChatRoom", room_Id);
-      ["chatActive", "chat_request", "activeChatSession", "activeRequest",
-        `chatCompleted_${room_Id}`, `queue_${room_Id}`, `timer_${room_Id}`]
-        .forEach((key) => localStorage.removeItem(key));
+      [
+        "chatActive",
+        "chat_request",
+        "activeChatSession",
+        "activeRequest",
+        `chatCompleted_${room_Id}`,
+        `queue_${room_Id}`,
+        `timer_${room_Id}`,
+      ].forEach((key) => localStorage.removeItem(key));
 
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
@@ -389,26 +413,55 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
       setShowWaitingPopup(false);
 
       localStorage.setItem(`chatCompleted_${room_Id}`, "true");
-      ["chatActive", "activeChatRoom", "activeChatSession", "chat_request", "activeRequest",
-        `queue_${room_Id}`, `timer_${room_Id}`]
-        .forEach((key) => localStorage.removeItem(key));
+      [
+        "chatActive",
+        "activeChatRoom",
+        "activeChatSession",
+        "chat_request",
+        "activeRequest",
+        `queue_${room_Id}`,
+        `timer_${room_Id}`,
+      ].forEach((key) => localStorage.removeItem(key));
 
       toast.success("The astrologer has rejected your chat request.");
       setTimeout(() => route.push("/chat-with-astrologer"), 100);
+    };
+    const handleCallAccepted = (data) => {
+      if (data.roomId !== room_Id) return;
+
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+
+      timeoutHandledRef.current = true;
+
+      setChatActive(true);
+      setShowWaitingPopup(false);
+      setShowQueuePopup(false);
+
+      localStorage.setItem("activeCallRoom", room_Id);
+
+      ["chat_request", `queue_${room_Id}`, `timer_${room_Id}`].forEach((key) =>
+        localStorage.removeItem(key),
+      );
+
+      // 🚀 REDIRECT TO CALL PAGE
+      route.push(`/call/${room_Id}`);
     };
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
     socket.on("queue_position", handleQueue);
     socket.on("chat_rejected", handleReject);
+    socket.on("callAcceptedByAstrologer", handleCallAccepted);
 
     return () => {
       socket.off("chatAcceptedByAstrologer", handleAccepted);
       socket.off("queue_position", handleQueue);
       socket.off("chat_rejected", handleReject);
+      socket.off("callAcceptedByAstrologer", handleCallAccepted);
     };
   }, [socket, room_Id]);
-
-
 
   // ----------------------------
   useEffect(() => {
@@ -424,11 +477,21 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   const handleRequestCancel = () => {
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
-    socket?.emit("cancel_chat_request", { room_id: room_Id, astroid: astro_id, user_id: user_Id });
+    socket?.emit("cancel_chat_request", {
+      room_id: room_Id,
+      astroid: astro_id,
+      user_id: user_Id,
+    });
 
-    ["chatActive", "activeChatRoom", "activeChatSession", "chat_request",
-      `queue_${room_Id}`, `timer_${room_Id}`, `chatJoined_${room_Id}`]
-      .forEach((key) => localStorage.removeItem(key));
+    [
+      "chatActive",
+      "activeChatRoom",
+      "activeChatSession",
+      "chat_request",
+      `queue_${room_Id}`,
+      `timer_${room_Id}`,
+      `chatJoined_${room_Id}`,
+    ].forEach((key) => localStorage.removeItem(key));
 
     setShowWaitingPopup(false);
     setShowQueuePopup(false);
@@ -445,10 +508,6 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
-
-
-
-
   // -----------------------
   useEffect(() => {
     return () => {
@@ -464,7 +523,6 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
   // =========================================================
   return (
     <div className="flex items-center justify-center w-full">
-
       {showWaitingPopup && (
         <div className="w-full bg-purple-200 px-3 py-2 rounded-full flex relative">
           <Image
@@ -476,7 +534,9 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
           />
           <div className="ml-3">
             <h3 className="font-semibold">{astro_Name}</h3>
-            <p className="text-xs text-gray-500">Wait Time: {formatTime(timeLeft)}</p>
+            <p className="text-xs text-gray-500">
+              Wait Time: {formatTime(timeLeft)}
+            </p>
           </div>
           <button
             onClick={handleRequestCancel}
@@ -503,7 +563,6 @@ const ChatRequestCard = ({ room_Id, astro_Name, user_Id, astroimage, astro_id })
           </button>
         </div>
       )}
-
     </div>
   );
 };
