@@ -183,6 +183,10 @@ export default function RequestForm() {
         toast.error("You already have a pending request for this astrologer. Please wait for it to be accepted or cancelled before sending a new request.");
         return;
        }
+      if(message=="Sorry, queue is too long. Please try another astrologer."){
+        toast.error("Sorry, queue is too long. Please try another astrologer.");
+        return;
+       }
 
       if (!intakeId) return toast.error("Failed");
 
