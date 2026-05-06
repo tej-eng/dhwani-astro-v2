@@ -15,7 +15,7 @@ export default function CallPage() {
   useEffect(() => {
     let activeSocket = socket;
     if (!activeSocket?.connected) activeSocket = connectSocket();
-
+     console.log("📞 CALL PAGE MOUNTED, ROOM ID join_call:", roomId);
     // ✅ JOIN ROOM (FIXED)
     activeSocket.emit("join_call", { roomId });
 
@@ -23,6 +23,7 @@ export default function CallPage() {
     // CREATE PEER CONNECTION
     // =========================
     const createPeer = async () => {
+      console.log("📞 CREATING PEER CONNECTION");
       pc.current = new RTCPeerConnection({
         iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
       });
@@ -40,6 +41,7 @@ export default function CallPage() {
       };
 
       pc.current.onicecandidate = (event) => {
+        console.log("📞 ICE Candidate:", event.candidate);
         if (event.candidate) {
           activeSocket.emit("ice-candidate", {
             room_id: roomId,
@@ -53,6 +55,8 @@ export default function CallPage() {
     // WHEN PEER JOINS → CREATE OFFER
     // =========================
     activeSocket.on("peer_joined", async () => {
+
+      console.log("📞 Peer joined event received");
       console.log("Peer joined → creating offer");
 
       await createPeer();
