@@ -15,6 +15,9 @@ export default function CallPage() {
   useEffect(() => {
     let activeSocket = socket;
     if (!activeSocket?.connected) activeSocket = connectSocket();
+    activeSocket.onAny((event, ...args) => {
+    console.log("📡 EVENT:", event, args);
+    });
      console.log("📞 CALL PAGE MOUNTED, ROOM ID join_call:", roomId);
     // ✅ JOIN ROOM (FIXED)
     activeSocket.emit("join_call", { roomId });
