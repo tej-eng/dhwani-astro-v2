@@ -52,294 +52,158 @@ export default function CallPage() {
     // =========================
     // CREATE PEER
     // =========================
-    const createPeer = async () => {
-      if (pc.current) {
-        console.log(
-          "⚠️ Reusing existing peer"
-        );
+   const createPeer = async () => {
+  if (pc.current) {
+    console.log("⚠️ Reusing existing peer");
+    return pc.current;
+  }
 
-        return;
-      }
+  console.log("🟢 Creating RTCPeerConnection");
 
-      console.log(
-        "🟢 Creating RTCPeerConnection"
-      );
+  const iceConfig = {
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" },
+      { urls: "stun:stun2.l.google.com:19302" },
+      {
+        urls: "turn:openrelay.metered.ca:80",
+        username: "openrelayproject",
+        credential: "openrelayproject",
+      },
+      {
+        urls: "turn:openrelay.metered.ca:443",
+        username: "openrelayproject",
+        credential: "openrelayproject",
+      },
+    ],
+    iceCandidatePoolSize: 10,        // Important
+    bundlePolicy: "max-bundle",
+    rtcpMuxPolicy: "require",
+  };
 
-      pc.current = new RTCPeerConnection({
-        iceServers: [
-          {
-            urls: "stun:stun.l.google.com:19302",
-          },
+  pc.current = new RTCPeerConnection(iceConfig);
 
-          {
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential:
-              "openrelayproject",
-          },
+  // =========================
+  // CONNECTION STATES (Enhanced Logging)
+  // =========================
+  pc.current.onconnectionstatechange = () => {
+    console.log("🔥 Connection State:", pc.current.connectionState);
+  };
 
-          {
-            urls:
-              "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential:
-              "openrelayproject",
-          },
-        ],
+  pc.current.oniceconnectionstatechange = () => {
+    console.log("🧊 ICE Connection State:", pc.current.iceConnectionState);
+    
+    // Extra warning if failing
+    if (["failed", "disconnected"].includes(pc.current.iceConnectionState)) {
+      console.warn("⚠️ ICE Connection failing! Check network/TURN");
+    }
+  };
+
+  pc.current.onsignalingstatechange = () => {
+    console.log("📶 Signaling State:", pc.current.signalingState);
+  };
+
+  pc.current.onicegatheringstatechange = () => {
+    console.log("🧊 ICE Gathering State:", pc.current.iceGatheringState);
+  };
+
+  // =========================
+  // GET USER MEDIA
+  // =========================
+  try {
+    localStream.current = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 48000,        // Optional: better quality
+      },
+    });
+
+    console.log("🎤 Local stream acquired successfully");
+
+    const tracks = localStream.current.getAudioTracks();
+    tracks.forEach((track) => {
+      console.log(`🎤 Track: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
+
+      const sender = pc.current.addTrack(track, localStream.current);
+      console.log("➕ Audio track added to peer connection");
+    });
+
+    // Verify senders
+    setTimeout(() => {
+      const senders = pc.current?.getSenders() || [];
+      console.log(`🎤 Total senders: ${senders.length}`);
+      senders.forEach((sender, i) => {
+        console.log(`Sender ${i}:`, sender.track?.kind, sender.track?.enabled);
       });
+    }, 1500);
 
-      // =========================
-      // CONNECTION STATES
-      // =========================
+  } catch (err) {
+    console.error("❌ Microphone access error:", err);
+    setCallStatus("Mic Error");
+    return;
+  }
 
-      pc.current.onconnectionstatechange =
-        () => {
-          console.log(
-            "🟢 connectionState:",
-            pc.current.connectionState
-          );
-        };
+  // =========================
+  // REMOTE TRACK
+  // =========================
+  pc.current.ontrack = async (event) => {
+    console.log("🎧 Remote track received");
+    const remoteStream = event.streams[0];
 
-      pc.current.oniceconnectionstatechange =
-        () => {
-          console.log(
-            "🧊 iceConnectionState:",
-            pc.current
-              .iceConnectionState
-          );
-        };
+    console.log("🎵 Remote audio tracks count:", remoteStream.getAudioTracks().length);
 
-      pc.current.onsignalingstatechange =
-        () => {
-          console.log(
-            "📶 signalingState:",
-            pc.current.signalingState
-          );
-        };
-
-      // =========================
-      // GET USER MEDIA
-      // =========================
+    if (remoteAudio.current) {
+      remoteAudio.current.srcObject = remoteStream;
+      remoteAudio.current.volume = 1.0;
+      remoteAudio.current.muted = false;
 
       try {
-        localStream.current =
-          await navigator.mediaDevices.getUserMedia(
-            {
-              audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true,
-              },
-            }
-          );
-
-        console.log(
-          "🎤 Local stream:",
-          localStream.current
-        );
-
-        const tracks =
-          localStream.current.getAudioTracks();
-
-        console.log(
-          "🎤 Audio tracks:",
-          tracks
-        );
-
-        tracks.forEach((track) => {
-          console.log(
-            "🎤 Track enabled:",
-            track.enabled
-          );
-
-          console.log(
-            "🎤 Track muted:",
-            track.muted
-          );
-
-          console.log(
-            "🎤 Track readyState:",
-            track.readyState
-          );
-
-          // =========================
-          // ADD TRACK
-          // =========================
-
-          const sender =
-            pc.current.addTrack(
-              track,
-              localStream.current
-            );
-
-          console.log(
-            "➕ Track added:",
-            track.kind
-          );
-
-          console.log(
-            "🎤 Sender:",
-            sender
-          );
-        });
-
-        // =========================
-        // VERIFY SENDERS
-        // =========================
-
-        setTimeout(() => {
-          const senders =
-            pc.current?.getSenders() || [];
-
-          senders.forEach((sender) => {
-            console.log(
-              "🎤 sender track:",
-              sender.track
-            );
-
-            console.log(
-              "🎤 sender enabled:",
-              sender.track?.enabled
-            );
-
-            console.log(
-              "🎤 sender readyState:",
-              sender.track?.readyState
-            );
-          });
-        }, 3000);
+        await remoteAudio.current.play();
+        console.log("🔊 Remote audio playing successfully");
       } catch (err) {
-        console.error(
-          "❌ Mic error:",
-          err
-        );
-
-        return;
+        console.error("❌ Autoplay blocked:", err);
       }
+    }
+    setCallStatus("Connected");
+  };
 
-      // =========================
-      // REMOTE TRACK
-      // =========================
+  // =========================
+  // ICE CANDIDATES
+  // =========================
+  pc.current.onicecandidate = (event) => {
+    if (event.candidate) {
+      console.log("📡 Sending ICE candidate:", event.candidate.candidate.substring(0, 80) + "...");
+      activeSocket.emit("ice-candidate", {
+        room_id: roomId,
+        candidate: event.candidate,
+      });
+    } else {
+      console.log("🧊 All ICE candidates gathered");
+    }
+  };
 
-      pc.current.ontrack = async (
-        event
-      ) => {
-        console.log(
-          "🎧 Remote track received"
-        );
-
-        const remoteStream =
-          event.streams[0];
-
-        console.log(
-          "🎵 Remote audio tracks:",
-          remoteStream.getAudioTracks()
-        );
-
-        if (remoteAudio.current) {
-          remoteAudio.current.srcObject =
-            remoteStream;
-
-          remoteAudio.current.volume = 1;
-
-          remoteAudio.current.muted = false;
-
-          try {
-            await remoteAudio.current.play();
-
-            console.log(
-              "🔊 Remote audio playing"
-            );
-          } catch (err) {
-            console.error(
-              "❌ Audio autoplay blocked:",
-              err
-            );
-          }
+  // =========================
+  // AUDIO STATS (Improved)
+  // =========================
+  statsIntervalRef.current = setInterval(async () => {
+    if (!pc.current) return;
+    try {
+      const stats = await pc.current.getStats();
+      stats.forEach((report) => {
+        if (report.type === "outbound-rtp" && report.kind === "audio") {
+          console.log(`🎤 Outbound → packetsSent: ${report.packetsSent}, bytesSent: ${report.bytesSent}`);
         }
-
-        setCallStatus("Connected");
-      };
-
-      // =========================
-      // ICE CANDIDATES
-      // =========================
-
-      pc.current.onicecandidate = (
-        event
-      ) => {
-        if (event.candidate) {
-          console.log(
-            "📡 Sending ICE candidate:",
-            event.candidate.candidate
-          );
-
-          activeSocket.emit(
-            "ice-candidate",
-            {
-              room_id: roomId,
-              candidate:
-                event.candidate,
-            }
-          );
+        if (report.type === "inbound-rtp" && report.kind === "audio") {
+          console.log(`🎵 Inbound  → packetsReceived: ${report.packetsReceived}, bytesReceived: ${report.bytesReceived}`);
         }
-      };
-
-      // =========================
-      // AUDIO STATS
-      // =========================
-
-      statsIntervalRef.current =
-        setInterval(async () => {
-          if (!pc.current) return;
-
-          const stats =
-            await pc.current.getStats();
-
-          stats.forEach((report) => {
-            // =========================
-            // OUTBOUND AUDIO
-            // =========================
-
-            if (
-              report.type ===
-                "outbound-rtp" &&
-              report.kind === "audio"
-            ) {
-              console.log(
-                "🎤 packetsSent:",
-                report.packetsSent
-              );
-
-              console.log(
-                "🎤 bytesSent:",
-                report.bytesSent
-              );
-            }
-
-            // =========================
-            // INBOUND AUDIO
-            // =========================
-
-            if (
-              report.type ===
-                "inbound-rtp" &&
-              report.kind === "audio"
-            ) {
-              console.log(
-                "🎵 packetsReceived:",
-                report.packetsReceived
-              );
-
-              console.log(
-                "🎵 bytesReceived:",
-                report.bytesReceived
-              );
-            }
-          });
-        }, 3000);
-    };
-
+      });
+    } catch (e) {
+      console.error("Stats error:", e);
+    }
+  }, 3000);
+};
     // =========================
     // PEER JOINED
     // =========================
