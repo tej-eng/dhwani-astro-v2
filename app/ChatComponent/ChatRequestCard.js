@@ -426,31 +426,34 @@ const ChatRequestCard = ({
       toast.success("The astrologer has rejected your chat request.");
       setTimeout(() => route.push("/chat-with-astrologer"), 100);
     };
-    const handleCallAccepted = (data) => {
-      console.log("📞 CALL ACCEPTED111111111111:", data) ;
-      if (data.roomId !== room_Id) return;
-      console.log("🚀 PROCEED TO CALL PAGE2222222222222");
-      if (timerIntervalRef.current) {
-        console.log("🧹 CLEANUP TIMER BEFORE CALL333333333333") ;
-        clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = null;
-      }
-      console.log("✅ TIMER CLEANED UP, PROCEEDING TO CALL44444444444") ;
-      timeoutHandledRef.current = true;
-      console.log(" ✅ TIMEOUT HANDLED FLAG SET, PROCEEDING TO CALL555555555555") ;
-      setChatActive(true);
-      setShowWaitingPopup(false);
-      setShowQueuePopup(false);
+   const handleCallAccepted = (data) => {
+  if (data.roomId !== room_Id) return;
+  if (timeoutHandledRef.current) return;   // Add this protection
 
-      localStorage.setItem("activeCallRoom", room_Id);
-      console.log("🧹 LOCALSTORAGE SET, PROCEEDING TO CALL66666666666") ;
-      ["chat_request", `queue_${room_Id}`, `timer_${room_Id}`].forEach((key) =>
-        localStorage.removeItem(key),
-      );
-     console.log("🧹 LOCALSTORAGE CLEANED, PROCEEDING TO CALL777777777777") ;
-      // 🚀 REDIRECT TO CALL PAGE
-      route.push(`/call/${room_Id}`);
-    };
+  console.log("📞 CALL ACCEPTED111111111111:", data);
+
+  timeoutHandledRef.current = true;
+
+  if (timerIntervalRef.current) {
+    clearInterval(timerIntervalRef.current);
+    timerIntervalRef.current = null;
+  }
+
+  setChatActive(true);
+  setShowWaitingPopup(false);
+  setShowQueuePopup(false);
+
+  localStorage.setItem("activeCallRoom", room_Id);
+
+  ["chat_request", `queue_${room_Id}`, `timer_${room_Id}`].forEach((key) =>
+    localStorage.removeItem(key)
+  );
+
+  // Prevent multiple navigation
+  setTimeout(() => {
+    route.push(`/call/${room_Id}`);
+  }, 300);
+};
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
     socket.on("queue_position", handleQueue);

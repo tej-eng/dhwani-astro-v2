@@ -285,37 +285,37 @@ export default function CallPage() {
     // =========================
     // ICE RECEIVED
     // =========================
+// =========================
+// ICE RECEIVED
+// =========================
+activeSocket.on("ice-candidate", async ({ candidate, room_id }) => {
+  console.log("📞 ICE candidate received");
 
-    activeSocket.on(
-      "ice-candidate",
-      async ({ candidate }) => {
-        console.log(
-          "📞 ICE candidate received"
-        );
+  if (!pc.current) {
+    console.warn("⚠️ ICE received but no peer connection yet");
+    return;
+  }
 
-        try {
-          if (
-            candidate &&
-            pc.current
-          ) {
-            await pc.current.addIceCandidate(
-              new RTCIceCandidate(
-                candidate
-              )
-            );
-
-            console.log(
-              "✅ ICE candidate added"
-            );
-          }
-        } catch (err) {
-          console.error(
-            "❌ ICE error:",
-            err
-          );
+  try {
+    // Wait until remote description is set
+    if (!pc.current.remoteDescription) {
+      console.log("⏳ Remote description not set yet, queuing ICE candidate");
+      // You can queue candidates if needed, but for now just wait a bit
+      setTimeout(async () => {
+        if (pc.current && pc.current.remoteDescription) {
+          await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
+          console.log("✅ Delayed ICE candidate added");
         }
-      }
-    );
+      }, 800);
+      return;
+    }
+
+    await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
+    console.log("✅ ICE candidate added successfully");
+  } catch (err) {
+    console.error("❌ ICE error:", err);
+  }
+});
 
     // =========================
     // CALL ENDED
