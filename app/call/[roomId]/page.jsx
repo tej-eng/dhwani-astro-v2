@@ -31,46 +31,185 @@ export default function CallPage() {
   // CREATE PEER CONNECTION
   // =========================
   const createPeer = async () => {
-    if (pc.current) return;
+  if (pc.current) return;
 
-    pc.current = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  console.log("🟢 Creating RTCPeerConnection");
+
+  pc.current = new RTCPeerConnection({
+    iceServers: [
+  {
+    urls: "stun:stun.l.google.com:19302",
+  },
+  {
+    urls: "turn:openrelay.metered.ca:80",
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
+  {
+    urls: "turn:openrelay.metered.ca:443",
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
+],
+  });
+
+  // =========================
+  // CONNECTION STATES
+  // =========================
+
+  pc.current.onconnectionstatechange = () => {
+    console.log(
+      "🟢 connectionState:",
+      pc.current.connectionState
+    );
+  };
+
+  pc.current.oniceconnectionstatechange = () => {
+    console.log(
+      "🧊 iceConnectionState:",
+      pc.current.iceConnectionState
+    );
+  };
+
+  pc.current.onsignalingstatechange = () => {
+    console.log(
+      "📶 signalingState:",
+      pc.current.signalingState
+    );
+  };
+
+  // =========================
+  // GET MIC
+  // =========================
+
+  try {
+    localStream.current =
+      await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+
+    console.log(
+      "🎤 Local stream:",
+      localStream.current
+    );
+
+    const tracks =
+      localStream.current.getAudioTracks();
+
+    console.log("🎤 Audio tracks:", tracks);
+
+    tracks.forEach((track) => {
+      console.log("Track enabled:", track.enabled);
+      console.log("Track muted:", track.muted);
+      console.log("Track readyState:", track.readyState);
+
+      pc.current.addTrack(track, localStream.current);
+
+      console.log("➕ Track added:", track.kind);
     });
+  } catch (err) {
+    console.error("❌ Mic error:", err);
+    return;
+  }
 
-    try {
-      localStream.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+  // =========================
+  // REMOTE TRACK
+  // =========================
 
-      localStream.current.getTracks().forEach((track) => {
-        pc.current.addTrack(track, localStream.current);
-      });
-    } catch (err) {
-      console.error("Mic error:", err);
-      return;
+  pc.current.ontrack = async (event) => {
+    console.log("🎧 Remote track received");
+
+    const remoteStream = event.streams[0];
+
+    console.log(
+      "🎵 Remote audio tracks:",
+      remoteStream.getAudioTracks()
+    );
+
+    if (remoteAudio.current) {
+      remoteAudio.current.srcObject = remoteStream;
+
+      remoteAudio.current.volume = 1;
+
+      try {
+        await remoteAudio.current.play();
+
+        console.log("🔊 Remote audio playing");
+      } catch (err) {
+        console.error(
+          "❌ Audio autoplay blocked:",
+          err
+        );
+      }
     }
 
-    pc.current.ontrack = (event) => {
-      console.log("📞 Remote track received");
-
-      if (remoteAudio.current) {
-        remoteAudio.current.srcObject = event.streams[0];
-      }
-
-      setCallStatus("Connected");
-    };
-
-    pc.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("📞 Sending ICE candidate");
-
-        activeSocket.emit("ice-candidate", {
-          room_id: roomId,
-          candidate: event.candidate,
-        });
-      }
-    };
+    setCallStatus("Connected");
   };
+
+  // =========================
+  // ICE
+  // =========================
+
+  pc.current.onicecandidate = (event) => {
+    if (event.candidate) {
+      console.log(
+        "📡 Sending ICE candidate:",
+        event.candidate.candidate
+      );
+
+      activeSocket.emit("ice-candidate", {
+        room_id: roomId,
+        candidate: event.candidate,
+      });
+    }
+  };
+
+  // =========================
+  // AUDIO STATS DEBUG
+  // =========================
+
+  setInterval(async () => {
+    if (!pc.current) return;
+
+    const stats = await pc.current.getStats();
+
+    stats.forEach((report) => {
+      if (
+        report.type === "inbound-rtp" &&
+        report.kind === "audio"
+      ) {
+        console.log(
+          "🎵 packetsReceived:",
+          report.packetsReceived
+        );
+
+        console.log(
+          "🎵 bytesReceived:",
+          report.bytesReceived
+        );
+      }
+
+      if (
+        report.type === "outbound-rtp" &&
+        report.kind === "audio"
+      ) {
+        console.log(
+          "🎤 packetsSent:",
+          report.packetsSent
+        );
+
+        console.log(
+          "🎤 bytesSent:",
+          report.bytesSent
+        );
+      }
+    });
+  }, 3000);
+};
 
   // =========================
   // SOCKET EVENTS
@@ -192,7 +331,11 @@ export default function CallPage() {
 
       <p className="mb-6 text-lg">{callStatus}</p>
 
-      <audio ref={remoteAudio} autoPlay />
+     <audio
+  ref={remoteAudio}
+  autoPlay
+  playsInline
+/>
 
       <div className="flex gap-4">
         <button
