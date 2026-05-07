@@ -22,7 +22,7 @@ export default function CallPage() {
     if (!activeSocket?.connected) {
       activeSocket = connectSocket();
     }
-
+    socket.emit("join_call", { roomId });
     console.log("📞 CALL PAGE MOUNTED:", roomId);
 
     // =========================
