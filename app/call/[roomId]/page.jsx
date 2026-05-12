@@ -323,8 +323,8 @@ export default function CallPage() {
 
     activeSocket.on("call_ended_by_astrologer", () => {
       console.log("📞 Call ended by astrologer");
-
-      handleEndCall();
+      cleanup();
+      router.push("/");
     });
 
     // =========================
