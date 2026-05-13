@@ -59,7 +59,7 @@ const GET_ASTROLOGER_BY_ID = gql`
   }
 `;
 
-export default function RequestForm({ mode = "chat", astroId }) {
+export default function RequestForm({ mode , astroId }) {
   const debounceRef = useRef(null); //  debounce added
 
   const [createIntake] = useMutation(CREATE_INTAKE);
@@ -75,6 +75,7 @@ export default function RequestForm({ mode = "chat", astroId }) {
   const [chatTime, setChatTime] = useState(0);
   const countries = useMemo(() => getCountries(), []);
   const [roomId, setRoomId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //  RHF
   const {
@@ -152,82 +153,118 @@ export default function RequestForm({ mode = "chat", astroId }) {
   }, [userInfo, countries, setValue]);
 
   const onSubmit = async (data) => {
-    try {
-      const response = await createIntake({
-        variables: {
-          input: {
-            astrologerId: astro_id,
-            name: data.name,
-            countryCode: data.countryCode || country?.dialCode,
-            mobile: data.phone,
-            gender: data.usergender,
-            birthDate: data.dob,
-            birthTime: data.time,
-            occupation: data.occupation,
-            birthPlace: data.place,
-            requestType: mode === "call" ? "call" : "chat",
-          },
+  try {
+    // PREVENT DOUBLE SUBMIT
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    const response = await createIntake({
+      variables: {
+        input: {
+          astrologerId: astro_id,
+          name: data.name,
+          countryCode: data.countryCode || country?.dialCode,
+          mobile: data.phone,
+          gender: data.usergender,
+          birthDate: data.dob,
+          birthTime: data.time,
+          occupation: data.occupation,
+          birthPlace: data.place,
+          requestType: mode === "call" ? "call" : "chat",
         },
-      });
+      },
+    });
 
-      const { roomId, chatTime, intakeId, message } = response.data.createIntake;
-      setChatTime(chatTime);
-      setRoomId(roomId);
+    const {
+      roomId,
+      chatTime,
+      intakeId,
+      message,
+    } = response.data.createIntake;
 
-      if (!intakeId) {
-        toast.error("Failed to create intake");
-        return;
-      }
-      if (message == "duplicate request. User is already in queue for this astrologer") {
-        toast.error("You already have a pending request for this astrologer. Please wait for it to be accepted or cancelled before sending a new request.");
-        return;
-       }
-      if(message=="Sorry, queue is too long. Please try another astrologer."){
-        toast.error("Sorry, queue is too long. Please try another astrologer.");
-        return;
-       }
+    setChatTime(chatTime);
+    setRoomId(roomId);
 
-      if (!intakeId) return toast.error("Failed");
-
-      let activeSocket = socket;
-      if (!activeSocket?.connected) activeSocket = connectSocket();
-
-      const req_data = {
-        name: data.name,
-        gender: data.usergender,
-        dateOfBirth: data.dob,
-        timeOfBirth: data.time,
-        occupation: data.occupation,
-        location: data.place,
-        userName: data.name,
-        user_id: id,
-        astro_id,
-        room_id: roomId,
-        maximum_time: chatTime,
-        phoneNumber: data.phone,
-      };
-      debugger;
-      const eventName = mode === "call" ? "call_request" : "chat_request";
-      console.log("eeeeeeeeeeeeeeeeeeeevant",eventName);
-
-      activeSocket.emit("call_request", req_data);
-
-     localStorage.setItem(`${mode}_request`, JSON.stringify(req_data));
-
-      dispatch(
-        setActiveRequest({
-          roomId,
-          astrologer,
-          chatTime,
-          userId: id,
-        }),
-      );
-
-     router.push(`/astrologer/${mode}`);
-    } catch (err) {
-      toast.error(err.message);
+    if (!intakeId) {
+      toast.error("Failed to create intake");
+      return;
     }
-  };
+
+    if (
+      message ===
+      "duplicate request. User is already in queue for this astrologer"
+    ) {
+      toast.error(
+        "You already have a pending request for this astrologer."
+      );
+      return;
+    }
+
+    if (
+      message ===
+      "Sorry, queue is too long. Please try another astrologer."
+    ) {
+      toast.error(message);
+      return;
+    }
+
+    let activeSocket = socket;
+
+    if (!activeSocket?.connected) {
+      activeSocket = connectSocket();
+    }
+
+    const req_data = {
+      name: data.name,
+      gender: data.usergender,
+      dateOfBirth: data.dob,
+      timeOfBirth: data.time,
+      occupation: data.occupation,
+      location: data.place,
+      userName: data.name,
+      user_id: id,
+      astro_id,
+      room_id: roomId,
+      maximum_time: chatTime,
+      phoneNumber: data.phone,
+    };
+
+    // ONLY ONE EVENT
+    const eventName =
+      mode === "call"
+        ? "call_request"
+        : "chat_request";
+
+    console.log(
+      "📡 EMITTING EVENT:",
+      eventName
+    );
+
+    activeSocket.emit(eventName, req_data);
+
+    localStorage.setItem(
+      `${mode}_request`,
+      JSON.stringify(req_data)
+    );
+
+    dispatch(
+      setActiveRequest({
+        roomId,
+        astrologer,
+        chatTime,
+        userId: id,
+      })
+    );
+
+    router.push(`/astrologer/${mode}`);
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const occupation_list = [
     "Student",
@@ -426,13 +463,17 @@ export default function RequestForm({ mode = "chat", astroId }) {
               </div>
 
               <div className="md:col-span-3 text-center">
-                <button
-                  type="submit"
-                  onClick={() => trigger()}
-                  className="px-6 py-2 bg-yellow-400 rounded-full"
-                >
-                  {mode === "call" ? "Start Call Now" : "Start Chat Now"}
-                </button>
+            <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-yellow-400 rounded-full disabled:opacity-50"
+          >
+            {isSubmitting
+              ? "Please wait..."
+              : mode === "call"
+              ? "Start Call Now"
+              : "Start Chat Now"}
+          </button> 
               </div>
             </div>
 
