@@ -29,6 +29,8 @@ function FilterBar({
   onSearchChange,
   mode,
   onSortChnage,
+  onSelectCategory,
+
 }) {
   const { messages: t } = useLanguage();
   const router = useRouter();
@@ -61,42 +63,9 @@ function FilterBar({
   }, [data]);
 
   // ---------------- FILTER STATE ----------------
-  const [selectedFilters, setSelectedFilters] = useState({
-    Skills: [],
-    Languages: [],
-    Rating: [],
-    Experience: [],
-    Price: [],
-  });
 
-  const dataFilters = {
-    Skills: [
-      "Vedic",
-      "Tarot",
-      "KP & Horary Astrology",
-      "Lal Kitab",
-      "Numerology",
-      "Vastu",
-      "Prashna",
-      "Palmistry",
-      "Naadi",
-      "Pendulum Dowsing",
-      "Fengshui",
-      "Psychic Reading & Healing",
-      "Love & Relationship",
-      "Career in Education",
-    ],
-    Languages: ["English", "Hindi", "Tamil", "Bengali", "Gujarati", "Telugu"],
-    Rating: ["1 Star", "2 Star", "3 Star", "4 Star", "5 Star"],
-    Experience: [
-      "0-5 Year",
-      "5-10 Years",
-      "10-15 Years",
-      "15-20 Years",
-      "20-25 Years",
-    ],
-    Price: ["0-20", "21-40", "41-60", "61-80"],
-  };
+
+
 
   // ---------------- SORT ----------------
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -115,24 +84,37 @@ function FilterBar({
     setSelected(id);
     setIsSortOpen(false);
     if (onSortChnage) onSortChnage(id);
+
   };
 
   const handleReset = () => {
     setSelected("popularity");
     setIsSortOpen(false);
     if (onSortChnage) onSortChnage("popularity");
+    if (onSelectCategory) {
+      onSelectCategory("All");
+    }
   };
+
+
   const [active, setActive] = useState("All");
+
+  const selectCategory = (name) => {
+    setActive(name);
+    if (onSelectCategory) onSelectCategory(name);
+
+  }
 
 
   const categories = [
     {
+
       name: "All",
       // icon: <Sparkles size={16} />,
       color: "bg-yellow-100 text-yellow-700",
     },
     {
-      name: "Tarot",
+      name: "Tarot Reading",
       // icon: <Star size={16} />,
       color: "bg-purple-100 text-purple-700",
     },
@@ -304,7 +286,7 @@ function FilterBar({
             return (
               <button
                 key={cat.name}
-                onClick={() => setActive(cat.name)}
+                onClick={() => selectCategory(cat.name)}
                 className={`flex items-center gap-2 px-4 py-1 rounded-full text-xs whitespace-nowrap transition
               
               ${isActive

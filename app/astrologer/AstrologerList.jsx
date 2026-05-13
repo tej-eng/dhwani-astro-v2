@@ -10,42 +10,57 @@ export default function AstrologerList({ serverdata, fetchMore, mode }) {
 
   const [search, setSearch] = useState("");
   const [sortType, setSortType] = useState("ratingHigh");
+  const [astroSkill, setAstroSkill] = useState("All");
+
   const [page, setPage] = useState(1);
 
   const allAstrologers = useMemo(() => serverdata?.data || [], [serverdata?.data]);
   const totalPages = serverdata?.totalPages || 1;
 
-const filteredAstrologers = useMemo(() => {
-  let filtered = allAstrologers;
+  const filteredAstrologers = useMemo(() => {
+    let filtered = allAstrologers;
 
-  //  MODE FILTER
-  // filtered = filtered.filter((astro) => {
-  //   if (mode === "chat") return astro.is_chat_online;
-  //   if (mode === "call") return astro.is_call_online;
-  //   return true;
-  // });
+    //  MODE FILTER
+    // filtered = filtered.filter((astro) => {
+    //   if (mode === "chat") return astro.is_chat_online;
+    //   if (mode === "call") return astro.is_call_online;
+    //   return true;
+    // });
 
-  // 🔍 SEARCH
-  filtered = filtered.filter((astro) =>
-    astro.name?.toLowerCase().includes(search.toLowerCase())
-  );
+    // 🔍 SEARCH
+    filtered = filtered.filter((astro) =>
+      astro.name?.toLowerCase().includes(search.toLowerCase())
+    );
 
-  //  SORT
-  const sortMap = {
-    expHigh: (a, b) => b.experience - a.experience,
-    expLow: (a, b) => a.experience - b.experience,
-    priceHigh: (a, b) => b.price - a.price,
-    priceLow: (a, b) => a.price - b.price,
-    ratingHigh: (a, b) => b.rating - a.rating,
-    ratingLow: (a, b) => a.rating - b.rating,
-  };
+        // 🎯 SKILL FILTER
+    if (astroSkill !== "All") {
+      filtered = filtered.filter((astro) =>
+        astro.skills?.some((skill) =>
+          skill.toLowerCase().includes(astroSkill.toLowerCase())
+        )
+      );
+    }
 
-  if (sortMap[sortType]) {
-    filtered = [...filtered].sort(sortMap[sortType]);
-  }
+    //  SORT
+    const sortMap = {
+      expHigh: (a, b) => b.experience - a.experience,
+      expLow: (a, b) => a.experience - b.experience,
+      priceHigh: (a, b) => b.price - a.price,
+      priceLow: (a, b) => a.price - b.price,
+      ratingHigh: (a, b) => b.rating - a.rating,
+      ratingLow: (a, b) => a.rating - b.rating,
+    };
 
-  return filtered;
-}, [allAstrologers, search, sortType, mode]);
+    if (sortMap[sortType]) {
+      filtered = [...filtered].sort(sortMap[sortType]);
+    }
+
+
+
+
+
+    return filtered;
+  }, [allAstrologers, search, sortType, mode, astroSkill]);
 
   useEffect(() => {
     if (!fetchMore) return;
@@ -101,6 +116,7 @@ const filteredAstrologers = useMemo(() => {
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
         onSortChnage={(id) => setSortType(id)}
+        onSelectCategory={(name) => setAstroSkill(name)}
         mode={mode}
       />
 
