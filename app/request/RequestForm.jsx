@@ -206,10 +206,11 @@ export default function RequestForm({ mode = "chat", astroId }) {
         maximum_time: chatTime,
         phoneNumber: data.phone,
       };
-    debugger;
+      debugger;
       const eventName = mode === "call" ? "call_request" : "chat_request";
+      console.log("eeeeeeeeeeeeeeeeeeeevant",eventName);
 
-      activeSocket.emit(eventName, req_data);
+      activeSocket.emit("call_request", req_data);
 
      localStorage.setItem(`${mode}_request`, JSON.stringify(req_data));
 
