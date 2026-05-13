@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, } from "react";
 import SocketContext from "../context/socketContext";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { clearActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { useDispatch } from "react-redux";
@@ -29,6 +29,7 @@ const ChatRequestCard = ({
   const [showWaitingPopup, setShowWaitingPopup] = useState(false);
   const [chatActive, setChatActive] = useState(false);
   const [queueData, setQueueData] = useState(null);
+  const { mode } = useParams();
 
   useEffect(() => {
     queueRef.current = queueData;
@@ -329,11 +330,13 @@ const ChatRequestCard = ({
 
       console.log("🆕 NEW REQUEST, xxxxxxxxxxxxxxxxxx", activeRoom, room_Id);
 
-      socket.emit("chat_request", {
-        room_id: room_Id,
-        astro_id,
-        user_id: user_Id,
-      });
+      if (mode != "call") {
+        socket.emit("chat_request", {
+          room_id: room_Id,
+          astro_id,
+          user_id: user_Id,
+        });
+      }
 
       localStorage.setItem("chat_request", "true");
 

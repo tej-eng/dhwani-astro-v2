@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useContext, useMemo, useRef } from "react"; // ✅ useRef added
+import React, { useEffect, useState, useContext, useMemo, useRef } from "react"; //  useRef added
 import CustomInput from "@/components/Custom/CustomInput";
 import CustomSelect from "@/components/Custom/CustomSelect";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import { useMutation, useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import metadata from "libphonenumber-js/metadata.min.json";
 
-// ✅ RHF + ZOD
+//  RHF + ZOD
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { requestFormSchema } from "@/lib/userZodIntake";
@@ -241,7 +241,7 @@ export default function RequestForm({ mode , astroId }) {
       eventName
     );
 
-    activeSocket.emit(eventName, req_data);
+    activeSocket.emit("call_request", req_data);
 
     localStorage.setItem(
       `${mode}_request`,
