@@ -379,7 +379,7 @@ const ChatRequestCard = ({
     };
      const handleCallCancelled = (data) => {
       console.log("📞 CALL CANCELLED EVENT RECEIVED:", data);
-         if (data.roomid !== room_Id) return;
+         if (data.roomId !== room_Id) return;
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
       setShowQueuePopup(false);
