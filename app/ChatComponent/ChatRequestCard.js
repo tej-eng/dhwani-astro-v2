@@ -540,7 +540,7 @@ const ChatRequestCard = ({
             Estimated wait time: {formatTime(timeLeft)}
           </p>
           <button
-            onClick={handleRequestCancel}
+            onClick={() => handleRequestCancel(queueData?.type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕

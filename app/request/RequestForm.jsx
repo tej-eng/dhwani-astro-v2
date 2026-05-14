@@ -268,6 +268,7 @@ export default function RequestForm({ mode , astroId }) {
         astrologer,
         chatTime,
         userId: id,
+        type: mode === "call" ? "call" : "chat",
       })
     );
 
