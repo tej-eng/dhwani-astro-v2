@@ -527,7 +527,7 @@ const ChatRequestCard = ({
             </p>
           </div>
           <button
-            onClick={() => handleRequestCancel(type)}
+            onClick={() => handleRequestCancel("chat")}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
