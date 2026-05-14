@@ -459,13 +459,15 @@ const ChatRequestCard = ({
   // =========================================================
   // CANCEL
   // =========================================================
-  const handleRequestCancel = () => {
+  const handleRequestCancel = (type) => {
+    console.log("❌ CANCELLING REQUEST, type:", type);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
     socket?.emit("cancel_chat_request", {
       room_id: room_Id,
       astroid: astro_id,
       user_id: user_Id,
+      type,
     });
 
     [
@@ -523,7 +525,7 @@ const ChatRequestCard = ({
             </p>
           </div>
           <button
-            onClick={handleRequestCancel}
+            onClick={() => handleRequestCancel(queueData?.type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
