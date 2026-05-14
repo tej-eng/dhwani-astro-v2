@@ -89,6 +89,7 @@ const ChatRequestCard = ({
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
         localStorage.removeItem(`timer_${room_Id}`);
+        console.log("⏰ TIMER EXPIRED for room:TTTTTTTTTTTTTTTTYPE", type);
         if (socket) {
           if (socket.connected) {
             socket.emit("autodisconnect", {
