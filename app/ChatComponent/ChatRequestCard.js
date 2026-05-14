@@ -140,6 +140,7 @@ const ChatRequestCard = ({
       socket.emit("autodisconnect", {
         room_id: room_Id,
         astroid: astro_id,
+        type: type,
       });
 
       toast.success("Chat request timed out. Please try again.");
