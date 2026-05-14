@@ -176,7 +176,7 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     const activeRoom = localStorage.getItem("activeChatRoom");
-    setType(localStorage.getItem("activeRequest")?.type);  
+    setType(JSON.parse(localStorage.getItem("activeRequest"))?.type);  
     console.log("cccccccccccccccccc",type);
 
     if (activeRoom === room_Id) {
