@@ -58,8 +58,6 @@ const ChatRequestCard = ({
   // and always get the LATEST version, never a stale one
   // =========================================================
   const startTimer = (seconds, isResume = false) => {
-    console.log("🔥 START TIMER:", seconds, "resume:", isResume);
-
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
@@ -176,11 +174,9 @@ const ChatRequestCard = ({
   // =========================================================
 
   useEffect(() => {
-    console.log("♻️ RESTORE STATE abcd");
     const activeRoom = localStorage.getItem("activeChatRoom");
 
     if (activeRoom === room_Id) {
-      console.log("✅ RESTORE ACTIVE CHAT — NO POPUP");
 
       setChatActive(true);
       setShowWaitingPopup(false);
@@ -194,8 +190,6 @@ const ChatRequestCard = ({
 
     if (savedQueue) {
       const parsed = JSON.parse(savedQueue);
-      console.log("♻️ RESTORE QUEUE:", parsed);
-
       setQueueData(parsed);
 
       if (parsed.position === 0) {
@@ -223,8 +217,6 @@ const ChatRequestCard = ({
 
     // fallback → assume position 0
     if (localStorage.getItem("chat_request")) {
-      console.log("⚠️ NO QUEUE → ASSUME POSITION 0");
-
       setShowWaitingPopup(true);
       setShowQueuePopup(false);
       startTimer(60);
@@ -255,7 +247,6 @@ const ChatRequestCard = ({
 
       // ✅ 1. ACTIVE CHAT — HIGHEST PRIORITY
       if (activeRoom === room_Id) {
-        console.log("🔁 REJOIN ACTIVE CHAT");
 
         setChatActive(true);
         setShowWaitingPopup(false);
@@ -272,7 +263,6 @@ const ChatRequestCard = ({
 
       // ✅ 2. QUEUE REJOIN
       if (localStorage.getItem(`queue_${room_Id}`)) {
-        console.log("♻️ REJOIN QUEUE");
         socket.emit("rejoin_queue", {
           room_id: room_Id,
           astro_id,
@@ -283,8 +273,6 @@ const ChatRequestCard = ({
 
       // ✅ 3. REQUEST REJOIN
       if (localStorage.getItem("chat_request")) {
-        console.log("♻️ REJOIN REQUEST");
-
         socket.emit("rejoin_queue", {
           room_id: room_Id,
           astro_id,
@@ -296,7 +284,6 @@ const ChatRequestCard = ({
             !queueRef.current &&
             localStorage.getItem("activeChatRoom") !== room_Id
           ) {
-            console.log("⚠️ FALLBACK → POSITION 0");
 
             const fallbackQueue = { position: 0, waitTime: 60 };
 
@@ -318,17 +305,14 @@ const ChatRequestCard = ({
 
       // ✅ 4. NEW REQUEST (ONLY IF NOTHING ELSE)
       if (localStorage.getItem("activeChatRoom") === room_Id) {
-        console.log("🛑 BLOCK NEW REQUEST — ACTIVE CHAT");
         return;
       }
 
       if (!room_Id) {
-        console.log("fffffffffffffffffffffffffffffffff", room_Id);
 
         return;
       }
 
-      console.log("🆕 NEW REQUEST, xxxxxxxxxxxxxxxxxx", activeRoom, room_Id);
 
       if (mode != "call") {
         socket.emit("chat_request", {
@@ -342,7 +326,6 @@ const ChatRequestCard = ({
 
       setTimeout(() => {
         if (!queueRef.current) {
-          console.log("⚠️ INITIAL FALLBACK");
           setShowWaitingPopup(true);
           startTimer(60);
         }
@@ -389,8 +372,6 @@ const ChatRequestCard = ({
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
     const handleQueue = (data) => {
-      console.log("🔥 QUEUE UPDATE:", data);
-
       setQueueData(data);
       localStorage.setItem(`queue_${room_Id}`, JSON.stringify(data));
 
@@ -432,9 +413,6 @@ const ChatRequestCard = ({
    const handleCallAccepted = (data) => {
   if (data.roomId !== room_Id) return;
   if (timeoutHandledRef.current) return;   // Add this protection
-
-  console.log("📞 CALL ACCEPTED111111111111:", data);
-
   timeoutHandledRef.current = true;
 
   if (timerIntervalRef.current) {
@@ -474,7 +452,6 @@ const ChatRequestCard = ({
   // ----------------------------
   useEffect(() => {
     if (showWaitingPopup && !timerIntervalRef.current) {
-      console.log("⚠️ SAFETY → RESTART TIMER");
       startTimer(60);
     }
   }, [showWaitingPopup]);
@@ -519,7 +496,6 @@ const ChatRequestCard = ({
   // -----------------------
   useEffect(() => {
     return () => {
-      console.log("🧹 CLEANUP TIMER");
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }

@@ -255,7 +255,7 @@ export default function RequestForm({ mode , astroId }) {
       eventName
     );
 
-    activeSocket.emit("call_request", req_data);
+    activeSocket.emit(eventName, req_data);
 
     localStorage.setItem(
       `${mode}_request`,
