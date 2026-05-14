@@ -571,7 +571,7 @@ const UserChat = ({
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
         setTimeout(() => {
-          router.push("/chat-with-astrologer");
+          router.push("/astrologer/chat");
         }, 4000);
         // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
@@ -600,7 +600,7 @@ const UserChat = ({
 
 
       setTimeout(() => {
-        router.push("/chat-with-astrologer");
+        router.push("/astrologer/chat");
       }, 10000);
     });
 
@@ -610,7 +610,7 @@ const UserChat = ({
       setShowPopup(true);
 
       setTimeout(() => {
-        router.push("/user/chat-history");
+        router.push("/astrologer/chat");
       }, 3000);
     });
 
@@ -769,7 +769,7 @@ const UserChat = ({
       dispatch(clearActiveRequest());
 
       setTimeout(() => {
-        router.push("/chat-with-astrologer");
+        router.push("/astrologer/chat");
       }, 100);
     } catch (error) {
       console.error("Review error:", error);
@@ -1007,7 +1007,7 @@ const UserChat = ({
                 onClick={() => {
                   emitChatCompleted();
                   setShowReviewPopup(false);
-                  router.push("/user/chat-history");
+                  router.push("/astrologer/chat");
                 }}
                 className="w-1/2 border py-2 rounded-lg"
               >
