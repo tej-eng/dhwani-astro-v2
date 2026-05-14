@@ -94,12 +94,14 @@ const ChatRequestCard = ({
             socket.emit("autodisconnect", {
               room_id: room_Id,
               astroid: astro_id,
+              type: type,
             });
           } else {
             socket.once("connect", () => {
               socket.emit("autodisconnect", {
                 room_id: room_Id,
                 astroid: astro_id,
+                type: type,
               });
             });
           }
@@ -177,7 +179,6 @@ const ChatRequestCard = ({
   useEffect(() => {
     const activeRoom = localStorage.getItem("activeChatRoom");
     setType(JSON.parse(localStorage.getItem("activeRequest"))?.type);  
-    console.log("cccccccccccccccccc",type);
 
     if (activeRoom === room_Id) {
 
@@ -374,6 +375,25 @@ const ChatRequestCard = ({
 
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
+     const handleCallCancelled = (data) => {
+         if (data.roomid !== room_Id) return;
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
+      setShowQueuePopup(false);
+      setShowWaitingPopup(false);
+
+      //localStorage.setItem(`chatCompleted_${room_Id}`, "true");
+      [
+        "call_request",
+        "activeRequest",
+        `queue_${room_Id}`,
+        `timer_${room_Id}`,
+      ].forEach((key) => localStorage.removeItem(key));
+
+      toast.success("The astrologer has rejected your call request.");
+      setTimeout(() => route.push(`/astrologer/call`), 100);
+    };
+
     const handleQueue = (data) => {
       setQueueData(data);
       localStorage.setItem(`queue_${room_Id}`, JSON.stringify(data));
@@ -411,7 +431,7 @@ const ChatRequestCard = ({
       ].forEach((key) => localStorage.removeItem(key));
 
       toast.success("The astrologer has rejected your chat request.");
-      setTimeout(() => route.push("/chat-with-astrologer"), 100);
+      setTimeout(() => route.push(`/astrologer/chat`), 100);
     };
    const handleCallAccepted = (data) => {
   if (data.roomId !== room_Id) return;
@@ -440,6 +460,7 @@ const ChatRequestCard = ({
 };
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
+     socket.on("call_cancel_by_astrologer", handleCallCancelled);
     socket.on("queue_position", handleQueue);
     socket.on("chat_rejected", handleReject);
     socket.on("callAcceptedByAstrologer", handleCallAccepted);
@@ -449,6 +470,7 @@ const ChatRequestCard = ({
       socket.off("queue_position", handleQueue);
       socket.off("chat_rejected", handleReject);
       socket.off("callAcceptedByAstrologer", handleCallAccepted);
+      socket.off("call_cancel_by_astrologer", handleCallCancelled);
     };
   }, [socket, room_Id]);
 
@@ -466,12 +488,19 @@ const ChatRequestCard = ({
     console.log("❌ CANCELLING REQUEST, type:", type);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
-    socket?.emit("cancel_chat_request", {
-      room_id: room_Id,
-      astroid: astro_id,
-      user_id: user_Id,
-      type,
-    });
+    const eventMap = {
+    chat: "cancel_chat_request",
+    call: "cancel_call_request",
+  };
+
+  socket?.emit(eventMap[type], {
+    room_id: room_Id,
+    astroid: astro_id,
+    user_id: user_Id,
+    type: type,
+  });
+
+   
 
     [
       "chatActive",
