@@ -487,13 +487,8 @@ const ChatRequestCard = ({
   const handleRequestCancel = (type) => {
     console.log("❌ CANCELLING REQUEST, type:", type);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-
-    const eventMap = {
-    chat: "cancel_chat_request",
-    call: "cancel_call_request",
-  };
-
-  socket?.emit(eventMap[type], {
+   console.log("Emitting cancel eventttttt:", `cancel_${type}_request`);
+  socket?.emit(`cancel_${type}_request`, {
     room_id: room_Id,
     astroid: astro_id,
     user_id: user_Id,
