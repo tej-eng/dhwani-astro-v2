@@ -176,7 +176,8 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     const activeRoom = localStorage.getItem("activeChatRoom");
-    setType(localStorage.getItem("activeRequest")?.type);
+    setType(localStorage.getItem("activeRequest")?.type);  
+    console.log("cccccccccccccccccc",type);
 
     if (activeRoom === room_Id) {
 
@@ -527,7 +528,7 @@ const ChatRequestCard = ({
             </p>
           </div>
           <button
-            onClick={() => handleRequestCancel("chat")}
+            onClick={() => handleRequestCancel(type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
@@ -544,7 +545,7 @@ const ChatRequestCard = ({
             Estimated wait time: {formatTime(timeLeft)}
           </p>
           <button
-            onClick={() => handleRequestCancel("chat")}
+            onClick={() => handleRequestCancel(queueData?.type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
