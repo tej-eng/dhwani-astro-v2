@@ -76,6 +76,20 @@ export default function RequestForm({ mode , astroId }) {
   const countries = useMemo(() => getCountries(), []);
   const [roomId, setRoomId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    if (!socket) return;
+
+    const originalEmit = socket.emit;
+
+    socket.emit = function (...args) {
+      console.log("🚀 FRONTEND SOCKET EMITxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:", args[0], args[1]);
+      return originalEmit.apply(this, args);
+    };
+
+    return () => {
+      socket.emit = originalEmit;
+    };
+  }, [socket]);
 
   //  RHF
   const {
