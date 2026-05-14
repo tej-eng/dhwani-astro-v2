@@ -378,6 +378,7 @@ const ChatRequestCard = ({
       route.push(`/chat-with-astrologer/${room_Id}`);
     };
      const handleCallCancelled = (data) => {
+      console.log("📞 CALL CANCELLED EVENT RECEIVED:", data);
          if (data.roomid !== room_Id) return;
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
@@ -462,7 +463,7 @@ const ChatRequestCard = ({
 };
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
-     socket.on("call_cancel_by_astrologer", handleCallCancelled);
+    socket.on("call_cancel_by_astrologer", handleCallCancelled);
     socket.on("queue_position", handleQueue);
     socket.on("chat_rejected", handleReject);
     socket.on("callAcceptedByAstrologer", handleCallAccepted);
