@@ -28,6 +28,7 @@ const ChatRequestCard = ({
   const [showQueuePopup, setShowQueuePopup] = useState(false);
   const [showWaitingPopup, setShowWaitingPopup] = useState(false);
   const [chatActive, setChatActive] = useState(false);
+  const [type, setType] = useState("");
   const [queueData, setQueueData] = useState(null);
   const { mode } = useParams();
 
@@ -175,6 +176,7 @@ const ChatRequestCard = ({
 
   useEffect(() => {
     const activeRoom = localStorage.getItem("activeChatRoom");
+    setType(localStorage.getItem("activeRequest")?.type);
 
     if (activeRoom === room_Id) {
 
@@ -525,7 +527,7 @@ const ChatRequestCard = ({
             </p>
           </div>
           <button
-            onClick={() => handleRequestCancel(queueData?.type)}
+            onClick={() => handleRequestCancel(type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
@@ -542,7 +544,7 @@ const ChatRequestCard = ({
             Estimated wait time: {formatTime(timeLeft)}
           </p>
           <button
-            onClick={() => handleRequestCancel(queueData?.type)}
+            onClick={() => handleRequestCancel("chat")}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
           >
             ✕
