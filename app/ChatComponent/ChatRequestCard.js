@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect, useContext, } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import SocketContext from "../context/socketContext";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { clearActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
+import { removeActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { useDispatch } from "react-redux";
 
 const ChatRequestCard = ({
@@ -14,6 +14,7 @@ const ChatRequestCard = ({
   user_Id,
   astroimage,
   astro_id,
+  type,
 }) => {
   const dispatch = useDispatch();
   const route = useRouter();
@@ -28,7 +29,7 @@ const ChatRequestCard = ({
   const [showQueuePopup, setShowQueuePopup] = useState(false);
   const [showWaitingPopup, setShowWaitingPopup] = useState(false);
   const [chatActive, setChatActive] = useState(false);
-  const [type, setType] = useState("");
+  // const [type, setType] = useState("");
   const [queueData, setQueueData] = useState(null);
   const { mode } = useParams();
 
@@ -130,7 +131,7 @@ const ChatRequestCard = ({
 
     const hasActiveRequest =
       localStorage.getItem(`queue_${room_Id}`) ||
-      localStorage.getItem("chat_request");
+      localStorage.getItem(`chat_request_${room_Id}`);
 
     if (!hasActiveRequest) return;
 
@@ -156,10 +157,10 @@ const ChatRequestCard = ({
 
     [
       "chatActive",
-      "activeChatRoom",
+      `activeChatRoom_${room_Id}`,
       "activeChatSession",
-      "chat_request",
-      "activeRequest",
+      `chat_request_${room_Id}`,
+      // "activeRequest",
       `chatJoined_${room_Id}`,
       `queue_${room_Id}`,
       `timer_${room_Id}`,
@@ -168,7 +169,7 @@ const ChatRequestCard = ({
     setShowQueuePopup(false);
     setShowWaitingPopup(false);
 
-    dispatch(clearActiveRequest());
+    dispatch(removeActiveRequest(room_Id));
   }, [timeLeft]);
 
   // check active chat
@@ -179,11 +180,10 @@ const ChatRequestCard = ({
   // =========================================================
 
   useEffect(() => {
-    const activeRoom = localStorage.getItem("activeChatRoom");
-    setType(JSON.parse(localStorage.getItem("activeRequest"))?.type);  
+    const activeRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
+    // setType(JSON.parse(localStorage.getItem("activeRequest"))?.type);
 
     if (activeRoom === room_Id) {
-
       setChatActive(true);
       setShowWaitingPopup(false);
       setShowQueuePopup(false);
@@ -222,7 +222,7 @@ const ChatRequestCard = ({
     }
 
     // fallback → assume position 0
-    if (localStorage.getItem("chat_request")) {
+    if (localStorage.getItem(`chat_request_${room_Id}`)) {
       setShowWaitingPopup(true);
       setShowQueuePopup(false);
       startTimer(60);
@@ -249,11 +249,10 @@ const ChatRequestCard = ({
     const handleConnect = () => {
       console.log("🔌 CONNECT HANDLER");
 
-      const activeRoom = localStorage.getItem("activeChatRoom");
+      const activeRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
       // ✅ 1. ACTIVE CHAT — HIGHEST PRIORITY
       if (activeRoom === room_Id) {
-
         setChatActive(true);
         setShowWaitingPopup(false);
         setShowQueuePopup(false);
@@ -278,7 +277,7 @@ const ChatRequestCard = ({
       }
 
       // ✅ 3. REQUEST REJOIN
-      if (localStorage.getItem("chat_request")) {
+      if (localStorage.getItem(`chat_request_${room_Id}`)) {
         socket.emit("rejoin_queue", {
           room_id: room_Id,
           astro_id,
@@ -288,9 +287,8 @@ const ChatRequestCard = ({
         setTimeout(() => {
           if (
             !queueRef.current &&
-            localStorage.getItem("activeChatRoom") !== room_Id
+            localStorage.getItem(`activeChatRoom_${room_Id}`) !== room_Id
           ) {
-
             const fallbackQueue = { position: 0, waitTime: 60 };
 
             setQueueData(fallbackQueue);
@@ -310,25 +308,23 @@ const ChatRequestCard = ({
       }
 
       // ✅ 4. NEW REQUEST (ONLY IF NOTHING ELSE)
-      if (localStorage.getItem("activeChatRoom") === room_Id) {
+      if (localStorage.getItem(`activeChatRoom_${room_Id}`) === room_Id) {
         return;
       }
 
       if (!room_Id) {
-
         return;
       }
 
+      // if (mode != "call") {
+      //   socket.emit(`chat_request_${room_Id}`, {
+      //     room_id: room_Id,
+      //     astro_id,
+      //     user_id: user_Id,
+      //   });
+      // }
 
-      if (mode != "call") {
-        socket.emit("chat_request", {
-          room_id: room_Id,
-          astro_id,
-          user_id: user_Id,
-        });
-      }
-
-      localStorage.setItem("chat_request", "true");
+      // localStorage.setItem(`chat_request_${room_Id}`, "true");
 
       setTimeout(() => {
         if (!queueRef.current) {
@@ -351,12 +347,16 @@ const ChatRequestCard = ({
     if (!socket) return;
 
     const handleAccepted = (data) => {
+      console.log("ACCEPTED DATA:", data);
+      console.log("ROOM:", room_Id);
+
       if (data.roomid !== room_Id) return;
 
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
+
       timeoutHandledRef.current = true;
 
       setChatActive(true);
@@ -364,48 +364,64 @@ const ChatRequestCard = ({
       setShowQueuePopup(false);
       setQueueData(null);
 
-      localStorage.setItem("activeChatRoom", room_Id);
+      localStorage.setItem(`activeChatRoom_${room_Id}`, room_Id);
+
       [
         "chatActive",
-        "chat_request",
+        `chat_request_${room_Id}`,
         "activeChatSession",
-        "activeRequest",
         `chatCompleted_${room_Id}`,
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
 
-      route.push(`/chat-with-astrologer/${room_Id}`);
+      setTimeout(() => {
+        route.push(`/chat-with-astrologer/${room_Id}`);
+      }, 100);
     };
-     const handleCallCancelled = (data) => {
-      console.log("📞 CALL CANCELLED EVENT RECEIVED:", data);
-         if (data.roomId !== room_Id) return;
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
+    const handleCallCancelled = (data) => {
+      console.log("📞 CALL CANCELLED EVENT:", data);
+
+      if (data.roomId !== room_Id) return;
+
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
 
       setShowQueuePopup(false);
       setShowWaitingPopup(false);
 
-      //localStorage.setItem(`chatCompleted_${room_Id}`, "true");
       [
-        "call_request",
-        "activeRequest",
+        `call_request_${room_Id}`,
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
 
       toast.success("The astrologer has rejected your call request.");
-      setTimeout(() => route.push(`/astrologer/call`), 100);
+
+      setTimeout(() => {
+        route.push(`/astrologer/call`);
+      }, 100);
     };
 
     const handleQueue = (data) => {
+      console.log("QUEUE EVENT:", data);
+
+      // OPTIONAL SAFETY
+      if (data.roomid && data.roomid !== room_Id) {
+        return;
+      }
+
       setQueueData(data);
+
       localStorage.setItem(`queue_${room_Id}`, JSON.stringify(data));
 
       if (data.position === 0) {
         setShowWaitingPopup(true);
         setShowQueuePopup(false);
 
-        startTimer(60); // always reset fresh
+        startTimer(60);
       } else {
         setShowWaitingPopup(false);
         setShowQueuePopup(true);
@@ -415,65 +431,108 @@ const ChatRequestCard = ({
     };
 
     const handleReject = (data) => {
+      console.log("REJECT EVENT:", data);
+
       if (data.roomid !== room_Id) return;
 
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
 
       setShowQueuePopup(false);
       setShowWaitingPopup(false);
 
       localStorage.setItem(`chatCompleted_${room_Id}`, "true");
+
       [
         "chatActive",
-        "activeChatRoom",
+        `activeChatRoom_${room_Id}`,
         "activeChatSession",
-        "chat_request",
-        "activeRequest",
+        `chat_request_${room_Id}`,
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
 
       toast.success("The astrologer has rejected your chat request.");
-      setTimeout(() => route.push(`/astrologer/chat`), 100);
+
+      setTimeout(() => {
+        route.push(`/astrologer/chat`);
+      }, 100);
     };
-   const handleCallAccepted = (data) => {
-  if (data.roomId !== room_Id) return;
-  if (timeoutHandledRef.current) return;   // Add this protection
-  timeoutHandledRef.current = true;
 
-  if (timerIntervalRef.current) {
-    clearInterval(timerIntervalRef.current);
-    timerIntervalRef.current = null;
-  }
+    const handleCallAccepted = (data) => {
+      console.log("CALL ACCEPTED:", data);
 
-  setChatActive(true);
-  setShowWaitingPopup(false);
-  setShowQueuePopup(false);
+      if (data.roomId !== room_Id) return;
 
-  localStorage.setItem("activeCallRoom", room_Id);
+      if (timeoutHandledRef.current) return;
 
-  ["chat_request", `queue_${room_Id}`, `timer_${room_Id}`].forEach((key) =>
-    localStorage.removeItem(key)
-  );
+      timeoutHandledRef.current = true;
 
-  // Prevent multiple navigation
-  setTimeout(() => {
-    route.push(`/call/${room_Id}`);
-  }, 300);
-};
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+
+      setChatActive(true);
+      setShowWaitingPopup(false);
+      setShowQueuePopup(false);
+
+      localStorage.setItem(`activeCallRoom_${room_Id}`, room_Id);
+
+      [
+        `call_request_${room_Id}`,
+        `queue_${room_Id}`,
+        `timer_${room_Id}`,
+      ].forEach((key) => localStorage.removeItem(key));
+
+      setTimeout(() => {
+        route.push(`/call/${room_Id}`);
+      }, 300);
+    };
+
+    // =========================
+    // REMOVE OLD LISTENERS FIRST
+    // =========================
+
+    socket.off("chatAcceptedByAstrologer", handleAccepted);
+
+    socket.off("call_cancel_by_astrologer", handleCallCancelled);
+
+    socket.off("queue_position", handleQueue);
+
+    socket.off("chat_rejected", handleReject);
+
+    socket.off("callAcceptedByAstrologer", handleCallAccepted);
+
+    // =========================
+    // REGISTER NEW LISTENERS
+    // =========================
 
     socket.on("chatAcceptedByAstrologer", handleAccepted);
+
     socket.on("call_cancel_by_astrologer", handleCallCancelled);
+
     socket.on("queue_position", handleQueue);
+
     socket.on("chat_rejected", handleReject);
+
     socket.on("callAcceptedByAstrologer", handleCallAccepted);
+
+    // =========================
+    // CLEANUP
+    // =========================
 
     return () => {
       socket.off("chatAcceptedByAstrologer", handleAccepted);
-      socket.off("queue_position", handleQueue);
-      socket.off("chat_rejected", handleReject);
-      socket.off("callAcceptedByAstrologer", handleCallAccepted);
+
       socket.off("call_cancel_by_astrologer", handleCallCancelled);
+
+      socket.off("queue_position", handleQueue);
+
+      socket.off("chat_rejected", handleReject);
+
+      socket.off("callAcceptedByAstrologer", handleCallAccepted);
     };
   }, [socket, room_Id]);
 
@@ -490,21 +549,19 @@ const ChatRequestCard = ({
   const handleRequestCancel = (type) => {
     console.log("❌ CANCELLING REQUEST, type:", type);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-   console.log("Emitting cancel eventttttt:", `cancel_${type}_request`);
-  socket?.emit(`cancel_${type}_request`, {
-    room_id: room_Id,
-    astroid: astro_id,
-    user_id: user_Id,
-    type: type,
-  });
-
-   
+    console.log("Emitting cancel eventttttt:", `cancel_${type}_request`);
+    socket?.emit(`cancel_${type}_request`, {
+      room_id: room_Id,
+      astroid: astro_id,
+      user_id: user_Id,
+      type: type,
+    });
 
     [
       "chatActive",
-      "activeChatRoom",
+      `activeChatRoom_${room_Id}`,
       "activeChatSession",
-      "chat_request",
+      `chat_request_${room_Id}`,
       `queue_${room_Id}`,
       `timer_${room_Id}`,
       `chatJoined_${room_Id}`,
@@ -513,7 +570,7 @@ const ChatRequestCard = ({
     setShowWaitingPopup(false);
     setShowQueuePopup(false);
     setQueueData(null);
-    dispatch(clearActiveRequest());
+    dispatch(removeActiveRequest(room_Id));
   };
 
   // =========================================================
@@ -540,23 +597,23 @@ const ChatRequestCard = ({
   return (
     <div className="flex items-center justify-center w-full">
       {showWaitingPopup && (
-        <div className="w-full bg-purple-200 px-3 py-2 rounded-full flex relative">
+        <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
           <Image
-            src={`/ds-img/${astroimage}`}
+            src="/ds-img/a.jpg"
+            alt="Neha Verma"
             width={50}
             height={50}
-            className="rounded-full"
-            alt="astro"
+            className="rounded-full object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold">{astro_Name}</h3>
-            <p className="text-xs text-gray-500">
+            <h3 className="font-semibold text-white ">{astro_Name}</h3>
+            <p className="text-xs text-gray-300 font-extralight">
               Wait Time: {formatTime(timeLeft)}
             </p>
           </div>
           <button
             onClick={() => handleRequestCancel(type)}
-            className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
+            className="absolute  right-1 top-1 text-xs bg-red-500 text-white h-5 w-5 rounded-full"
           >
             ✕
           </button>
@@ -564,13 +621,24 @@ const ChatRequestCard = ({
       )}
 
       {!showWaitingPopup && showQueuePopup && (
-        <div className="bg-purple-200 px-4 py-2 rounded-full w-full text-black relative">
-          <p className="text-sm font-medium">
-            You are in line! Position #{queueData?.position}
-          </p>
-          <p className="text-xs text-gray-600">
-            Estimated wait time: {formatTime(timeLeft)}
-          </p>
+        <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
+          <Image
+            src="/ds-img/a.jpg"
+            alt="Neha Verma"
+            width={50}
+            height={50}
+            className="rounded-full object-cover"
+          />
+          <div className="ml-3">
+            <h3 className="font-semibold text-white">{astro_Name}</h3>
+
+            <p className="text-sm font-medium">
+              You are in line! Position : {queueData?.position}
+            </p>
+            <p className="text-xs text-gray-300 font-extralight">
+              Estimated wait time: {formatTime(timeLeft)}
+            </p>
+          </div>
           <button
             onClick={() => handleRequestCancel(queueData?.type)}
             className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"

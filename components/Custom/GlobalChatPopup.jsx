@@ -1,27 +1,35 @@
 "use client";
+
 import { useSelector } from "react-redux";
 import FloatingChatRequest from "./FloatingChatRequest";
 import { ChatRequestCard } from "@/app/ChatComponent";
 
 export default function GlobalChatPopup() {
-  const { activeRequest } = useSelector(
+  const { activeRequests } = useSelector(
     (state) => state.send_request_chat
   );
 
-  //  single source of truth
-  if (!activeRequest) return null;
+  if (!activeRequests?.length) return null;
 
   return (
-    <FloatingChatRequest>
-      <ChatRequestCard
-        room_Id={activeRequest.roomId}
-        astro_Name={activeRequest.astrologer?.full_name || ""}
-        astroimage={activeRequest.astrologer?.profile_image || ""}
-        astro_id={activeRequest.astrologer?.id || ""}
-        chat_time={activeRequest.chatTime}
-        user_Id={activeRequest.userId}
-        experts_price={activeRequest.astrologer?.price || 0}
-      />
-    </FloatingChatRequest>
+    <>
+      {activeRequests.map((request, index) => (
+        <FloatingChatRequest
+          key={request.roomId}
+          index={index}
+        >
+          <ChatRequestCard
+            room_Id={request.roomId}
+            astro_Name={request.astrologer?.name || ""}
+            astroimage={request.astrologer?.profile_image || ""}
+            astro_id={request.astrologer?.id || ""}
+            chat_time={request.chatTime}
+            user_Id={request.userId}
+            experts_price={request.astrologer?.price || 0}
+            type={request.type}
+          />
+        </FloatingChatRequest>
+      ))}
+    </>
   );
 }

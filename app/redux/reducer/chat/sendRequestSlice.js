@@ -4,15 +4,19 @@ const initialState = {
   loading: false,
   chatData: [],
   chatStatusCode: null,
-  activeRequest:
+
+  // ✅ MULTIPLE REQUESTS
+  activeRequests:
     typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("activeRequest")) || null
-      : null,
+      ? JSON.parse(localStorage.getItem("activeRequests")) || []
+      : [],
 };
 
 const sendRequestSlice = createSlice({
   name: "send_request_chat",
+
   initialState,
+
   reducers: {
     sendChatRequest: (state) => {
       state.loading = true;
@@ -34,24 +38,45 @@ const sendRequestSlice = createSlice({
       state.chatStatusCode = null;
     },
 
-    // ✅ STORE + PERSIST
-    setActiveRequest: (state, action) => {
-      state.activeRequest = action.payload;
+    // ✅ ADD REQUEST
+    addActiveRequest: (state, action) => {
+      const exists = state.activeRequests.find(
+        (item) => item.roomId === action.payload.roomId
+      );
+
+      // duplicate room avoid
+      if (!exists) {
+        state.activeRequests.push(action.payload);
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "activeRequests",
+            JSON.stringify(state.activeRequests)
+          );
+        }
+      }
+    },
+
+    // ✅ REMOVE SINGLE REQUEST
+    removeActiveRequest: (state, action) => {
+      state.activeRequests = state.activeRequests.filter(
+        (item) => item.roomId !== action.payload
+      );
 
       if (typeof window !== "undefined") {
         localStorage.setItem(
-          "activeRequest",
-          JSON.stringify(action.payload)
+          "activeRequests",
+          JSON.stringify(state.activeRequests)
         );
       }
     },
 
-    // ✅ CLEAR + REMOVE
-    clearActiveRequest: (state) => {
-      state.activeRequest = null;
+    // ✅ CLEAR ALL
+    clearAllActiveRequests: (state) => {
+      state.activeRequests = [];
 
       if (typeof window !== "undefined") {
-        localStorage.removeItem("activeRequest");
+        localStorage.removeItem("activeRequests");
       }
     },
   },
@@ -62,8 +87,10 @@ export const {
   sendChatReqAdd,
   sendChatReqFail,
   resetCode,
-  setActiveRequest,
-  clearActiveRequest,
+
+  addActiveRequest,
+  removeActiveRequest,
+  clearAllActiveRequests,
 } = sendRequestSlice.actions;
 
 export default sendRequestSlice.reducer;

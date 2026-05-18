@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createReviewRequest } from "../redux/reducer/auth/reviewSlice";
 import { debug } from "three/src/nodes/utils/DebugNode";
-import { clearActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
+import { removeActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 
 // ================= GRAPHQL =================
 const GET_RECHARGE_PACKS = gql`
@@ -437,10 +437,10 @@ const UserChat = ({
     localStorage.setItem(`chatCompleted_${room_Id}`, "true");
     localStorage.removeItem(`chatJoined_${room_Id}`);
     localStorage.removeItem("activeRequest");
-    localStorage.removeItem("chat_request");
+    localStorage.removeItem(`chat_request_${room_Id}`);
 
 
-    ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+    ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
       console.log("Removing localStorage key:", key);
       localStorage.removeItem(key);
     });
@@ -565,7 +565,7 @@ const UserChat = ({
     socket.on("leave_chat", (data) => {
       if (data.roomId === room_Id) {
         localStorage.removeItem(`chatJoined_${room_Id}`);
-        ["chatActive", "activeChatRoom", "activeChatSession"].forEach((key) => {
+        ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
           localStorage.removeItem(key);
         });
         setLeaveMessage("Chat ended by astrologer");
@@ -594,7 +594,7 @@ const UserChat = ({
       setLeaveMessage("Chat completed successfully");
       setShowReviewPopup(true);
       localStorage.removeItem("activeRequest");
-      localStorage.removeItem("chat_request");
+      localStorage.removeItem(`chat_request_${room_Id}`);
       localStorage.removeItem("activeChatSession");
 
 
@@ -766,7 +766,7 @@ const UserChat = ({
       toast.success("Review submitted successfully");
 
       setShowReviewPopup(false);
-      dispatch(clearActiveRequest());
+      dispatch(removeActiveRequest(room_Id));
 
       setTimeout(() => {
         router.push("/astrologer/chat");

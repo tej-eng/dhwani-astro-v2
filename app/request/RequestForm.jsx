@@ -17,7 +17,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { requestFormSchema } from "@/lib/userZodIntake";
 import Image from "next/image";
 import { StarIcon } from "flowbite-react";
-import { setActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
+import { addActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
+import { createRequestAndEmit } from "@/utils/createRequestAndEmit";
+
+// import { createRequestAndEmit } from "@/utils/createRequestAndEmit";
 
 const CREATE_INTAKE = gql`
   mutation CreateIntake($input: IntakeInput!) {
@@ -44,6 +47,20 @@ const GET_USER_BY_ID = gql`
     }
   }
 `;
+const GET_PROFILE_BY_ID = gql`
+  query recentIntakes($id: String!) {
+    getRecentProfile(id: $id) {
+      id
+      name
+      countryCode
+      mobile
+      gender
+      birthDate
+      birthTime
+      occupation
+    }
+  }
+`;
 
 const GET_ASTROLOGER_BY_ID = gql`
   query GetAstrologerById($id: String!) {
@@ -59,7 +76,7 @@ const GET_ASTROLOGER_BY_ID = gql`
   }
 `;
 
-export default function RequestForm({ mode , astroId }) {
+export default function RequestForm({ mode, astroId }) {
   const debounceRef = useRef(null); //  debounce added
 
   const [createIntake] = useMutation(CREATE_INTAKE);
@@ -82,7 +99,11 @@ export default function RequestForm({ mode , astroId }) {
     const originalEmit = socket.emit;
 
     socket.emit = function (...args) {
-      console.log("🚀 FRONTEND SOCKET EMITxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:", args[0], args[1]);
+      console.log(
+        "🚀 FRONTEND SOCKET EMITxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:",
+        args[0],
+        args[1],
+      );
       return originalEmit.apply(this, args);
     };
 
@@ -134,6 +155,11 @@ export default function RequestForm({ mode , astroId }) {
     variables: { id },
     skip: !id,
   });
+  
+    const { data: profileInfo } = useQuery(GET_PROFILE_BY_ID, {
+    variables: { id },
+    skip: !id,
+  });
 
   const { data: astrologerInfo, loading } = useQuery(GET_ASTROLOGER_BY_ID, {
     variables: { id: astro_id },
@@ -145,7 +171,6 @@ export default function RequestForm({ mode , astroId }) {
       setAstrologer(astrologerInfo.getAstrologerById);
     }
   }, [astrologerInfo]);
-
 
   useEffect(() => {
     if (userInfo?.getUserById) {
@@ -166,120 +191,134 @@ export default function RequestForm({ mode , astroId }) {
     }
   }, [userInfo, countries, setValue]);
 
+
   const onSubmit = async (data) => {
+
+  if (isSubmitting) return;
+
+  setIsSubmitting(true);
+
   try {
-    // PREVENT DOUBLE SUBMIT
-    if (isSubmitting) return;
 
-    setIsSubmitting(true);
-
-    const response = await createIntake({
-      variables: {
-        input: {
-          astrologerId: astro_id,
-          name: data.name,
-          countryCode: data.countryCode || country?.dialCode,
-          mobile: data.phone,
-          gender: data.usergender,
-          birthDate: data.dob,
-          birthTime: data.time,
-          occupation: data.occupation,
-          birthPlace: data.place,
-          requestType: mode === "call" ? "call" : "chat",
-        },
-      },
+    await createRequestAndEmit({
+      createIntake,
+      mode,
+      astro_id,
+      profileData: data,
+      socket,
+      connectSocket,
+      astrologer,
+      dispatch,
+      router,
+      userId: id,
     });
 
-    const {
-      roomId,
-      chatTime,
-      intakeId,
-      message,
-    } = response.data.createIntake;
-
-    setChatTime(chatTime);
-    setRoomId(roomId);
-
-    if (!intakeId) {
-      toast.error("Failed to create intake");
-      return;
-    }
-
-    if (
-      message ===
-      "duplicate request. User is already in queue for this astrologer"
-    ) {
-      toast.error(
-        "You already have a pending request for this astrologer."
-      );
-      return;
-    }
-
-    if (
-      message ===
-      "Sorry, queue is too long. Please try another astrologer."
-    ) {
-      toast.error(message);
-      return;
-    }
-
-    let activeSocket = socket;
-
-    if (!activeSocket?.connected) {
-      activeSocket = connectSocket();
-    }
-
-    const req_data = {
-      name: data.name,
-      gender: data.usergender,
-      dateOfBirth: data.dob,
-      timeOfBirth: data.time,
-      occupation: data.occupation,
-      location: data.place,
-      userName: data.name,
-      user_id: id,
-      astro_id,
-      room_id: roomId,
-      maximum_time: chatTime,
-      phoneNumber: data.phone,
-    };
-
-    // ONLY ONE EVENT
-    const eventName =
-      mode === "call"
-        ? "call_request"
-        : "chat_request";
-
-    console.log(
-      "📡 EMITTING EVENT:",
-      eventName
-    );
-
-    activeSocket.emit(eventName, req_data);
-
-    localStorage.setItem(
-      `${mode}_request`,
-      JSON.stringify(req_data)
-    );
-
-    dispatch(
-      setActiveRequest({
-        roomId,
-        astrologer,
-        chatTime,
-        userId: id,
-        type: mode === "call" ? "call" : "chat",
-      })
-    );
-
-    router.push(`/astrologer/${mode}`);
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message);
   } finally {
     setIsSubmitting(false);
   }
 };
+
+  // const onSubmit = async (data) => {
+  //   try {
+  //     // PREVENT DOUBLE SUBMIT
+  //     if (isSubmitting) return;
+
+  //     setIsSubmitting(true);
+
+  //     const response = await createIntake({
+  //       variables: {
+  //         input: {
+  //           astrologerId: astro_id,
+  //           name: data.name,
+  //           countryCode: data.countryCode || country?.dialCode,
+  //           mobile: data.phone,
+  //           gender: data.usergender,
+  //           birthDate: data.dob,
+  //           birthTime: data.time,
+  //           occupation: data.occupation,
+  //           birthPlace: data.place,
+  //           requestType: mode === "call" ? "call" : "chat",
+  //         },
+  //       },
+  //     });
+
+  //     const { roomId, chatTime, intakeId, message } =
+  //       response.data.createIntake;
+
+  //     setChatTime(chatTime);
+  //     setRoomId(roomId);
+
+  //     if (!intakeId) {
+  //       toast.error("Failed to create intake");
+  //       return;
+  //     }
+
+  //     if (
+  //       message ===
+  //       "duplicate request. User is already in queue for this astrologer"
+  //     ) {
+  //       toast.error("You already have a pending request for this astrologer.");
+  //       return;
+  //     }
+
+  //     if (
+  //       message === "Sorry, queue is too long. Please try another astrologer."
+  //     ) {
+  //       toast.error(message);
+  //       return;
+  //     }
+
+  //     let activeSocket = socket;
+
+  //     if (!activeSocket?.connected) {
+  //       activeSocket = connectSocket();
+  //     }
+
+  //     const req_data = {
+  //       name: data.name,
+  //       gender: data.usergender,
+  //       dateOfBirth: data.dob,
+  //       timeOfBirth: data.time,
+  //       occupation: data.occupation,
+  //       location: data.place,
+  //       userName: data.name,
+  //       user_id: id,
+  //       astro_id,
+  //       room_id: roomId,
+  //       maximum_time: chatTime,
+  //       phoneNumber: data.phone,
+  //     };
+
+  //     // ONLY ONE EVENT
+  //     const eventName = mode === "call" ? "call_request" : "chat_request";
+
+  //     console.log("📡 EMITTING EVENT:", eventName);
+
+  //     activeSocket.emit(eventName, req_data);
+
+  //     localStorage.setItem(
+  //       `${mode}_request_${roomId}`,
+  //       JSON.stringify(req_data),
+  //     );
+
+  //     dispatch(
+  //       addActiveRequest({
+  //         roomId,
+  //         astrologer,
+  //         chatTime,
+  //         userId: id,
+  //         type: mode === "call" ? "call" : "chat",
+  //       }),
+  //     );
+
+  //     router.push(`/astrologer/${mode}`);
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error(err.message);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   const occupation_list = [
     "Student",
@@ -322,13 +361,18 @@ export default function RequestForm({ mode , astroId }) {
       <form onSubmit={handleSubmit(handleDebouncedSubmit)}>
         <div className="flex items-start justify-center gap-5 px-10 my-10 text-black">
           <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl">
-
             <div className="bg-linear-to-r from-purple-900 via-purple-800 to-purple-900 gap-2 items-center justify-center py-3 rounded-full flex flex-col text-white">
               <h1 className="text-2xl font-semibold">Consultation Form</h1>
               <div className="flex items-center justify-between gap-15 text-xs font-extralight">
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">✨ Get answers in 2 minutes</span>
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">🔒 “Your data is secure”</span>
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">👨‍🔬 “Verified astrologers only”</span>
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  ✨ Get answers in 2 minutes
+                </span>
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  🔒 “Your data is secure”
+                </span>
+                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  👨‍🔬 “Verified astrologers only”
+                </span>
               </div>
             </div>
 
@@ -478,33 +522,26 @@ export default function RequestForm({ mode , astroId }) {
               </div>
 
               <div className="md:col-span-3 text-center">
-            <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-6 py-2 bg-yellow-400 rounded-full disabled:opacity-50"
-          >
-            {isSubmitting
-              ? "Please wait..."
-              : mode === "call"
-              ? "Start Call Now"
-              : "Start Chat Now"}
-          </button> 
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-6 py-2 bg-yellow-400 rounded-full disabled:opacity-50"
+                >
+                  {isSubmitting
+                    ? "Please wait..."
+                    : mode === "call"
+                      ? "Start Call Now"
+                      : "Start Chat Now"}
+                </button>
               </div>
             </div>
-
-
-
           </div>
-
         </div>
       </form>
 
       <div className="bg-linear-to-r from-purple-300 via-violet-400 to-purple-200 gap-2 items-center justify-center py-3 flex flex-col text-white">
-
         <div className="flex items-center text-black justify-between gap-15 text-sm font-semibold">
-
           <div className="flex items-center gap-3">
-
             {/* Avatar Stack */}
             <div className="flex items-center">
               {users.map((user, index) => (
@@ -528,12 +565,8 @@ export default function RequestForm({ mode , astroId }) {
                 +500
               </div>
             </div>
-
-
-
           </div>
           <span className="  px-4 py-1 ">⭐⭐⭐⭐⭐ 4.9 (50k+ reviews)</span>
-
         </div>
       </div>
 
