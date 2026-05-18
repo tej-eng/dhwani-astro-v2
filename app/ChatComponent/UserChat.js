@@ -568,6 +568,7 @@ const UserChat = ({
         ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
           localStorage.removeItem(key);
         });
+         dispatch(removeActiveRequest(room_Id));
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
         setTimeout(() => {
@@ -584,7 +585,7 @@ const UserChat = ({
     });
 
     //  Completed Chat
-    socket.on("chatCompleted", (data) => {
+    socket.on("chatCompleted", (data) => { 
       if (data.roomId !== room_Id) return;
 
       if (chatEndedRef.current) return; //  prevent duplicate
@@ -593,9 +594,11 @@ const UserChat = ({
 
       setLeaveMessage("Chat completed successfully");
       setShowReviewPopup(true);
-      localStorage.removeItem("activeRequest");
+      localStorage.removeItem("activeRequests");
       localStorage.removeItem(`chat_request_${room_Id}`);
       localStorage.removeItem("activeChatSession");
+      dispatch(removeActiveRequest(room_Id));
+
 
 
 

@@ -98,6 +98,11 @@ const ChatRequestCard = ({
               astroid: astro_id,
               type: type,
             });
+            dispatch(removeActiveRequest(room_Id));
+            [`call_request_${room_Id}`].forEach((key) =>
+              localStorage.removeItem(key),
+            );
+            toast.success("Chat request timed out. Please try again.");
           } else {
             socket.once("connect", () => {
               socket.emit("autodisconnect", {
@@ -105,6 +110,11 @@ const ChatRequestCard = ({
                 astroid: astro_id,
                 type: type,
               });
+              dispatch(removeActiveRequest(room_Id));
+              [`call_request_${room_Id}`].forEach((key) =>
+                localStorage.removeItem(key),
+              );
+              toast.success("Chat request timed out. Please try again.");
             });
           }
         }
@@ -143,6 +153,10 @@ const ChatRequestCard = ({
         astroid: astro_id,
         type: type,
       });
+      dispatch(removeActiveRequest(room_Id));
+      [`call_request_${room_Id}`].forEach((key) =>
+        localStorage.removeItem(key),
+      );
 
       toast.success("Chat request timed out. Please try again.");
     };
@@ -393,10 +407,13 @@ const ChatRequestCard = ({
       setShowWaitingPopup(false);
 
       [
+        `activeRequests`,
         `call_request_${room_Id}`,
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
+
+      dispatch(removeActiveRequest(room_Id));
 
       toast.success("The astrologer has rejected your call request.");
 
@@ -452,6 +469,7 @@ const ChatRequestCard = ({
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
+      dispatch(removeActiveRequest(room_Id));
 
       toast.success("The astrologer has rejected your chat request.");
 
@@ -481,7 +499,7 @@ const ChatRequestCard = ({
       localStorage.setItem(`activeCallRoom_${room_Id}`, room_Id);
 
       [
-        `call_request_${room_Id}`,
+        // `call_request_${room_Id}`,
         `queue_${room_Id}`,
         `timer_${room_Id}`,
       ].forEach((key) => localStorage.removeItem(key));
@@ -497,7 +515,7 @@ const ChatRequestCard = ({
 
     socket.off("chatAcceptedByAstrologer", handleAccepted);
 
-    socket.off("call_cancel_by_astrologer", handleCallCancelled);
+    // socket.off("call_cancel_by_astrologer", handleCallCancelled);
 
     socket.off("queue_position", handleQueue);
 
@@ -561,7 +579,7 @@ const ChatRequestCard = ({
       "chatActive",
       `activeChatRoom_${room_Id}`,
       "activeChatSession",
-      `chat_request_${room_Id}`,
+      `${type}_request_${room_Id}`,
       `queue_${room_Id}`,
       `timer_${room_Id}`,
       `chatJoined_${room_Id}`,

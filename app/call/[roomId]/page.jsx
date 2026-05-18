@@ -4,8 +4,11 @@ import { useEffect, useRef, useContext, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import SocketContext from "@/app/context/socketContext";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
+import { removeActiveRequest } from "@/app/redux/reducer/chat/sendRequestSlice";
 
 export default function CallPage() {
+  const dispatch = useDispatch();
   const { roomId } = useParams();
 
   const router = useRouter();
@@ -311,10 +314,16 @@ export default function CallPage() {
       console.log("✅ Remote description set");
 
       setCallStatus("Connected");
-      const stored = localStorage.getItem("call_request");
+      const stored = localStorage.getItem(`call_request_${roomId}`);
 
       if (stored) {
         const data = JSON.parse(stored);
+
+        console.log(
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          data,
+          data.maximum_time,
+        );
 
         // maximum_time = minutes
         const totalSeconds = Number(data.maximum_time || 0) * 60;
@@ -366,8 +375,11 @@ export default function CallPage() {
 
     activeSocket.on("call_ended_by_astrologer", () => {
       console.log("📞 Call ended by astrologer");
+
       cleanup();
-      router.push("/");
+      dispatch(removeActiveRequest(roomId));
+
+      router.push("/astrologer/call");
     });
 
     // =========================
@@ -436,7 +448,7 @@ export default function CallPage() {
     // }
 
     const data = JSON.parse(stored);
-
+debugger;
     socket.emit("call_ended_by_user", {
       room_id: roomId,
       astro_id: data?.astro_id,
@@ -444,7 +456,9 @@ export default function CallPage() {
 
     cleanup();
 
-    router.push("/");
+    dispatch(removeActiveRequest(roomId));
+
+    router.push("/astrologer/call");
   };
 
   // =========================
@@ -514,6 +528,13 @@ export default function CallPage() {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
+    [
+      `call_request_${roomId}`,
+      `activeCallRoom_${roomId}`,
+      "activeRequests",
+      `queue_${roomId}`,
+      `timer_${roomId}`,
+    ].forEach((key) => localStorage.removeItem(key));
   };
 
   // format time
