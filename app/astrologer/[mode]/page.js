@@ -8,38 +8,43 @@ import { useQuery } from "@apollo/client/react";
 
 const GET_ASTROLOGERS = gql`
   query GetAstrologers($searchInput: AstrologerSearchInput) {
-    getAstrologerListBySearch(searchInput: $searchInput) {
-      data {
-        id
-        profilePic
-        name
-        experience
-        price
-        rating
-        skills
-        languages
-  
-      }
-      totalPages
+  getAstrologerListBySearch(searchInput: $searchInput) {
+    data {
+      id
+      profilePic
+      name
+      experience
+      price
+      offerPrice
+      commissionPercent
+      rating
+      skills
+      languages
     }
+    totalPages
   }
+}
 `;
 
 export default function Page() {
   const params = useParams();
   const mode = params?.mode;
 
-  const { data, loading, error, fetchMore } = useQuery(GET_ASTROLOGERS, {
+ const { data, loading, error, fetchMore } = useQuery(
+  GET_ASTROLOGERS,
+  {
     variables: {
       searchInput: {
         limit: 12,
         page: 1,
         sortField: "RATING",
         sortOrder: "DESC",
+        type: mode?.toUpperCase() || "CHAT",
       },
     },
     fetchPolicy: "network-only",
-  });
+  }
+);
 
   if (loading) return <Astroskelton />;
   if (error) return <p>Error: {error.message}</p>;
