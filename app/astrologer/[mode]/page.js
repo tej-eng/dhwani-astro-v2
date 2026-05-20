@@ -7,7 +7,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 
 const GET_ASTROLOGERS = gql`
-  query GetAstrologers($searchInput: AstrologerSearchInput) {
+ query GetAstrologers($searchInput: AstrologerSearchInput) {
   getAstrologerListBySearch(searchInput: $searchInput) {
     data {
       id
