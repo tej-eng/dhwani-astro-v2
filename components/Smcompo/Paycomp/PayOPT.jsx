@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import { AlertLoading } from "../../../app/common";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { gql } from "@apollo/client";
 import {
   sendPaymentDetail,
   resetStatusCode,
@@ -22,7 +24,7 @@ const searchParams = useSearchParams();
   const { statusCode } = useSelector((state) => state.recharge_payment);
   const { userData } = useSelector((state) => state.getuserDetail);
   const [user, setUserData] = useState("");
- const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+ //const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     if (userData) {
@@ -46,58 +48,104 @@ const searchParams = useSearchParams();
   const route = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const handleCheckout = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("https://dhwaniastro.com/api/createOrder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: payAmount }),
-      });
-
-      const order = await res.json();
-
-      console.log("Order created:", order);
-     
-
-      if (order.error) {
-        alert("Error creating order");
-        setLoading(false);
-
-        return;
-      }
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
-        amount: order.amount,
-        currency: order.currency,
-        name: "Dhwani Astro LLp",
-        description: "Recharge Payment",
-        order_id: order.id,
-        prefill: {
-          name: "",
-          email: "",
-          contact: "",
-        },
-         notes: {
-         userId: storedUser?.id || "test-user-1",
-         source: "dhwaniastro",
-         rechargePackId: packid || "pack_001",
-         coins: 100,
-       },
-        theme: {
-          color: "#fff49e",
-        },
-      };
-
-      setLoading(false);
-
-      const razor = new window.Razorpay(options);
-      razor.open();
-    } catch (error) {
-      alert("Error processing payment: " + error.message);
-    } finally {
+  const CREATE_ORDER = gql`
+  mutation CreateOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      success
+      orderId
+      amount
+      currency
     }
-  };
+  }
+`;
+const [createOrder] = useMutation(CREATE_ORDER);
+ const handleCheckout = async (amount, packId) => {
+  try {
+    customer_recharge();
+
+    setIsPaused(true);
+
+    // CREATE ORDER
+    const { data } = await createOrder({
+      variables: {
+        input: {
+          rechargePackId: packId,
+        },
+      },
+    });
+
+    const order = data?.createOrder;
+
+    if (!order?.success) {
+      setIsPaused(false);
+      toast.error("Order creation failed");
+      return;
+    }
+
+    const options = {
+      key:
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "rzp_test_SNXjhTOgP1CIx0",
+
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.orderId,
+
+      name: "Dhwani Astro LLP",
+      description: "Recharge Payment",
+
+      handler: async function (response) {
+        toast.success("Payment Successful");
+
+        const selectedPack = rechargePacks.find(
+          (p) => p.id === packId
+        );
+
+        if (selectedPack) {
+          const newTime =
+            timeLeft + selectedPack.talktime * 60;
+
+          customer_recharge_completed(newTime);
+
+          setTimeLeft(newTime);
+        }
+
+        setIsPaused(false);
+
+        console.log("Razorpay Response:", response);
+      },
+
+      modal: {
+        ondismiss: function () {
+          customer_recharge_fail();
+
+          toast.error("Payment Cancelled");
+
+          setIsPaused(false);
+        },
+      },
+
+      notes: {
+        userId: user?.id ?? "guest",
+        rechargePackId: packId,
+      },
+
+      theme: {
+        color: "#fff49e",
+      },
+    };
+
+    const razor = new window.Razorpay(options);
+
+    razor.open();
+  } catch (error) {
+    console.error("Checkout Error:", error);
+
+    setIsPaused(false);
+
+    toast.error(error.message || "Payment failed");
+  }
+};
   return (
     <div className="col-span-2">
       <Script
@@ -120,7 +168,9 @@ const searchParams = useSearchParams();
           { name: "Bhim UPI", icon: "/prblm/bh-a.png" },
         ].map((method, idx) => (
           <button aria-label={`Pay with ${method.name}`}
-            onClick={handleCheckout}
+            onClick={
+              () => handleCheckout(payAmount, packid)
+            }
             key={idx}
             className="bg-[linear-gradient(to_right,#a65ed677_54%,#ba38cb67_100%)] rounded-lg p-2  flex flex-col gap-1 items-center hover:scale-105 transition-transform shadow"
           >

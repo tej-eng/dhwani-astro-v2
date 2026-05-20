@@ -96,11 +96,11 @@ export default function CallPage() {
     // =========================
     const createPeer = async () => {
       if (pc.current) {
-        console.log("⚠️ Reusing existing peer");
+        console.log(" Reusing existing peer");
         return pc.current;
       }
 
-      console.log("🟢 Creating RTCPeerConnection");
+      console.log(" Creating RTCPeerConnection");
 
       const iceConfig = {
         iceServers: [
@@ -129,26 +129,26 @@ export default function CallPage() {
       // CONNECTION STATES (Enhanced Logging)
       // =========================
       pc.current.onconnectionstatechange = () => {
-        console.log("🔥 Connection State:", pc.current.connectionState);
+        console.log(" Connection State:", pc.current.connectionState);
       };
 
       pc.current.oniceconnectionstatechange = () => {
-        console.log("🧊 ICE Connection State:", pc.current.iceConnectionState);
+        console.log("ICE Connection State:", pc.current.iceConnectionState);
 
         // Extra warning if failing
         if (
           ["failed", "disconnected"].includes(pc.current.iceConnectionState)
         ) {
-          console.warn("⚠️ ICE Connection failing! Check network/TURN");
+          console.warn(" ICE Connection failing! Check network/TURN");
         }
       };
 
       pc.current.onsignalingstatechange = () => {
-        console.log("📶 Signaling State:", pc.current.signalingState);
+        console.log("Signaling State:", pc.current.signalingState);
       };
 
       pc.current.onicegatheringstatechange = () => {
-        console.log("🧊 ICE Gathering State:", pc.current.iceGatheringState);
+        console.log(" ICE Gathering State:", pc.current.iceGatheringState);
       };
 
       // =========================
@@ -164,16 +164,16 @@ export default function CallPage() {
           },
         });
 
-        console.log("🎤 Local stream acquired successfully");
+        console.log(" Local stream acquired successfully");
 
         const tracks = localStream.current.getAudioTracks();
         tracks.forEach((track) => {
           console.log(
-            `🎤 Track: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`,
+            `Track: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`,
           );
 
           const sender = pc.current.addTrack(track, localStream.current);
-          console.log("➕ Audio track added to peer connection");
+          console.log(" Audio track added to peer connection");
         });
 
         // Verify senders
@@ -189,7 +189,7 @@ export default function CallPage() {
           });
         }, 1500);
       } catch (err) {
-        console.error("❌ Microphone access error:", err);
+        console.error(" Microphone access error:", err);
         setCallStatus("Mic Error");
         return;
       }
@@ -198,11 +198,11 @@ export default function CallPage() {
       // REMOTE TRACK
       // =========================
       pc.current.ontrack = async (event) => {
-        console.log("🎧 Remote track received");
+        console.log(" Remote track received");
         const remoteStream = event.streams[0];
 
         console.log(
-          "🎵 Remote audio tracks count:",
+          " Remote audio tracks count:",
           remoteStream.getAudioTracks().length,
         );
 
@@ -213,9 +213,9 @@ export default function CallPage() {
 
           try {
             await remoteAudio.current.play();
-            console.log("🔊 Remote audio playing successfully");
+            console.log(" Remote audio playing successfully");
           } catch (err) {
-            console.error("❌ Autoplay blocked:", err);
+            console.error(" Autoplay blocked:", err);
           }
         }
         setCallStatus("Connected");
@@ -227,7 +227,7 @@ export default function CallPage() {
       pc.current.onicecandidate = (event) => {
         if (event.candidate) {
           console.log(
-            "📡 Sending ICE candidate:",
+            " Sending ICE candidate:",
             event.candidate.candidate.substring(0, 80) + "...",
           );
           activeSocket.emit("ice-candidate", {
@@ -235,7 +235,7 @@ export default function CallPage() {
             candidate: event.candidate,
           });
         } else {
-          console.log("🧊 All ICE candidates gathered");
+          console.log(" All ICE candidates gathered");
         }
       };
 
@@ -249,12 +249,12 @@ export default function CallPage() {
           stats.forEach((report) => {
             if (report.type === "outbound-rtp" && report.kind === "audio") {
               console.log(
-                `🎤 Outbound → packetsSent: ${report.packetsSent}, bytesSent: ${report.bytesSent}`,
+                `Outbound → packetsSent: ${report.packetsSent}, bytesSent: ${report.bytesSent}`,
               );
             }
             if (report.type === "inbound-rtp" && report.kind === "audio") {
               console.log(
-                `🎵 Inbound  → packetsReceived: ${report.packetsReceived}, bytesReceived: ${report.bytesReceived}`,
+                ` Inbound  → packetsReceived: ${report.packetsReceived}, bytesReceived: ${report.bytesReceived}`,
               );
             }
           });
@@ -278,7 +278,7 @@ export default function CallPage() {
       // WAIT TRACK INIT
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log("📡 Senders:", pc.current.getSenders());
+      console.log(" Senders:", pc.current.getSenders());
 
       // =========================
       // CREATE OFFER
@@ -290,9 +290,9 @@ export default function CallPage() {
 
       await pc.current.setLocalDescription(offer);
 
-      console.log("✅ Local description set");
+      console.log(" Local description set");
 
-      console.log("📞 Sending offer");
+      console.log(" Sending offer");
 
       activeSocket.emit("offer", {
         room_id: roomId,
