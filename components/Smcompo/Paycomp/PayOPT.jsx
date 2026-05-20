@@ -1,54 +1,21 @@
 "use client";
+
 import Image from "next/image";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AlertLoading } from "../../../app/common";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { useQuery, useMutation } from "@apollo/client/react";
+import { useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
+
 import {
   sendPaymentDetail,
   resetStatusCode,
 } from "../../../app/redux/reducer/payment/rechargeSlice";
 
-import { useSearchParams } from 'next/navigation';
-
-export default function PayOPT({ amount,oriamount,coupon_id,couponprice,packid }) {
-const searchParams = useSearchParams();
-
-  const payAmount = amount || 0;
-
-  const dispatch = useDispatch();
-  const { statusCode } = useSelector((state) => state.recharge_payment);
-  const { userData } = useSelector((state) => state.getuserDetail);
-  const [user, setUserData] = useState("");
- //const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-
-  useEffect(() => {
-    if (userData) {
-      setUserData(userData);
-    }
-  }, [userData]);
-
-      useEffect(() => {
-}, [oriamount]);
-
-  useEffect(() => {
-    if (statusCode === 200) {
-      setLoading(false);
-      toast.success("Payment Add successfully!");
-      route.push("/chat-with-astrologer");
-      dispatch(resetStatusCode());
-      
-    }
-  }, [statusCode]);
-
-  const route = useRouter();
-
-  const [loading, setLoading] = useState(false);
-  const CREATE_ORDER = gql`
+const CREATE_ORDER = gql`
   mutation CreateOrder($input: CreateOrderInput!) {
     createOrder(input: $input) {
       success
@@ -58,103 +25,154 @@ const searchParams = useSearchParams();
     }
   }
 `;
-const [createOrder] = useMutation(CREATE_ORDER);
- const handleCheckout = async (amount, packId) => {
-  try {
-    customer_recharge();
 
-    setIsPaused(true);
+export default function PayOPT({
+  amount,
+  oriamount,
+  coupon_id,
+  couponprice,
+  packid,
+}) {
+  const searchParams = useSearchParams();
 
-    // CREATE ORDER
-    const { data } = await createOrder({
-      variables: {
-        input: {
-          rechargePackId: packId,
-        },
-      },
-    });
+  const payAmount = amount || 0;
 
-    const order = data?.createOrder;
+  const dispatch = useDispatch();
 
-    if (!order?.success) {
-      setIsPaused(false);
-      toast.error("Order creation failed");
-      return;
+  const { statusCode } = useSelector(
+    (state) => state.recharge_payment
+  );
+
+  const { userData } = useSelector(
+    (state) => state.getuserDetail
+  );
+
+  const [user, setUserData] = useState("");
+
+  const route = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  const [createOrder] = useMutation(CREATE_ORDER);
+
+  useEffect(() => {
+    if (userData) {
+      setUserData(userData);
     }
+  }, [userData]);
 
-    const options = {
-      key:
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-        "rzp_test_SNXjhTOgP1CIx0",
+  useEffect(() => {}, [oriamount]);
 
-      amount: order.amount,
-      currency: order.currency,
-      order_id: order.orderId,
+  useEffect(() => {
+    if (statusCode === 200) {
+      setLoading(false);
 
-      name: "Dhwani Astro LLP",
-      description: "Recharge Payment",
+      toast.success("Payment Add successfully!");
 
-      handler: async function (response) {
-        toast.success("Payment Successful");
+      route.push("/chat-with-astrologer");
 
-        const selectedPack = rechargePacks.find(
-          (p) => p.id === packId
-        );
+      dispatch(resetStatusCode());
+    }
+  }, [statusCode]);
 
-        if (selectedPack) {
-          const newTime =
-            timeLeft + selectedPack.talktime * 60;
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
 
-          customer_recharge_completed(newTime);
-
-          setTimeLeft(newTime);
-        }
-
-        setIsPaused(false);
-
-        console.log("Razorpay Response:", response);
-      },
-
-      modal: {
-        ondismiss: function () {
-          customer_recharge_fail();
-
-          toast.error("Payment Cancelled");
-
-          setIsPaused(false);
+      // CREATE ORDER USING GRAPHQL
+      const { data } = await createOrder({
+        variables: {
+          input: {
+            rechargePackId: packid,
+          },
         },
-      },
+      });
 
-      notes: {
-        userId: user?.id ?? "guest",
-        rechargePackId: packId,
-      },
+      const order = data?.createOrder;
 
-      theme: {
-        color: "#fff49e",
-      },
-    };
+      console.log("GraphQL Order:", order);
 
-    const razor = new window.Razorpay(options);
+      if (!order?.success) {
+        toast.error("Error creating order");
 
-    razor.open();
-  } catch (error) {
-    console.error("Checkout Error:", error);
+        setLoading(false);
 
-    setIsPaused(false);
+        return;
+      }
 
-    toast.error(error.message || "Payment failed");
-  }
-};
+      const options = {
+        key:
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+          "rzp_test_SNXjhTOgP1CIx0",
+
+        amount: order.amount,
+
+        currency: order.currency,
+
+        name: "Dhwani Astro LLP",
+
+        description: "Recharge Payment",
+
+        order_id: order.orderId,
+
+        prefill: {
+          name: "",
+          email: "",
+          contact: "",
+        },
+
+        notes: {
+          userId: user?.id || "test-user-1",
+          source: "dhwaniastro",
+          rechargePackId: packid || "pack_001",
+          coins: 100,
+        },
+
+        handler: async function (response) {
+          console.log("Razorpay Response:", response);
+
+          toast.success("Payment Successful");
+
+          // OPTIONAL:
+          // dispatch(sendPaymentDetail(...))
+        },
+
+        modal: {
+          ondismiss: function () {
+            toast.error("Payment Cancelled");
+          },
+        },
+
+        theme: {
+          color: "#fff49e",
+        },
+      };
+
+      setLoading(false);
+
+      const razor = new window.Razorpay(options);
+
+      razor.open();
+    } catch (error) {
+      console.error("Checkout Error:", error);
+
+      setLoading(false);
+
+      toast.error(error.message || "Payment failed");
+    }
+  };
+
   return (
     <div className="col-span-2">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
       />
+
       <h3 className="mb-4 text-base font-bold text-center sm:text-lg">
         Payment Options
       </h3>
+
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {[
           { name: "Paytm", icon: "/prblm/pa-1.png" },
@@ -167,27 +185,30 @@ const [createOrder] = useMutation(CREATE_ORDER);
           { name: "PhonePay", icon: "/prblm/ph-a.png" },
           { name: "Bhim UPI", icon: "/prblm/bh-a.png" },
         ].map((method, idx) => (
-          <button aria-label={`Pay with ${method.name}`}
-            onClick={
-              () => handleCheckout(payAmount, packid)
-            }
+          <button
+            aria-label={`Pay with ${method.name}`}
+            onClick={handleCheckout}
             key={idx}
-            className="bg-[linear-gradient(to_right,#a65ed677_54%,#ba38cb67_100%)] rounded-lg p-2  flex flex-col gap-1 items-center hover:scale-105 transition-transform shadow"
+            className="bg-[linear-gradient(to_right,#a65ed677_54%,#ba38cb67_100%)] rounded-lg p-2 flex flex-col gap-1 items-center hover:scale-105 transition-transform shadow"
           >
             <Image
               src={method.icon}
               alt={method.name}
               width={100}
               height={100}
-              className="sm:h-8 sm:w-10.5  h-5.7 w-7"
+              className="sm:h-8 sm:w-10.5 h-5.7 w-7"
             />
+
             <span className="text-xs font-semibold text-center text-white sn:font-bold">
               {method.name}
             </span>
           </button>
         ))}
 
-        <AlertLoading show={loading} title="Please Waiting..." />
+        <AlertLoading
+          show={loading}
+          title="Please Waiting..."
+        />
       </div>
     </div>
   );
