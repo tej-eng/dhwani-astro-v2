@@ -22,13 +22,15 @@ function AstrologerPrice({ mode, astro }) {
 
   const isAuth = !!data?.me;
 
-    // const isAuth = !!data?.me;
-
-      // const isAuth = !!data?.me;
-
-
-  // Prevent flicker while checking auth
   if (loading) return null;
+
+  // pick correct pricing based on mode (CHAT/CALL/etc)
+  const pricing = astro?.pricing?.find(
+    (p) => p.type === (mode || "CHAT").toUpperCase()
+  );
+
+  const price = pricing?.price ?? 0;
+  const offerPrice = pricing?.offerPrice ?? price;
 
   return (
     <>
@@ -40,7 +42,7 @@ function AstrologerPrice({ mode, astro }) {
           </span>
 
           <span className="text-sm font-semibold text-black line-through">
-            ₹{astro} /{t?.astrocard?.min || "min"}
+            ₹{price} /{t?.astrocard?.min || "min"}
           </span>
         </div>
       )}
@@ -49,11 +51,11 @@ function AstrologerPrice({ mode, astro }) {
       {isAuth && (
         <>
           <span className="flex items-center justify-center gap-3 text-sm font-semibold text-red-500 sm:text-lg">
-            ₹{astro?.price}
+            ₹{offerPrice}
           </span>
 
           <span className="text-sm font-semibold text-black line-through">
-            ₹{astro?.price} /min
+            ₹{price} /min
           </span>
         </>
       )}
