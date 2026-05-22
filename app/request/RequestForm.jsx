@@ -29,6 +29,8 @@ const CREATE_INTAKE = gql`
       roomId
       chatTime
       message
+      pricePerMin
+      pricingType
     }
   }
 `;
@@ -68,10 +70,18 @@ const GET_ASTROLOGER_BY_ID = gql`
       id
       name
       profilePic
-      price
       rating
-      status
       experience
+      skills
+      languages
+
+      pricing {
+        type
+        price
+        offerPrice
+        commissionPercent
+        isActive
+      }
     }
   }
 `;
@@ -166,11 +176,33 @@ export default function RequestForm({ mode, astroId }) {
     skip: !astro_id,
   });
 
-  useEffect(() => {
-    if (astrologerInfo?.getAstrologerById) {
-      setAstrologer(astrologerInfo.getAstrologerById);
-    }
-  }, [astrologerInfo]);
+ useEffect(() => {
+  if (astrologerInfo?.getAstrologerById) {
+    const astroData = astrologerInfo.getAstrologerById;
+
+    // Find active pricing according to mode
+    const selectedPricing = astroData?.pricing?.find(
+      (item) =>
+        item?.type?.toUpperCase() === mode?.toUpperCase() &&
+        item?.isActive
+    );
+
+    setAstrologer({
+      ...astroData,
+
+      // Backward compatibility
+      price: selectedPricing?.offerPrice || selectedPricing?.price || 0,
+
+      // Extra fields
+      pricePerMin:
+        selectedPricing?.offerPrice || selectedPricing?.price || 0,
+
+      pricingType: selectedPricing?.type || mode,
+
+      activePricing: selectedPricing || null,
+    });
+  }
+}, [astrologerInfo, mode]);
 
   useEffect(() => {
     if (userInfo?.getUserById) {
@@ -208,6 +240,7 @@ export default function RequestForm({ mode, astroId }) {
       socket,
       connectSocket,
       astrologer,
+      pricePerMin: astrologer?.pricePerMin || 0,
       dispatch,
       router,
       userId: id,

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import SocketContext from "@/app/context/socketContext";
 import { useContext } from "react";
 
@@ -17,6 +17,8 @@ const CREATE_INTAKE = gql`
       roomId
       chatTime
       message
+      pricePerMin
+      pricingType
     }
   }
 `;
@@ -81,7 +83,9 @@ export default function RecentRequestPopup({
     if (!date) return "N/A";
 
     const parsedDate =
-      String(date).length > 10 ? new Date(Number(date)) : new Date(date);
+      String(date).length > 10
+        ? new Date(Number(date))
+        : new Date(date);
 
     return parsedDate.toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -91,6 +95,32 @@ export default function RecentRequestPopup({
   };
 
   const handleProfileSelect = async (profile) => {
+    // FIND ACTIVE PRICING BASED ON MODE
+    const selectedPricing = astrologer?.pricing?.find(
+      (item) =>
+        item?.type?.toUpperCase() === mode?.toUpperCase() &&
+        item?.isActive
+    );
+
+    const updatedAstrologer = {
+      ...astrologer,
+
+      price:
+        selectedPricing?.offerPrice ||
+        selectedPricing?.price ||
+        0,
+
+      pricePerMin:
+        selectedPricing?.offerPrice ||
+        selectedPricing?.price ||
+        0,
+
+      pricingType:
+        selectedPricing?.type || mode,
+
+      activePricing: selectedPricing || null,
+    };
+
     await createRequestAndEmit({
       createIntake,
       mode,
@@ -98,10 +128,10 @@ export default function RecentRequestPopup({
       profileData: profile,
       socket,
       connectSocket,
-      astrologer,
+      astrologer: updatedAstrologer,
       dispatch,
       router,
-    userId
+      userId,
     });
 
     onClose();
@@ -117,7 +147,9 @@ export default function RecentRequestPopup({
     <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4 text-black">
       <div className="bg-white rounded-3xl p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl font-semibold">Recent Requests</h2>
+          <h2 className="text-2xl font-semibold">
+            Recent Requests
+          </h2>
 
           <button onClick={onClose}>✕</button>
         </div>
@@ -130,20 +162,28 @@ export default function RecentRequestPopup({
         </button>
 
         {loading ? (
-          <div className="py-10 text-center">Loading...</div>
+          <div className="py-10 text-center">
+            Loading...
+          </div>
         ) : (
           <div className="space-y-3">
             {profiles.map((profile) => (
               <div
                 key={profile.id}
-                onClick={() => handleProfileSelect(profile)}
-                className=" px-3 py-2 rounded-4xl border border-gray-200 cursor-pointer hover:bg-purple-50"
+                onClick={() =>
+                  handleProfileSelect(profile)
+                }
+                className="px-3 py-2 rounded-4xl border border-gray-200 cursor-pointer hover:bg-purple-50"
               >
-                <h3 className="font-semibold text-lg">{profile.name}</h3>
+                <h3 className="font-semibold text-lg">
+                  {profile.name}
+                </h3>
 
                 <div className="grid grid-cols-3 gap-3 mt-2 text-sm">
                   <div>
-                    <p className="text-purple-600 text-xs">Gender</p>
+                    <p className="text-purple-600 text-xs">
+                      Gender
+                    </p>
 
                     <p className="font-medium text-gray-700">
                       {profile.gender}
@@ -151,7 +191,9 @@ export default function RecentRequestPopup({
                   </div>
 
                   <div>
-                    <p className="text-purple-600 text-xs">Occupation</p>
+                    <p className="text-purple-600 text-xs">
+                      Occupation
+                    </p>
 
                     <p className="font-medium text-gray-700">
                       {profile.occupation}
@@ -159,7 +201,9 @@ export default function RecentRequestPopup({
                   </div>
 
                   <div>
-                    <p className="text-purple-600 text-xs">Date of Birth</p>
+                    <p className="text-purple-600 text-xs">
+                      Date of Birth
+                    </p>
 
                     <p className="font-medium text-gray-700">
                       {formatDate(profile.birthDate)}
@@ -167,7 +211,9 @@ export default function RecentRequestPopup({
                   </div>
 
                   <div>
-                    <p className="text-purple-600 text-xs">Time of Birth</p>
+                    <p className="text-purple-600 text-xs">
+                      Time of Birth
+                    </p>
 
                     <p className="font-medium text-gray-700">
                       {profile.birthTime}
@@ -175,12 +221,39 @@ export default function RecentRequestPopup({
                   </div>
 
                   <div className="col-span-2">
-                    <p className="text-purple-600 text-xs">Birth Place</p>
+                    <p className="text-purple-600 text-xs">
+                      Birth Place
+                    </p>
 
                     <p className="font-medium text-gray-700">
                       {profile.birthPlace || "India"}
                     </p>
                   </div>
+                </div>
+
+                {/* SHOW CURRENT MODE PRICING */}
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs text-gray-500 uppercase">
+                    {mode} Price
+                  </span>
+
+                  <span className="font-semibold text-purple-700">
+                    ₹
+                    {astrologer?.pricing?.find(
+                      (item) =>
+                        item?.type?.toUpperCase() ===
+                          mode?.toUpperCase() &&
+                        item?.isActive
+                    )?.offerPrice ||
+                      astrologer?.pricing?.find(
+                        (item) =>
+                          item?.type?.toUpperCase() ===
+                            mode?.toUpperCase() &&
+                          item?.isActive
+                      )?.price ||
+                      0}
+                    /min
+                  </span>
                 </div>
               </div>
             ))}
