@@ -14,13 +14,19 @@ const GET_ASTROLOGERS = gql`
       profilePic
       name
       experience
-      price
-      offerPrice
-      commissionPercent
       rating
       skills
       languages
+
+      pricing {
+        type
+        price
+        offerPrice
+        commissionPercent
+        isActive
+      }
     }
+
     totalPages
   }
 }
