@@ -40,7 +40,7 @@ function AstrologerPrice({ mode, astro }) {
           </span>
 
           <span className="text-sm font-semibold text-black line-through">
-            ₹{astro?.price} /{t?.astrocard?.min || "min"}
+            ₹{astro} /{t?.astrocard?.min || "min"}
           </span>
         </div>
       )}
