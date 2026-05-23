@@ -652,7 +652,7 @@ const UserChat = ({
 
         return prev - 1;
       });
-    }, 1000);
+    }, 8000);
 
     return () => {
       if (intervalRef.current) {
