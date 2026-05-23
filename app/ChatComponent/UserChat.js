@@ -773,7 +773,7 @@ const UserChat = ({
 
       setTimeout(() => {
         router.push("/astrologer/chat");
-      }, 100);
+      }, 8000);
     } catch (error) {
       console.error("Review error:", error);
       toast.error("Failed to submit review");
