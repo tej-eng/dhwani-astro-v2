@@ -573,7 +573,7 @@ const UserChat = ({
         setShowReviewPopup(true);
         setTimeout(() => {
           router.push("/astrologer/chat");
-        }, 4000);
+        }, 8000);
         // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
         //         setTimeout(() => {
