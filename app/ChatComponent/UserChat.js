@@ -771,7 +771,6 @@ const UserChat = ({
         variables: {
           input: {
             astro_id: String(astroid),
-            review_id: String(room_Id),
             star: rating,
             comment: reviewComment,
             user_name: getintake?.name || "",
