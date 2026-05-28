@@ -579,10 +579,11 @@ const UserChat = ({
         ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
           localStorage.removeItem(key);
         });
-         dispatch(removeActiveRequest(room_Id));
+        
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
         setTimeout(() => {
+           dispatch(removeActiveRequest(room_Id));
           router.push("/astrologer/chat");
         }, 18000);
         // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
@@ -608,7 +609,7 @@ const UserChat = ({
       localStorage.removeItem("activeRequests");
       localStorage.removeItem(`chat_request_${room_Id}`);
       localStorage.removeItem("activeChatSession");
-      dispatch(removeActiveRequest(room_Id));
+      // dispatch(removeActiveRequest(room_Id));
 
 
 
