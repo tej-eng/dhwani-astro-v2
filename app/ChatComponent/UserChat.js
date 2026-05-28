@@ -584,7 +584,7 @@ const UserChat = ({
         setShowReviewPopup(true);
         setTimeout(() => {
           router.push("/astrologer/chat");
-        }, 4000);
+        }, 18000);
         // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
 
         //         setTimeout(() => {
@@ -615,7 +615,7 @@ const UserChat = ({
 
       setTimeout(() => {
         router.push("/astrologer/chat");
-      }, 10000);
+      }, 18000);
     });
 
     //  User Disconnected
@@ -784,7 +784,7 @@ const UserChat = ({
 
       setTimeout(() => {
         router.push("/astrologer/chat");
-      }, 100);
+      }, 8000);
     } catch (error) {
       console.error("Review error:", error);
       toast.error("Failed to submit review");
