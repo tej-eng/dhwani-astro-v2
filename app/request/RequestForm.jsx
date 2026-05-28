@@ -71,6 +71,7 @@ const GET_ASTROLOGER_BY_ID = gql`
       name
       profilePic
       rating
+      about
       experience
       skills
       languages

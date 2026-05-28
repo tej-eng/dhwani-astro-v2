@@ -28,16 +28,16 @@ export default function Header({ openSignInModal }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
-console.log("isssssssssssssssssss",isLoggedIn);
+  console.log("isssssssssssssssssss", isLoggedIn);
 
-// useEffect(() => {
-//   const storedUser = localStorage.getItem("user");
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
 
-//   if (storedUser) {
-//     setUser(JSON.parse(storedUser));
-//   }
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
 
-// }, [isLoggedIn]);
+  // }, [isLoggedIn]);
 
   // ==============================
   // LOGOUT MUTATION
@@ -49,23 +49,21 @@ console.log("isssssssssssssssssss",isLoggedIn);
     try {
       const result = await logoutMutation().catch(() => {});
       console.log("Logout result:", result.data.logout);
-      if(result.data.logout){
-         localStorage.removeItem("user");
-         setUser(null);
-          setIsLoggedIn(false);
-         await client.clearStore();
-         await persistor.purge();
+      if (result.data.logout) {
+        localStorage.removeItem("user");
+        setUser(null);
+        setIsLoggedIn(false);
+        await client.clearStore();
+        await persistor.purge();
         //  setIsLoggedIn(false);
-         toast.success("Logged out successfully");
+        toast.success("Logged out successfully");
         router.refresh();
-         router.push("/");
-      }else{        
+        router.push("/");
+      } else {
         toast.error("Logout failed");
       }
-      
     } catch (err) {
       console.error("Logout error:", err);
-     
     }
   };
 
@@ -76,8 +74,7 @@ console.log("isssssssssssssssssss",isLoggedIn);
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdown = document.querySelector(".user-container");
-      if (dropdown && !dropdown.contains(event.target))
-        setIsUserOpen(false);
+      if (dropdown && !dropdown.contains(event.target)) setIsUserOpen(false);
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
@@ -89,7 +86,6 @@ console.log("isssssssssssssssssss",isLoggedIn);
 
   return (
     <header className="z-50 flex items-center justify-between w-full p-1 px-2 shadow-lg head-top bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 md:px-18">
-
       <div className="w-1/3 ml-8 dslogo sm:w-1/2 sm:ml-0">
         <Link href="/">
           <Image
@@ -143,10 +139,67 @@ console.log("isssssssssssssssssss",isLoggedIn);
             </div>
 
             {isUserOpen && (
-              <div className="absolute -left-36 z-30 w-50 p-3 mt-2 space-y-3 bg-purple-900 rounded-lg shadow-lg">
-                <p className="text-white text-sm"> 
-                  {user?.name || "User"}
-                </p>
+              <div className="absolute right-0 z-50 w-72 mt-3 overflow-hidden text-black bg-white shadow-2xl rounded-2xl">
+                {/* TOP USER INFO */}
+                <div className="flex items-center gap-3 p-4 bg-purple-900">
+                  <Image
+                    src="/ds-img/user2.webp"
+                    width={45}
+                    height={45}
+                    alt="User"
+                    className="rounded-full"
+                  />
+
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      {user?.name || "User"}
+                    </h3>
+
+                    <p className="text-sm text-gray-300">
+                      {user?.mobile || "User Account"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* MENU */}
+                <div className="p-2">
+                  <Link
+                    href="/dashboard/profile"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    👤 Profile
+                  </Link>
+
+                  <Link
+                    href="/dashboard/account"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    🪪 Account
+                  </Link>
+
+                  <hr className="my-2" />
+
+                  <Link
+                    href="/dashboard/chat-history"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    💬 Chat History
+                  </Link>
+
+                  <Link
+                    href="/dashboard/call-history"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    📞 Call History
+                  </Link>
+
+                  <Link
+                    href="/dashboard/transaction"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    🛒 Transaction
+                  </Link>
+                </div>
               </div>
             )}
           </div>
