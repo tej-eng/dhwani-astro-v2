@@ -30,10 +30,21 @@ const GET_RECHARGE_PACKS = gql`
   }
 `;
 const CREATE_REVIEW = gql`
-  mutation CreateReview($input: CreateReviewInput!) {
+  mutation CreateReview(
+    $input: CreateReviewInput!
+  ) {
     createReview(input: $input) {
       success
       message
+
+      review {
+        id
+        rating
+        comment
+        userName
+        astroName
+        createdAt
+      }
     }
   }
 `;
