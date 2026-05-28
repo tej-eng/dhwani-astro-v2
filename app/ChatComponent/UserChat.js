@@ -55,7 +55,6 @@ const GET_USER_BY_ID = gql`
       id
       name
       gender
-      user_status
     }
   }
 `;
@@ -773,8 +772,8 @@ const UserChat = ({
             astro_id: String(astroid),
             star: rating,
             comment: reviewComment,
-            user_name: getintake?.name || "",
-            astro_name: astro_Name,
+            // user_name: getintake?.name || "",
+            // astro_name: astro_Name,
           },
         },
       });
