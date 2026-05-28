@@ -615,6 +615,8 @@ const UserChat = ({
 
       setTimeout(() => {
         router.push("/astrologer/chat");
+              dispatch(removeActiveRequest(room_Id));
+
       }, 18000);
     });
 
