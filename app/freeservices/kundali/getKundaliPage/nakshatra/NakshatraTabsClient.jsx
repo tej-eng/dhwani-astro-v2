@@ -3,15 +3,15 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 
-const NakprevClient = dynamic(() => import("../../../freeservices/kundali/getKundaliPage/nakshatra/previous/NakprevClient"), {
+const NakprevClient = dynamic(() => import("./previous/NakprevClient"), {
   loading: () => <p className="text-center">Loading previous...</p>,
 });
 
-const NaktodayClient = dynamic(() => import("../../../freeservices/kundali/getKundaliPage/nakshatra/naktoday/NaktodayClient"), {
+const NaktodayClient = dynamic(() => import("./naktoday/NaktodayClient"), {
   loading: () => <p className="text-center">Loading today...</p>,
 });
 
-const NaktommClient = dynamic(() => import("../../../freeservices/kundali/getKundaliPage/nakshatra/tomorrow/NaktommClient"), {
+const NaktommClient = dynamic(() => import("./tomorrow/NaktommClient"), {
   loading: () => <p className="text-center">Loading tomorrow...</p>,
 });
 

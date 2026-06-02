@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Pujasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/puja/Pujasuggest";
-import Gemsuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/gem/Gemsuggest";
-import Rudrasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/rudra/Rudrasuggest";
+import Pujasuggest from "./puja/Pujasuggest";
+import Gemsuggest from "./gem/Gemsuggest";
+import Rudrasuggest from "./rudra/Rudrasuggest";
+
 
 const TABS = [
   { id: "puja", label: "Puja Suggestions", src: "/ds-img/onpooja.webp" },

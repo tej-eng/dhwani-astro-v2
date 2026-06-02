@@ -29,6 +29,8 @@ function AstrologerPrice({ mode, astro }) {
     (p) => p.type === (mode || "CHAT").toUpperCase()
   );
 
+  const oprice = astro?.activeOffer?.price;
+
   const price = pricing?.price ?? 0;
   const offerPrice = pricing?.offerPrice ?? price;
 
@@ -51,7 +53,7 @@ function AstrologerPrice({ mode, astro }) {
       {isAuth && (
         <>
           <span className="flex items-center justify-center gap-3 text-sm font-semibold text-red-500 sm:text-lg">
-            ₹{offerPrice}
+            ₹{oprice ? oprice : offerPrice}
           </span>
 
           <span className="text-sm font-semibold text-black line-through">
