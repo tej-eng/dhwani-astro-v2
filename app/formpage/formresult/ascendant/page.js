@@ -1,5 +1,5 @@
 import { decodeKundliHash } from "@/utils/kundliHash";
-import AscendantClient from "../../../inKundli/getKundlipage/ascendant/AscendantClient";
+import AscendantClient from "../../../freeservices/kundali/getKundaliPage/ascendant/AscendantClient";
 import {  fetchGenAscRep,   fetchGenNakRep,} from "@/app/api/astroapi.server";
 
 

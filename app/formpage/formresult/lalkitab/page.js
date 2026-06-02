@@ -6,7 +6,7 @@ import {
 } from "@/app/api/astroapi.server";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
-import LalkitabClient from "../../../inKundli/getKundlipage/lalkitab/LalkitabClient";
+import LalkitabClient from "../../../freeservices/kundali/getKundaliPage/lalkitab/LalkitabClient";
 
 export default async function Page({ params, searchParams }) {
   const { slug } = params;

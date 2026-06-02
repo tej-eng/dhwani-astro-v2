@@ -1,6 +1,6 @@
 import { fetchRudraSuggestion } from "@/app/api/astroapi.server";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import Rudrasuggest from "../../../inKundli/getKundlipage/suggestions/rudra/Rudrasuggest";
+import Rudrasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/rudra/Rudrasuggest";
 
 export default async function Page({ params, searchParams }) {
   const { slug } = params;

@@ -1,6 +1,6 @@
 import { fetchPujaSuggestion } from "@/app/api/astroapi.server";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import Pujasuggest from "../../../inKundli/getKundlipage/suggestions/puja/Pujasuggest";
+import Pujasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/puja/Pujasuggest";
 
 export default async function Page({ params, searchParams }) {
   const { slug } = params;

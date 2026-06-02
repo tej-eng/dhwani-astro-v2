@@ -163,14 +163,14 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                     <Image
                       src={
                         astro?.profilePic
-                          ? `/ds-img/${astro.profilePic}`
+                          ? `https://www.dhwaniastro.com${astro.profilePic}`
                           : "/man.png"
                       }
                       className="object-cover border-4 border-yellow-400 rounded-full shadow-md w-22 h-22 sm:w-22 sm:h-22"
                       width={50}
                       height={50}
                       loading="lazy"
-                      alt="Astro Image"
+                      alt="Astro Image" 
                       onClick={() => astrologerprofile(astro?.id)}
                     />
                     <div className="hidden md:flex space-x-4 justify-around w-[80%]">

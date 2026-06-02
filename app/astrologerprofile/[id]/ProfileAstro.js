@@ -10,14 +10,15 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { fetchUsersRequest } from "@/app/redux/reducer/astrologer/UserFollowSlice";
 import { getHistoryRequest } from "@/app/redux/reducer/astrologer/getFollowHistory";
-import { getAstrologerData, RequestAstrologerDetail } from "@/app/redux/reducer/astrologer/AstrologerDetail";
+import {
+  getAstrologerData,
+  RequestAstrologerDetail,
+} from "@/app/redux/reducer/astrologer/AstrologerDetail";
 import Link from "next/link";
 import { fetchAstrologers } from "@/app/redux/reducer/astrologer/astrlogerSlice";
 import CustomButton from "@/components/Custom/CustomButton";
 import GiftPop from "@/components/Smcompo/GiftPop";
 import { useLanguage } from "@/app/context/LangContext";
-
-
 
 export default function ProfileAstro({ serverData, serverreviewdata }) {
   const router = useRouter();
@@ -25,13 +26,7 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
   const dispatch = useDispatch();
   const { messages: t } = useLanguage();
 
-
-  const astrologerdetail = serverData?.profile;
-
-
-
-
-
+  const astrologerdetail = serverData;
   const [showGiftPopup, setShowGiftPopup] = useState(false);
 
   const [astrofollow, setAstroFollow] = useState("");
@@ -42,7 +37,7 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
   const { loading } = useSelector((state) => state.followastrologer);
   const { resposeData } = useSelector((state) => state.getfollowhistory);
   const { astrologerloading, astrologerdata: astro } = useSelector(
-    (state) => state.astrologerdetail
+    (state) => state.astrologerdetail,
   );
   useEffect(() => {
     if (id) {
@@ -50,31 +45,28 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
     }
   }, [dispatch, id]);
 
+  useEffect(() => {}, [serverreviewdata]);
 
-  useEffect(() => {
+useEffect(() => {
 
+  console.log("astrologerdetailxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", astrologerdetail);
+  if (
+    astrologerdetail &&
+    typeof astrologerdetail === "object" &&
+    Object.keys(astrologerdetail).length
+  ) {
+    dispatch(getAstrologerData(astrologerdetail));
+    return;
+  }
 
-
-  }, [serverreviewdata])
-
-
-
-  useEffect(() => {
-    if (typeof astrologerdetail && Object.keys(astrologerdetail).length > 0) {
-      dispatch(getAstrologerData(astrologerdetail));
-      return;
-    }
-
-    if (!astro || astro.length === 0) {
-      dispatch(RequestAstrologerDetail({ astro_id: parseInt(id) }));
-    }
-
-
-
-
-  }, [dispatch, id, astrologerdetail, astro]);
-
-
+  if (!astro?.length) {
+    dispatch(
+      RequestAstrologerDetail({
+        astro_id: Number(id),
+      })
+    );
+  }
+}, [dispatch, id, astrologerdetail, astro]);
 
   useEffect(() => {
     if (resposeData?.follow_status !== undefined) {
@@ -86,18 +78,16 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
       fetchUsersRequest({
         astro_id: parseInt(id),
         follow_status: 1,
-      })
+      }),
     );
     setAstroFollow(1);
     setHide(false);
     toast.success(
-      `We will notify you when ${astro.full_name} goes live, comes online, or runs an offer!`
+      `We will notify you when ${astro.full_name} goes live, comes online, or runs an offer!`,
     );
   };
 
-
   const { data = [] } = useSelector((state) => state.astrologerReducer);
-
 
   useEffect(() => {
     if (!data?.sortedAstrologers || data.sortedAstrologers.length === 0) {
@@ -105,22 +95,16 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
     }
   }, [dispatch, data.sortedAstrologers, data]);
 
-
-
-
-
-
   const astrologersData = useMemo(() => {
     if (Array.isArray(data?.sortedAstrologers)) {
       return data.sortedAstrologers;
     }
-  }, [data])
-
+  }, [data]);
 
   const astrologerlist = useMemo(() => {
     const list = astrologersData?.filter((item) => item.availability === 1);
     return list;
-  }, [astrologersData])
+  }, [astrologersData]);
 
   const useunfollow = () => setShowConfirmModal(true);
 
@@ -130,7 +114,7 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
         fetchUsersRequest({
           astro_id: parseInt(id),
           follow_status: 0,
-        })
+        }),
       );
       setAstroFollow(0);
       setHide(false);
@@ -146,51 +130,57 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
       </div>
     );
 
-
   const profileData = astro;
+
+  const chatPricing =
+  astrologerdetail?.pricing?.find(
+    (item) => item.type === "CHAT"
+  );
+
+const callPricing =
+  astrologerdetail?.pricing?.find(
+    (item) => item.type === "CALL"
+  );
 
   return (
     <div className="w-full p-3 pt-5 md:pt-5">
       <div className="max-w-7xl p-3 mx-auto rounded-lg shadow-md  md:p-6">
         <div className="flex items-start relative overflow-hidden justify-evenly bg-linear-to-r from-yellow-100 p-3 rounded-2xl md:p-6 via-yellow-50 to-yellow-100 flex-col gap-5 sm:flex-row md:gap-10">
-
-
-
-          {
-            !astrologerdetail?.astro_tag ?
-              <></>
-              :
-
-              <div className="celeb-tag absolute -rotate-45 top-4 left-[-35px] z-20">
-                <span className="bg-[#ffd70a] p-1 text-[9px] text-black w-30 inline-block text-center  px-8">
-                  {astrologerdetail?.astro_tag}
-                </span>
-              </div>
-          }
-
-
+          {!astrologerdetail?.astro_tag ? (
+            <></>
+          ) : (
+            <div className="celeb-tag absolute -rotate-45 top-4 left-[-35px] z-20">
+              <span className="bg-[#ffd70a] p-1 text-[9px] text-black w-30 inline-block text-center  px-8">
+                {astrologerdetail?.astro_tag}
+              </span>
+            </div>
+          )}
 
           <div className="flex flex-col items-center justify-center gap-2">
             <Image
-              src={`/ds-img/${astrologerdetail?.profile_image}`}
-              alt={`Profile of ${astrologerdetail?.full_name}`}
+              src={astrologerdetail?.profilePic || "/default-user.png"}
+              alt="image"
               width={100}
               height={100}
               className="border-4 border-yellow-400 rounded-full w-35 h-35 object-cover"
             />
 
             {astrofollow === 1 ? (
-
-              <CustomButton variant="yellow" onClick={useunfollow} aria-label="Unfollow Astrologer"
-                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit">
+              <CustomButton
+                variant="yellow"
+                onClick={useunfollow}
+                aria-label="Unfollow Astrologer"
+                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit"
+              >
                 <h5 className="text-white ">Following</h5>
               </CustomButton>
-
             ) : (
-
-
-              <CustomButton variant="yellow" onClick={follow} aria-label="Follow Astrologer"
-                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit">
+              <CustomButton
+                variant="yellow"
+                onClick={follow}
+                aria-label="Follow Astrologer"
+                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit"
+              >
                 <h5 className="text-white">Follow</h5>
               </CustomButton>
             )}
@@ -199,18 +189,18 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
               onClick={() => setShowGiftPopup(true)}
               className="relative shine-text mt-7 px-5 py-2 rounded-full text-white font-medium
              bg-linear-to-r from-pink-500 to-red-500 shadow-[4px_4px_8px_rgba(0,0,0,0.2)]
-             overflow-hidden transition-transform duration-300 hover:scale-105" aria-label="Send Gift to Astrologer">
+             overflow-hidden transition-transform duration-300 hover:scale-105"
+              aria-label="Send Gift to Astrologer"
+            >
               🎁 Send Gift
-
             </button>
-
-
           </div>
 
           <div className="flex flex-col gap-5 sm:flex-row md:items-start sm:gap-5 lg:gap-20">
             <div className="flex flex-col gap-2 py-2 text-sm md:text-base">
               <h2 className="flex items-center gap-1 text-xl text-gray-800 sm:text-xl sm:font-bold lg:text-3xl lg:font-semibold">
-                {astro?.full_name}
+            {astrologerdetail?.displayName ||
+  astrologerdetail?.name}
                 <BiSolidBadgeCheck className="w-5 h-5 text-green-500" />
               </h2>
 
@@ -223,7 +213,7 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
 
               <div className="flex items-center gap-4">
                 <span className="font-semibold text-black">
-                  {astrologerdetail?.rating}/5
+                {astrologerdetail?.rating || 0}/5
                 </span>
                 <StarRating
                   className="text-yellow-500"
@@ -232,14 +222,13 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
               </div>
 
               <span className="text-sm font-semibold text-black">
-                {astrologerdetail?.id}+ Satisfied Consultations
+             {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
-
 
               <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
                 <span className="font-semibold">Call/Chat Charges:</span>
                 <span className="font-bold charge-price flex items-center gap-2">
-                  {astro?.disc_chat_charge ? (
+                  {/* {astro?.disc_chat_charge ? (
                     <>
                       <span className="text-lg text-red-600 font-extrabold">
                         ₹{astro.disc_chat_charge}
@@ -248,11 +237,27 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
                         ₹{astro.astro_chat_charges}/min
                       </span>
                     </>
-                  ) : (
+                   ) : (
                     <span className="text-lg">
                       ₹{astro.astro_chat_charges}/min
                     </span>
-                  )}
+                  )} */}
+                 {chatPricing?.offerPrice ? (
+  <>
+    <span className="text-lg text-red-600 font-extrabold">
+      ₹{chatPricing.offerPrice}
+    </span>
+
+    <span className="line-through text-gray-500 text-sm">
+      ₹{chatPricing.price}/min
+    </span>
+  </>
+) : (
+  <span>
+    ₹{chatPricing?.price}/min
+  </span>
+)}
+                  
                 </span>
               </div>
             </div>
@@ -265,30 +270,29 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
                 </div>
                 <div className="grid grid-cols-2 gap-5">
                   <span className="font-semibold">Language</span>
-                  <span>{astrologerdetail?.languages}</span>
+                  <span>{astrologerdetail?.languages?.join(", ")}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-5">
                   <span className="font-semibold">Skills</span>
-                  <span>{astrologerdetail?.specialisation}</span>
+                  <span>{astrologerdetail?.skills?.join(", ")}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-5">
                   <span className="font-semibold">Expertise</span>
                   <span>
-                    Career, Finance, Addiction, Anxiety, Child Birth, Family
-                    Conflicts, Family Problems
+                  {astrologerdetail?.problems?.join(", ")}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-center gap-5 mt-6 text-sm sm:flex-col lg:flex-row md:text-base">
-                <SingleButton
+                {/* <SingleButton
                   astro_charge_chat={astrologerdetail?.astro_call_charges}
                   astro_charge_call={astrologerdetail?.astro_chat_charges}
                   disprice_chat={astrologerdetail?.disc_chat_charge}
                   disprice_call={astrologerdetail?.disc_chat_charge}
                   availability={astrologerdetail?.availability}
                   astro_id={id}
-                />
+                /> */}
               </div>
             </div>
           </div>
@@ -297,9 +301,15 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
         <div className="flex flex-col gap-5">
           <div className="p-4 mt-4 border   shadow bg-linear-to-r from-purple-50  rounded-2xl md:p-6 via-violet-50 to-yellow-50">
             <h3 className="mb-1 text-lg font-bold text-gray-800">About Me</h3>
-            <p className="text-sm text-gray-700">
-              {astro?.about_me_en || "No description available."}
-            </p>
+            <div className="text-sm text-gray-700">
+           <div
+  dangerouslySetInnerHTML={{
+    __html:
+      astrologerdetail?.about ||
+      "No description available.",
+  }}
+/>
+            </div>
           </div>
 
           <div className="astro-rate flex flex-col md:flex-row gap-8 py-6 rounded-2xl">
@@ -316,20 +326,16 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
                         key={index}
                         className="flex items-center justify-around gap-3 bg-[#ffffffe7] rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 p-3 w-[220px]"
                       >
-
                         <Image
                           src={`/ds-img/${astro?.profile_image}`}
-                          alt={astro?.full_name}
+                          alt="image"
                           width={60}
                           height={60}
                           className="rounded-full object-cover"
                           onClick={() =>
-                            router.push(
-                              `/astrologerprofile/${astro?.id}`
-                            )
+                            router.push(`/astrologerprofile/${astro?.id}`)
                           }
                         />
-
 
                         <div className="flex flex-col items-start">
                           <Link href={`/astrologerprofile/${astro?.id}`}>
@@ -346,90 +352,103 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500">No similar consultants found.</p>
+                    <p className="text-gray-500">
+                      No similar consultants found.
+                    </p>
                   )}
                 </div>
               </div>
             </div>
+<div className="flex flex-col shadow-xl rounded-2xl p-4 items-center flex-1 bg-linear-to-r from-yellow-50 md:p-6 via-violet-50 to-purple-100">
+  <h5 className="text-lg font-semibold text-gray-800 text-center mb-4">
+    Ratings & Reviews
+  </h5>
 
-            <div className="flex flex-col shadow-xl rounded-2xl p-4 items-center flex-1 bg-linear-to-r from-yellow-50  md:p-6 via-violet-50 to-purple-100">
-              <h5 className="text-lg font-semibold  text-gray-800 text-center mb-4">
-                Ratings & Reviews
-              </h5>
+  {astrologerdetail?.recentReviews?.length > 0 ? (
+    <>
+      <div className="w-full max-w-xl space-y-5">
+        {astrologerdetail.recentReviews
+          .slice(
+            0,
+            showAll
+              ? astrologerdetail.recentReviews.length
+              : 3
+          )
+          .map((review) => (
+            <div
+              key={review.id}
+              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h5 className="font-semibold text-gray-700">
+                  {review?.userName?.split(" ")[0] || "User"}
+                </h5>
 
-              {serverreviewdata?.length > 0 ? (
-                <>
-                  <div className="w-full max-w-xl space-y-5">
-                    {serverreviewdata
-                      .slice(0, showAll ? serverreviewdata.length : 3)
-                      .map((review, i) => (
-                        <div
-                          key={i}
-                          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">
+                    {new Date(
+                      review.createdAt
+                    ).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+
+                  <div>
+                    {[...Array(review?.rating || 0)].map(
+                      (_, index) => (
+                        <span
+                          key={index}
+                          style={{
+                            color: "gold",
+                            fontSize: "18px",
+                          }}
                         >
-                          <div className="flex justify-between items-center mb-2">
-                            <h5 className="font-semibold text-gray-700">
-                              {review?.user_name?.split(" ")[0]}
-                            </h5>
-                            <div className="text-right">
-                              <p className="text-xs text-gray-400">
-                                {new Date(review.created_at).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  }
-                                )}
-                              </p>
-                              <div>
-                                {[...Array(review?.star)].map((_, i) => (
-                                  <span
-                                    key={i}
-                                    style={{ color: i < review.star ? 'gold' : 'lightgray', fontSize: '18px' }}
-                                  >
-                                    ★
-                                  </span>
-                                ))}
-                              </div>
-
-
-                            </div>
-                          </div>
-
-                          <hr className="border-gray-200 mb-3" />
-
-                          <div className="text-sm italic text-gray-600 mb-2">
-                            {review?.comment}
-                          </div>
-
-                          {review?.reply_to && (
-                            <div className="bg-gray-50 p-3 rounded-md text-sm text-black border-l-4 border-blue-400">
-                              <strong className="text-gray-700">
-                                {review?.astro_name || "Astrologer"}:
-                              </strong>{" "}
-                              <i >{review?.reply_to}</i>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                          ★
+                        </span>
+                      )
+                    )}
                   </div>
+                </div>
+              </div>
 
-                  {!showAll && serverreviewdata?.length > 2 && (
-                    <div className="mt-5">
-                      <button aria-label="View More Reviews"
-                        onClick={() => setShowAll(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm transition-all"
-                      >
-                        View More
-                      </button>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-gray-500">No reviews yet</div>
+              <hr className="border-gray-200 mb-3" />
+
+              <div className="text-sm italic text-gray-600 mb-2">
+                {review?.comment}
+              </div>
+
+              {review?.reply && (
+                <div className="bg-gray-50 p-3 rounded-md text-sm text-black border-l-4 border-blue-400">
+                  <strong className="text-gray-700">
+                    Astrologer:
+                  </strong>{" "}
+                  <i>{review.reply}</i>
+                </div>
               )}
             </div>
+          ))}
+      </div>
+
+      {!showAll &&
+        astrologerdetail?.recentReviews?.length > 3 && (
+          <div className="mt-5">
+            <button
+              onClick={() => setShowAll(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm transition-all"
+            >
+              View More
+            </button>
+          </div>
+        )}
+    </>
+  ) : (
+    <div className="text-gray-500">
+      No reviews yet
+    </div>
+  )}
+</div>
           </div>
         </div>
       </div>
@@ -441,13 +460,15 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
               Are you sure you want to unfollow {astro?.full_name}?
             </p>
             <div className="flex justify-center gap-4 mt-4">
-              <button aria-label="Confirm Unfollow"
+              <button
+                aria-label="Confirm Unfollow"
                 className="px-4 py-2 text-white bg-green-500 rounded-md"
                 onClick={() => unfollow(true)}
               >
                 Yes
               </button>
-              <button aria-label="Cancel Unfollow"
+              <button
+                aria-label="Cancel Unfollow"
                 className="px-4 py-2 text-white bg-red-500 rounded-md"
                 onClick={() => setShowConfirmModal(false)}
               >
@@ -457,7 +478,12 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
           </div>
         </div>
       )}
-      <GiftPop open={showGiftPopup} astrologername={astro?.full_name} astro_id={astro?.id} onClose={() => setShowGiftPopup(false)} />
+      <GiftPop
+        open={showGiftPopup}
+        astrologername={astro?.full_name}
+        astro_id={astro?.id}
+        onClose={() => setShowGiftPopup(false)}
+      />
 
       <AlertLoading show={loading} title="Please Wait.." />
       <AlertLoading show={astrologerloading} title="Please Wait" />

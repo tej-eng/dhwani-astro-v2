@@ -1,6 +1,6 @@
 import { fetchGemSuggestion } from "@/app/api/astroapi.server";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import Gemsuggest from "../../../inKundli/getKundlipage/suggestions/gem/Gemsuggest"
+import Gemsuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/gem/Gemsuggest"
 
 export default async function Page({ params, searchParams }) {
   const { slug } = params;

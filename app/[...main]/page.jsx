@@ -50,11 +50,11 @@ import RefundP from "@/components/Homepagecomp/FootPages/RefundP";
 import Disclaimer from "@/components/Homepagecomp/FootPages/Disclaimer";
 import Userchatscr from "@/components/Smcompo/Userchatscr";
 import AstrowaitPop from "@/components/Smcompo/AstrowaitPop";
-import Lalkitab from "@/app/inKundli/getKundlipage/lalkitab/LalkitabClient";
+import Lalkitab from "@/app/freeservices/kundali/getKundaliPage/lalkitab/LalkitabClient";
 import CallOptionModal from "@/components/Smcompo/CallOptionModal";
 // import Numerokundli from "@/components/Kundli/Kundliinter/Numerokundli/Numerokundli";
 // import Nakshatra from "@/components/Kundli/Kundliinter/Nakshatra/Nakshatra";
-import Charyogd from "@/app/inKundli/getKundlipage/charyogdasha/page";
+import Charyogd from "@/app/freeservices/kundali/getKundaliPage/charyogdasha/page";
 
 
 export default function ServicePage() {
