@@ -17,7 +17,12 @@ const GET_ASTROLOGERS = gql`
       rating
       skills
       languages
-
+      activeOffer {
+        id
+        offerName
+        price
+        description
+      }
       pricing {
         type
         price
