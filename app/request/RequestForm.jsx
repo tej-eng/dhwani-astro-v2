@@ -142,6 +142,8 @@ export default function RequestForm({ mode, astroId }) {
       time: "",
       occupation: "Private Job",
       place: "",
+      latitude: "",
+      longitude: "",
     },
   });
 
@@ -166,8 +168,8 @@ export default function RequestForm({ mode, astroId }) {
     variables: { id },
     skip: !id,
   });
-  
-    const { data: profileInfo } = useQuery(GET_PROFILE_BY_ID, {
+
+  const { data: profileInfo } = useQuery(GET_PROFILE_BY_ID, {
     variables: { id },
     skip: !id,
   });
@@ -177,33 +179,31 @@ export default function RequestForm({ mode, astroId }) {
     skip: !astro_id,
   });
 
- useEffect(() => {
-  if (astrologerInfo?.getAstrologerById) {
-    const astroData = astrologerInfo.getAstrologerById;
+  useEffect(() => {
+    if (astrologerInfo?.getAstrologerById) {
+      const astroData = astrologerInfo.getAstrologerById;
 
-    // Find active pricing according to mode
-    const selectedPricing = astroData?.pricing?.find(
-      (item) =>
-        item?.type?.toUpperCase() === mode?.toUpperCase() &&
-        item?.isActive
-    );
+      // Find active pricing according to mode
+      const selectedPricing = astroData?.pricing?.find(
+        (item) =>
+          item?.type?.toUpperCase() === mode?.toUpperCase() && item?.isActive,
+      );
 
-    setAstrologer({
-      ...astroData,
+      setAstrologer({
+        ...astroData,
 
-      // Backward compatibility
-      price: selectedPricing?.offerPrice || selectedPricing?.price || 0,
+        // Backward compatibility
+        price: selectedPricing?.offerPrice || selectedPricing?.price || 0,
 
-      // Extra fields
-      pricePerMin:
-        selectedPricing?.offerPrice || selectedPricing?.price || 0,
+        // Extra fields
+        pricePerMin: selectedPricing?.offerPrice || selectedPricing?.price || 0,
 
-      pricingType: selectedPricing?.type || mode,
+        pricingType: selectedPricing?.type || mode,
 
-      activePricing: selectedPricing || null,
-    });
-  }
-}, [astrologerInfo, mode]);
+        activePricing: selectedPricing || null,
+      });
+    }
+  }, [astrologerInfo, mode]);
 
   useEffect(() => {
     if (userInfo?.getUserById) {
@@ -224,135 +224,30 @@ export default function RequestForm({ mode, astroId }) {
     }
   }, [userInfo, countries, setValue]);
 
-
   const onSubmit = async (data) => {
+    console.log("FORM DATA xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=>", data);
+    if (isSubmitting) return;
 
-  if (isSubmitting) return;
+    setIsSubmitting(true);
 
-  setIsSubmitting(true);
-
-  try {
-
-    await createRequestAndEmit({
-      createIntake,
-      mode,
-      astro_id,
-      profileData: data,
-      socket,
-      connectSocket,
-      astrologer,
-      pricePerMin: astrologer?.pricePerMin || 0,
-      dispatch,
-      router,
-      userId: id,
-    });
-
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-  // const onSubmit = async (data) => {
-  //   try {
-  //     // PREVENT DOUBLE SUBMIT
-  //     if (isSubmitting) return;
-
-  //     setIsSubmitting(true);
-
-  //     const response = await createIntake({
-  //       variables: {
-  //         input: {
-  //           astrologerId: astro_id,
-  //           name: data.name,
-  //           countryCode: data.countryCode || country?.dialCode,
-  //           mobile: data.phone,
-  //           gender: data.usergender,
-  //           birthDate: data.dob,
-  //           birthTime: data.time,
-  //           occupation: data.occupation,
-  //           birthPlace: data.place,
-  //           requestType: mode === "call" ? "call" : "chat",
-  //         },
-  //       },
-  //     });
-
-  //     const { roomId, chatTime, intakeId, message } =
-  //       response.data.createIntake;
-
-  //     setChatTime(chatTime);
-  //     setRoomId(roomId);
-
-  //     if (!intakeId) {
-  //       toast.error("Failed to create intake");
-  //       return;
-  //     }
-
-  //     if (
-  //       message ===
-  //       "duplicate request. User is already in queue for this astrologer"
-  //     ) {
-  //       toast.error("You already have a pending request for this astrologer.");
-  //       return;
-  //     }
-
-  //     if (
-  //       message === "Sorry, queue is too long. Please try another astrologer."
-  //     ) {
-  //       toast.error(message);
-  //       return;
-  //     }
-
-  //     let activeSocket = socket;
-
-  //     if (!activeSocket?.connected) {
-  //       activeSocket = connectSocket();
-  //     }
-
-  //     const req_data = {
-  //       name: data.name,
-  //       gender: data.usergender,
-  //       dateOfBirth: data.dob,
-  //       timeOfBirth: data.time,
-  //       occupation: data.occupation,
-  //       location: data.place,
-  //       userName: data.name,
-  //       user_id: id,
-  //       astro_id,
-  //       room_id: roomId,
-  //       maximum_time: chatTime,
-  //       phoneNumber: data.phone,
-  //     };
-
-  //     // ONLY ONE EVENT
-  //     const eventName = mode === "call" ? "call_request" : "chat_request";
-
-  //     console.log("📡 EMITTING EVENT:", eventName);
-
-  //     activeSocket.emit(eventName, req_data);
-
-  //     localStorage.setItem(
-  //       `${mode}_request_${roomId}`,
-  //       JSON.stringify(req_data),
-  //     );
-
-  //     dispatch(
-  //       addActiveRequest({
-  //         roomId,
-  //         astrologer,
-  //         chatTime,
-  //         userId: id,
-  //         type: mode === "call" ? "call" : "chat",
-  //       }),
-  //     );
-
-  //     router.push(`/astrologer/${mode}`);
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error(err.message);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+    try {
+      await createRequestAndEmit({
+        createIntake,
+        mode,
+        astro_id,
+        profileData: data,
+        socket,
+        connectSocket,
+        astrologer,
+        pricePerMin: astrologer?.pricePerMin || 0,
+        dispatch,
+        router,
+        userId: id,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const occupation_list = [
     "Student",
@@ -542,10 +437,28 @@ export default function RequestForm({ mode, astroId }) {
 
                 <LocationSelector
                   onSelect={(loc) => {
+                    console.log(
+                      "LOCATION SELECTEDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                      loc,
+                    );
                     setValue("place", loc?.city || "", {
                       shouldValidate: true,
                     });
+
+                    setValue("latitude", loc?.latitude || "");
+                    setValue("longitude", loc?.longitude || "");
                   }}
+                />
+                <Controller
+                  name="latitude"
+                  control={control}
+                  render={({ field }) => <input type="hidden" {...field} />}
+                />
+
+                <Controller
+                  name="longitude"
+                  control={control}
+                  render={({ field }) => <input type="hidden" {...field} />}
                 />
 
                 {errors.place && (
