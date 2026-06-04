@@ -1,7 +1,7 @@
 const BASE_URL = "https://json.astrologyapi.com/v1/";
 
-const USER_ID = process.env.NEXT_PUBLIC_ASTROLOGY_USER_ID;
-const API_KEY = process.env.NEXT_PUBLIC_ASTROLOGY_API_KEY;
+const USER_ID = process.env.NEXT_PUBLIC_ASTROLOGY_USER_ID || "618742";
+const API_KEY = process.env.NEXT_PUBLIC_ASTROLOGY_API_KEY || "7c20599eb23be276e8c8ace8bef880c2";
 
 function getHeaders() {
     return {
