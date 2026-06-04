@@ -22,5 +22,7 @@ export async function createKundliFromMain(formData) {
 
   await saveKundli(hash, payload);
 
-  redirect(`/inKundli/getKundlipage?hash=${hash}`);
+redirect(
+  `/freeservices/kundali/getKundaliPage?hash=${hash}`
+);
 }

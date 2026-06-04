@@ -53,8 +53,6 @@ async function post(endpoint, body) {
 export const fetchMoonBio = (body) =>
     post("moon_biorhythm", body);
 
-
-
 // My Day Prediction
 export async function fetchMyDay(body) {
     return post("daily_nakshatra_prediction", body);
@@ -63,7 +61,6 @@ export async function fetchMyDay(body) {
 export async function fetchNumeroDay(body) {
     return post("numero_prediction/daily", body);
 }
-
 
 // Nakshatra Prediction 
 export const fetchNakPrev = (body) =>

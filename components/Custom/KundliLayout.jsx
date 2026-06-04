@@ -28,10 +28,12 @@ export default function KundliLayout({ children }) {
     const [isExternalAccess, setIsExternalAccess] = useState(false);
     const [paramsProcessed, setParamsProcessed] = useState(false);
 
-    const fullLayoutRoutes = ["/inKundli/getKundlipage"];
+    const fullLayoutRoutes = ["/freeservices/kundali/getKundaliPage"];
     const isFullLayoutRoute = fullLayoutRoutes.some((route) =>
         pathname.startsWith(route)
     );
+
+    console.log("pathname =", pathname);
 
     useEffect(() => {
         try {
@@ -123,7 +125,7 @@ export default function KundliLayout({ children }) {
             <section className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md z-9999 p-5">
                 <div className="bg-white/80 backdrop-blur-xl h-[95vh] overflow-y-scroll shadow-2xl rounded-2xl max-w-5xl w-full px-5 py-2 border border-white/30">
                     <Link
-                        href={"/inKundli/getKundlipage"}
+                        href={"/freeservices/kundali/getKundaliPage"}
                         className="text-2xl mb-2 flex items-center gap-2 font-bold text-[#2f1254]"
                     >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M236.3 107.1C247.9 96 265 92.9 279.7 99.2C294.4 105.5 304 120 304 136L304 272.3L476.3 107.2C487.9 96 505 92.9 519.7 99.2C534.4 105.5 544 120 544 136L544 504C544 520 534.4 534.5 519.7 540.8C505 547.1 487.9 544 476.3 532.9L304 367.7L304 504C304 520 294.4 534.5 279.7 540.8C265 547.1 247.9 544 236.3 532.9L44.3 348.9C36.5 341.3 32 330.9 32 320C32 309.1 36.5 298.7 44.3 291.1L236.3 107.1z"/></svg>
