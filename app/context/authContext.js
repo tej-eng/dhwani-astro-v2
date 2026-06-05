@@ -6,37 +6,32 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
-
 export function AuthProvider({ children }) {
-const [user, setUser] = useState(null);
-  
- const [isLoggedIn, setIsLoggedIn] = useState(false);
- 
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const [showLogin, setShowLogin] = useState(false);
   const [pendingRoute, setPendingRoute] = useState(null);
 
-useEffect(() => {
-  try {
-    if (typeof window === "undefined") return;
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
 
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (err) {
+      console.error("AuthContext localStorage error:", err);
+    } finally {
+      setAuthLoading(false);
     }
-  } catch (err) {
-    console.error("AuthContext localStorage error:", err);
-  }
-}, []);
+  }, []);
 
   const value = {
     user,
     setUser,
-    isLoggedIn,
-    setIsLoggedIn,
+    isLoggedIn: !!user,
+    authLoading,
     showLogin,
     setShowLogin,
     pendingRoute,
@@ -49,7 +44,6 @@ useEffect(() => {
     </AuthContext.Provider>
   );
 }
-
 export function useAuth() {
   return useContext(AuthContext);
 }

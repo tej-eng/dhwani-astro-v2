@@ -27,7 +27,7 @@ const UPDATE_PROFILE = gql`
 `;
 
 const SignInModal = ({ onClose }) => {
-  const { setUser, setIsLoggedIn } = useAuth();
+  const { setUser } = useAuth();
   const router = useRouter();
 
   const {
@@ -43,11 +43,11 @@ const SignInModal = ({ onClose }) => {
     setStep,
   } = useOTP();
 
- const [phoneData, setPhoneData] = useState({
-  countryCode: "",
-  mobile: "",
-  isValid: false,
-});
+  const [phoneData, setPhoneData] = useState({
+    countryCode: "",
+    mobile: "",
+    isValid: false,
+  });
 
   const [existingUserName, setExistingUserName] = useState("");
   const [userName, setUserName] = useState("");
@@ -56,7 +56,6 @@ const SignInModal = ({ onClose }) => {
 
   const { pendingRoute, setPendingRoute } = useAuth();
 
- 
   console.log("comming step value:", step);
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -78,19 +77,19 @@ const SignInModal = ({ onClose }) => {
      SEND OTP
   ============================= */
 
- const handleGetOTP = async () => {
-  try {
-    if (!phoneData.mobile || !phoneData.countryCode) {
-      toast.error("Enter valid mobile number");
-      return;
-    }
+  const handleGetOTP = async () => {
+    try {
+      if (!phoneData.mobile || !phoneData.countryCode) {
+        toast.error("Enter valid mobile number");
+        return;
+      }
 
-    await sendOtp(phoneData.countryCode, phoneData.mobile);
-    toast.success("OTP sent successfully");
-  } catch (err) {
-    toast.error(err.message);
-  }
-};
+      await sendOtp(phoneData.countryCode, phoneData.mobile);
+      toast.success("OTP sent successfully");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   /* =============================
      VERIFY OTP
@@ -98,15 +97,12 @@ const SignInModal = ({ onClose }) => {
 
   const handleVerifyOTP = async () => {
     try {
-      const result = await confirmOtp(
-      phoneData.countryCode,
-      phoneData.mobile
-      );
+      const result = await confirmOtp(phoneData.countryCode, phoneData.mobile);
       localStorage.setItem("user", JSON.stringify(result.user));
 
-       setUser(result.user);
-        setIsLoggedIn(true);
-     
+      setUser(result.user);
+      // setIsLoggedIn(true);
+
       if (result.hasName) {
         setExistingUserName(result.user.name);
 
@@ -121,7 +117,6 @@ const SignInModal = ({ onClose }) => {
       } else {
         setStep("NAME");
       }
-
     } catch (err) {
       toast.error(err.message);
       setOtp(["", "", "", ""]);
@@ -144,9 +139,14 @@ const SignInModal = ({ onClose }) => {
       });
 
       // ✅ Update name in localStorage
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      user.name = userName;
-      localStorage.setItem("user", JSON.stringify(user));
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem("user") || "{}"),
+        name: userName,
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      setUser(updatedUser);
 
       if (pendingRoute) {
         onClose();
@@ -157,7 +157,6 @@ const SignInModal = ({ onClose }) => {
 
       onClose();
       router.refresh();
-
     } catch (err) {
       toast.error(err.message);
     }
@@ -211,7 +210,6 @@ const SignInModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
       <div className="flex flex-col w-full max-w-2xl bg-white text-black rounded-lg shadow-lg overflow-hidden">
-
         <div className="relative py-4 flex items-center justify-center bg-[#3f1069]">
           <span className="text-xl font-semibold text-white">
             Continue With Mobile
@@ -223,14 +221,17 @@ const SignInModal = ({ onClose }) => {
         </div>
 
         <div className="flex side-div">
-
           <div className="bg-[#3f1069] text-white w-2/5 flex flex-col items-center p-8">
-            <Image src="/ds-img/logo.webp" alt="Logo" width={100} height={100} />
+            <Image
+              src="/ds-img/logo.webp"
+              alt="Logo"
+              width={100}
+              height={100}
+            />
             <h2 className="text-xl font-bold">Welcome to Dhwani Astro</h2>
           </div>
 
           <div className="w-3/5 flex flex-col items-center justify-center p-8 gap-4">
-
             {step === "PHONE" && (
               <>
                 <PhoneInput onChange={setPhoneData} />
@@ -314,9 +315,7 @@ const SignInModal = ({ onClose }) => {
                 <p className="text-lg mt-2">{existingUserName}</p>
               </>
             )}
-
           </div>
-
         </div>
       </div>
     </div>

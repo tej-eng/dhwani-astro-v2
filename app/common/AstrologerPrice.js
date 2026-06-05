@@ -14,52 +14,29 @@ const ME_QUERY = gql`
 `;
 
 function AstrologerPrice({ mode, astro }) {
-  const { messages: t } = useLanguage();
-
-  const { data, loading } = useQuery(ME_QUERY, {
-    fetchPolicy: "cache-first",
-  });
-
-  const isAuth = !!data?.me;
-
-  if (loading) return null;
-
-  // pick correct pricing based on mode (CHAT/CALL/etc)
   const pricing = astro?.pricing?.find(
-    (p) => p.type === (mode || "CHAT").toUpperCase()
+    (p) => p.type === mode?.toUpperCase()
   );
 
-  const oprice = astro?.activeOffer?.price;
+  if (!pricing) return null;
 
-  const price = pricing?.price ?? 0;
-  const offerPrice = pricing?.offerPrice ?? price;
+  const currentPrice = pricing.price ?? 0;
+
+  const originalPrice =
+    pricing.originalPrice ||
+    pricing.offerPrice ||
+    currentPrice;
 
   return (
     <>
-      {/* 🔹 NOT LOGGED IN */}
-      {!isAuth && (
-        <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center gap-3 text-base font-semibold text-red-500 sm:text-[16px]">
-            {t?.astrocard?.free || "Free"}
-          </span>
+      <span className="flex items-center justify-center gap-3 text-sm font-semibold text-red-500 sm:text-lg">
+        ₹{currentPrice}
+      </span>
 
-          <span className="text-sm font-semibold text-black line-through">
-            ₹{price} /{t?.astrocard?.min || "min"}
-          </span>
-        </div>
-      )}
-
-      {/* 🔹 LOGGED IN */}
-      {isAuth && (
-        <>
-          <span className="flex items-center justify-center gap-3 text-sm font-semibold text-red-500 sm:text-lg">
-            ₹{oprice ? oprice : offerPrice}
-          </span>
-
-          <span className="text-sm font-semibold text-black line-through">
-            ₹{price} /min
-          </span>
-        </>
+      {originalPrice > currentPrice && (
+        <span className="text-sm font-semibold text-black line-through">
+          ₹{originalPrice}/min
+        </span>
       )}
     </>
   );

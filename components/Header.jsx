@@ -52,7 +52,7 @@ export default function Header({ openSignInModal }) {
       if (result.data.logout) {
         localStorage.removeItem("user");
         setUser(null);
-        setIsLoggedIn(false);
+        // setIsLoggedIn(false);
         await client.clearStore();
         await persistor.purge();
         //  setIsLoggedIn(false);
