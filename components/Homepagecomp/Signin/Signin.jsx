@@ -102,7 +102,7 @@ const SignInModal = ({ onClose }) => {
 
       setUser(result.user);
       // setIsLoggedIn(true);
-
+ 
       if (result.hasName) {
         setExistingUserName(result.user.name);
 

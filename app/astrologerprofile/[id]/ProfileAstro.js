@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import StarRating from "@/components/Homepagecomp/Remedosha/StarRating";
 import { AlertLoading, SingleButton } from "@/app/common";
@@ -10,23 +10,37 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { fetchUsersRequest } from "@/app/redux/reducer/astrologer/UserFollowSlice";
 import { getHistoryRequest } from "@/app/redux/reducer/astrologer/getFollowHistory";
-import {
-  getAstrologerData,
-  RequestAstrologerDetail,
-} from "@/app/redux/reducer/astrologer/AstrologerDetail";
+
 import Link from "next/link";
 import { fetchAstrologers } from "@/app/redux/reducer/astrologer/astrlogerSlice";
 import CustomButton from "@/components/Custom/CustomButton";
 import GiftPop from "@/components/Smcompo/GiftPop";
 import { useLanguage } from "@/app/context/LangContext";
 
-export default function ProfileAstro({ serverData, serverreviewdata }) {
+import { useRouter } from "next/navigation";
+import { GET_ASTROLOGER_BY_ID } from "@/app/graphql/gqlQuery";
+import { useQuery } from "@apollo/client/react";
+
+export default function ProfileAstro({ astrologerId }) {
   const router = useRouter();
-  const { id } = useParams();
+  const id = astrologerId;
+
+  const {
+    data: astrologerResponse,
+    loading: astrologerloading,
+    error,
+  } = useQuery(GET_ASTROLOGER_BY_ID, {
+    variables: {
+      id,
+    },
+    skip: !id,
+    fetchPolicy: "network-only",
+  });
+
+  const astrologerdetail = astrologerResponse?.getAstrologerById;
   const dispatch = useDispatch();
   const { messages: t } = useLanguage();
 
-  const astrologerdetail = serverData;
   const [showGiftPopup, setShowGiftPopup] = useState(false);
 
   const [astrofollow, setAstroFollow] = useState("");
@@ -36,37 +50,12 @@ export default function ProfileAstro({ serverData, serverreviewdata }) {
 
   const { loading } = useSelector((state) => state.followastrologer);
   const { resposeData } = useSelector((state) => state.getfollowhistory);
-  const { astrologerloading, astrologerdata: astro } = useSelector(
-    (state) => state.astrologerdetail,
-  );
+
   useEffect(() => {
     if (id) {
       dispatch(getHistoryRequest({ astro_id: parseInt(id) }));
     }
   }, [dispatch, id]);
-
-  useEffect(() => {}, [serverreviewdata]);
-
-useEffect(() => {
-
-  console.log("astrologerdetailxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", astrologerdetail);
-  if (
-    astrologerdetail &&
-    typeof astrologerdetail === "object" &&
-    Object.keys(astrologerdetail).length
-  ) {
-    dispatch(getAstrologerData(astrologerdetail));
-    return;
-  }
-
-  if (!astro?.length) {
-    dispatch(
-      RequestAstrologerDetail({
-        astro_id: Number(id),
-      })
-    );
-  }
-}, [dispatch, id, astrologerdetail, astro]);
 
   useEffect(() => {
     if (resposeData?.follow_status !== undefined) {
@@ -83,7 +72,9 @@ useEffect(() => {
     setAstroFollow(1);
     setHide(false);
     toast.success(
-      `We will notify you when ${astro.full_name} goes live, comes online, or runs an offer!`,
+      `We will notify you when ${
+        astrologerdetail?.displayName || astrologerdetail?.name
+      } goes live, comes online, or runs an offer!`,
     );
   };
 
@@ -123,23 +114,36 @@ useEffect(() => {
     }
   };
 
-  if (!astro)
+  if (astrologerloading) {
     return (
       <div className="text-center text-gray-600 mt-10">
         Loading astrologer details...
       </div>
     );
+  }
 
-  const profileData = astro;
+  if (error) {
+    return (
+      <div className="text-center text-red-500 mt-10">{error.message}</div>
+    );
+  }
 
-  const chatPricing =
-  astrologerdetail?.pricing?.find(
-    (item) => item.type === "CHAT"
+  if (!astrologerdetail) {
+    return (
+      <div className="text-center text-gray-600 mt-10">
+        Astrologer not found
+      </div>
+    );
+  }
+
+  const profileData = astrologerdetail;
+
+  const chatPricing = astrologerdetail?.pricing?.find(
+    (item) => item.type === "CHAT",
   );
 
-const callPricing =
-  astrologerdetail?.pricing?.find(
-    (item) => item.type === "CALL"
+  const callPricing = astrologerdetail?.pricing?.find(
+    (item) => item.type === "CALL",
   );
 
   return (
@@ -158,7 +162,11 @@ const callPricing =
 
           <div className="flex flex-col items-center justify-center gap-2">
             <Image
-              src={astrologerdetail?.profilePic || "/default-user.png"}
+              src={
+                astrologerdetail?.profilePic
+                  ? `https://www.dhwaniastro.com${astrologerdetail.profilePic}`
+                  : "/man.png"
+              }
               alt="image"
               width={100}
               height={100}
@@ -199,8 +207,7 @@ const callPricing =
           <div className="flex flex-col gap-5 sm:flex-row md:items-start sm:gap-5 lg:gap-20">
             <div className="flex flex-col gap-2 py-2 text-sm md:text-base">
               <h2 className="flex items-center gap-1 text-xl text-gray-800 sm:text-xl sm:font-bold lg:text-3xl lg:font-semibold">
-            {astrologerdetail?.displayName ||
-  astrologerdetail?.name}
+                {astrologerdetail?.displayName || astrologerdetail?.name}
                 <BiSolidBadgeCheck className="w-5 h-5 text-green-500" />
               </h2>
 
@@ -213,7 +220,7 @@ const callPricing =
 
               <div className="flex items-center gap-4">
                 <span className="font-semibold text-black">
-                {astrologerdetail?.rating || 0}/5
+                  {astrologerdetail?.rating || 0}/5
                 </span>
                 <StarRating
                   className="text-yellow-500"
@@ -222,7 +229,7 @@ const callPricing =
               </div>
 
               <span className="text-sm font-semibold text-black">
-             {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
+                {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
 
               <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
@@ -242,22 +249,19 @@ const callPricing =
                       ₹{astro.astro_chat_charges}/min
                     </span>
                   )} */}
-                 {chatPricing?.offerPrice ? (
-  <>
-    <span className="text-lg text-red-600 font-extrabold">
-      ₹{chatPricing.offerPrice}
-    </span>
+                  {chatPricing?.offerPrice ? (
+                    <>
+                      <span className="text-lg text-red-600 font-extrabold">
+                        ₹{chatPricing.offerPrice}
+                      </span>
 
-    <span className="line-through text-gray-500 text-sm">
-      ₹{chatPricing.price}/min
-    </span>
-  </>
-) : (
-  <span>
-    ₹{chatPricing?.price}/min
-  </span>
-)}
-                  
+                      <span className="line-through text-gray-500 text-sm">
+                        ₹{chatPricing.price}/min
+                      </span>
+                    </>
+                  ) : (
+                    <span>₹{chatPricing?.price}/min</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -278,9 +282,7 @@ const callPricing =
                 </div>
                 <div className="grid grid-cols-2 gap-5">
                   <span className="font-semibold">Expertise</span>
-                  <span>
-                  {astrologerdetail?.problems?.join(", ")}
-                  </span>
+                  <span>{astrologerdetail?.problems?.join(", ")}</span>
                 </div>
               </div>
 
@@ -302,13 +304,12 @@ const callPricing =
           <div className="p-4 mt-4 border   shadow bg-linear-to-r from-purple-50  rounded-2xl md:p-6 via-violet-50 to-yellow-50">
             <h3 className="mb-1 text-lg font-bold text-gray-800">About Me</h3>
             <div className="text-sm text-gray-700">
-           <div
-  dangerouslySetInnerHTML={{
-    __html:
-      astrologerdetail?.about ||
-      "No description available.",
-  }}
-/>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    astrologerdetail?.about || "No description available.",
+                }}
+              />
             </div>
           </div>
 
@@ -359,96 +360,92 @@ const callPricing =
                 </div>
               </div>
             </div>
-<div className="flex flex-col shadow-xl rounded-2xl p-4 items-center flex-1 bg-linear-to-r from-yellow-50 md:p-6 via-violet-50 to-purple-100">
-  <h5 className="text-lg font-semibold text-gray-800 text-center mb-4">
-    Ratings & Reviews
-  </h5>
+            <div className="flex flex-col shadow-xl rounded-2xl p-4 items-center flex-1 bg-linear-to-r from-yellow-50 md:p-6 via-violet-50 to-purple-100">
+              <h5 className="text-lg font-semibold text-gray-800 text-center mb-4">
+                Ratings & Reviews
+              </h5>
 
-  {astrologerdetail?.recentReviews?.length > 0 ? (
-    <>
-      <div className="w-full max-w-xl space-y-5">
-        {astrologerdetail.recentReviews
-          .slice(
-            0,
-            showAll
-              ? astrologerdetail.recentReviews.length
-              : 3
-          )
-          .map((review) => (
-            <div
-              key={review.id}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h5 className="font-semibold text-gray-700">
-                  {review?.userName?.split(" ")[0] || "User"}
-                </h5>
-
-                <div className="text-right">
-                  <p className="text-xs text-gray-400">
-                    {new Date(
-                      review.createdAt
-                    ).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </p>
-
-                  <div>
-                    {[...Array(review?.rating || 0)].map(
-                      (_, index) => (
-                        <span
-                          key={index}
-                          style={{
-                            color: "gold",
-                            fontSize: "18px",
-                          }}
-                        >
-                          ★
-                        </span>
+              {astrologerdetail?.recentReviews?.length > 0 ? (
+                <>
+                  <div className="w-full max-w-xl space-y-5">
+                    {astrologerdetail.recentReviews
+                      .slice(
+                        0,
+                        showAll ? astrologerdetail.recentReviews.length : 3,
                       )
-                    )}
+                      .map((review) => (
+                        <div
+                          key={review.id}
+                          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
+                        >
+                          <div className="flex justify-between items-center mb-2">
+                            <h5 className="font-semibold text-gray-700">
+                              {review?.userName?.split(" ")[0] || "User"}
+                            </h5>
+
+                            <div className="text-right">
+                              <p className="text-xs text-gray-400">
+                                {new Date(review.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "long",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </p>
+
+                              <div>
+                                {[...Array(review?.rating || 0)].map(
+                                  (_, index) => (
+                                    <span
+                                      key={index}
+                                      style={{
+                                        color: "gold",
+                                        fontSize: "18px",
+                                      }}
+                                    >
+                                      ★
+                                    </span>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <hr className="border-gray-200 mb-3" />
+
+                          <div className="text-sm italic text-gray-600 mb-2">
+                            {review?.comment}
+                          </div>
+
+                          {review?.reply && (
+                            <div className="bg-gray-50 p-3 rounded-md text-sm text-black border-l-4 border-blue-400">
+                              <strong className="text-gray-700">
+                                Astrologer:
+                              </strong>{" "}
+                              <i>{review.reply}</i>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                   </div>
-                </div>
-              </div>
 
-              <hr className="border-gray-200 mb-3" />
-
-              <div className="text-sm italic text-gray-600 mb-2">
-                {review?.comment}
-              </div>
-
-              {review?.reply && (
-                <div className="bg-gray-50 p-3 rounded-md text-sm text-black border-l-4 border-blue-400">
-                  <strong className="text-gray-700">
-                    Astrologer:
-                  </strong>{" "}
-                  <i>{review.reply}</i>
-                </div>
+                  {!showAll && astrologerdetail?.recentReviews?.length > 3 && (
+                    <div className="mt-5">
+                      <button
+                        onClick={() => setShowAll(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm transition-all"
+                      >
+                        View More
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-gray-500">No reviews yet</div>
               )}
             </div>
-          ))}
-      </div>
-
-      {!showAll &&
-        astrologerdetail?.recentReviews?.length > 3 && (
-          <div className="mt-5">
-            <button
-              onClick={() => setShowAll(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm transition-all"
-            >
-              View More
-            </button>
-          </div>
-        )}
-    </>
-  ) : (
-    <div className="text-gray-500">
-      No reviews yet
-    </div>
-  )}
-</div>
           </div>
         </div>
       </div>
@@ -480,8 +477,8 @@ const callPricing =
       )}
       <GiftPop
         open={showGiftPopup}
-        astrologername={astro?.full_name}
-        astro_id={astro?.id}
+        astrologername={astrologerdetail?.displayName || astrologerdetail?.name}
+        astro_id={astrologerdetail?.id}
         onClose={() => setShowGiftPopup(false)}
       />
 
