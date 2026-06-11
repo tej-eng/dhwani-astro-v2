@@ -10,17 +10,20 @@ export default function Healdetail({ data, pkgId, setPkgId }) {
     return (
 
         <div className="flex flex-col gap-2">
-            <h1 className="mb-0 text-xl font-bold text-purple-700 sm:text-3xl">{data.hnm}</h1>
+            <h1 className="mb-0 text-xl font-bold text-purple-700 sm:text-3xl">{data?.name}</h1>
             <div className="flex items-center mt-0 space-x-2">
-                <span className="text-base font-semibold text-purple-600 sm:text-xl">Starting From: ₹ {data.startprice}</span>
+                <span className="text-base font-semibold text-purple-600 sm:text-xl">Starting From: ₹ {data?.price}</span>
                 <span className="text-sm text-gray-500">(Per Session)</span>
             </div>
             <p className="mb-1 text-sm text-gray-600 sm:text-base">
-                {data.hdes}
+                {data?.description}
+            </p>
+                <p className="mb-1 text-sm text-gray-600 sm:text-base">
+                {data?.longText}
             </p>
 
-            <div className="flex flex-col items-start gap-1 space-x-4 text-gray-600 ">
-                <h4 className="font-semibold">{data.hul} :-</h4>
+            {/* <div className="flex flex-col items-start gap-1 space-x-4 text-gray-600 ">
+                <h4 className="font-semibold">{data.benefitsTitle} :-</h4>
                 <ul className="text-sm list-disc list-inside">
                     <li>{data.hli1}</li>
                     <li>{data.hli2}</li>
@@ -29,7 +32,7 @@ export default function Healdetail({ data, pkgId, setPkgId }) {
                     <li>{data.hli5}</li>
                 </ul>
                 <span className="text-sm font-semibold">The healing session is of 20 minutes.</span>
-            </div>
+            </div> */}
 
             {/* <div className="flex flex-col gap-2 mt-4 text-black">
                 <h5 className="md:text-sm text-[15px] font-semibold">Please select session:</h5>

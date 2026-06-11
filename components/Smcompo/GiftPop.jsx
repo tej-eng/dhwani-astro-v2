@@ -15,25 +15,64 @@ import {
   resetStatusCode,
 } from "@/app/redux/reducer/payment/rechargeSlice";
 import { GET_GIFTS } from "@/app/graphql/gqlQuery";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+const GET_RECHARGE_PACKS = gql`
+  query GetRechargePacks {
+    getRechargePacks {
+      data {
+        id
+        name
+        description
+        price
+        talktime
+      }
+      totalCount
+    }
+  }
+`;
+const GET_USER_WALLET = gql`
+  query GetUserWallet {
+    getUserWallet {
+      balanceCoins
+      lockedCoins
+    }
+  }
+`;
+export const SEND_GIFT = gql`
+  mutation SendGift($input: SendGiftInput!) {
+    sendGift(input: $input) {
+      success
+      message
+      userBalance
+      astrologerBalance
+    }
+  }
+`;
+const CREATE_ORDER = gql`
+  mutation CreateOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      success
+      orderId
+      amount
+      currency
+    }
+  }
+`;
 
 export default function GiftPop({ open, onClose, astrologername, astro_id }) {
-
   const dispatch = useDispatch();
   const [alert, setAlert] = useState(false);
-
   const router = useRouter();
-
   const [selected, setSelected] = useState(null);
-  const [balance, setBalance] = useState(0);
-  const rechargeOptions = [100, 200, 500, 1000, 2000];
-  const { userData } = useSelector((state) => state.getuserDetail);
   const { loading, successMessage, responsedata } = useSelector(
     (state) => state.gift,
   );
 
   const [priceupdate, setPriceUpdate] = useState(0);
+  const [showAlert, setShowAlert] = useState(false);
 
+  let userData = JSON.parse(localStorage.getItem("user") || "{}");
   const {
     data: giftsResponse,
     loading: giftsLoading,
@@ -42,133 +81,146 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
     fetchPolicy: "network-only",
   });
 
-  useEffect(() => {
-  console.log("Gift API Response", giftsResponse);
-  console.log("Gift API Error", giftsError);
-}, [giftsResponse, giftsError]);
+  const {
+    data: rechargeResponse,
+    loading: rechargeLoading,
+    error: rechargeError,
+  } = useQuery(GET_RECHARGE_PACKS, {
+    fetchPolicy: "network-only",
+  });
+
+  const rechargePacks = rechargeResponse?.getRechargePacks?.data || [];
+  const {
+    data: walletData,
+    loading: walletLoading,
+    error: walletError,
+    refetch,
+  } = useQuery(GET_USER_WALLET, {
+    fetchPolicy: "network-only",
+  });
 
   const gifts = giftsResponse?.getGifts?.data || [];
 
   const { statusCode } = useSelector((state) => state.recharge_payment);
   useEffect(() => {}, [userData, responsedata]);
 
-  useEffect(() => {
-    if (successMessage === 200) {
-      toast.success("🎉Your gift has been sent with love!");
-      setPriceUpdate(0);
-      onClose();
-      dispatch(clearGiftState());
-    }
-  }, [successMessage, userData]);
+  const [sendGiftMutation] = useMutation(SEND_GIFT);
+   const [createOrder] = useMutation(CREATE_ORDER);
 
-  const sendGift = () => {
-    const walletprice = userData?.balance_amount + parseInt(priceupdate || 0);
-    if (walletprice < selected?.price) {
-      toast.error("Insufficient wallet balance. Please recharge your wallet.");
-      return;
-    }
-
+  const sendGift = async () => {
     if (!selected) {
       toast.error("Please select one gift");
       return;
     }
 
-    let gift_price = 0;
-    if (selected?.price === "Free") {
-      gift_price = 0;
-    } else {
-      gift_price = selected?.price;
+    const giftPrice = Number(selected?.amount || selected?.price || 0);
+
+    const walletBalance = Number(walletData?.getUserWallet?.balanceCoins || 0);
+
+    if (walletBalance < giftPrice) {
+      toast.error("Insufficient wallet balance");
+      return;
     }
 
     const payload = {
-      astro_id: astro_id,
-      giftname: selected?.name || "",
-      giftprice: gift_price || 0,
-      user_name: userData?.full_name,
+      astro_id,
+      giftname: selected?.name,
+      giftprice: giftPrice,
+      gift_id: selected?.id,
+      user_name: userData?.name,
       astro_name: astrologername,
+      user_id: userData?.id,
     };
 
-    dispatch(addGiftRequest(payload));
-  };
-  useEffect(() => {
-    if (statusCode === 200) {
-      setAlert(false);
-      toast.success("Payment Add Wallet successfully Again Send Gift!");
-
-      dispatch(resetStatusCode());
-    }
-  }, [statusCode, astro_id, dispatch, router]);
-  const handleCheckout = async (amount) => {
     try {
-      setAlert(true);
-      const res = await fetch("/api/createOrder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: amount }),
+      const { data } = await sendGiftMutation({
+        variables: {
+          input: payload,
+        },
       });
 
-      const order = await res.json();
+      toast.success(data.sendGift.message);
 
-      if (order.error) {
-        alert("Error creating order");
-        setAlert(false);
-
-        return;
-      }
-      const options = {
-        key:
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
-        amount: order.amount,
-        currency: order.currency,
-        name: "Dhwani Astro LLp",
-        description: "Gift Payment",
-        order_id: order.id,
-        handler: async function (response) {
-          setAlert(true);
-
-          const res = await fetch("/api/verifypayment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
-          const order = await res.json();
-
-          if (order.success) {
-            const userId = userData?.id;
-            const paymentId = order.payment_id;
-            const totalamount = amount || 0;
-            const method = order?.paymentmethod;
-            setPriceUpdate(totalamount || 0);
-            const res = dispatch(
-              sendPaymentDetail({ userId, paymentId, totalamount, method }),
-            );
-          } else {
-            alert(order);
-          }
-        },
-        prefill: {
-          name: "",
-          email: "",
-          contact: "",
-        },
-        theme: {
-          color: "#fff49e",
-        },
-      };
-
-      setAlert(false);
-
-      const razor = new window.Razorpay(options);
-      razor.open();
-    } catch (error) {
-      console.log("aSAs", error?.message);
-    } finally {
+      await refetch();
+    } catch (err) {
+      toast.error(err.message);
     }
   };
+
+  const handleCheckout = async (amount, packId) => {
+  try {
+    setAlert(true);
+
+    const { data } = await createOrder({
+      variables: {
+        input: {
+          rechargePackId: packId,
+        },
+      },
+    });
+
+    const order = data?.createOrder;
+
+    console.log("GraphQL Order:", order);
+
+    if (!order?.success) {
+      toast.error("Error creating order");
+      setAlert(false);
+      return;
+    }
+
+    const options = {
+      key:
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "rzp_test_SNXjhTOgP1CIx0",
+
+      amount: order.amount,
+
+      currency: order.currency,
+
+      name: "Dhwani Astro LLP",
+
+      description: "Recharge Payment",
+
+      order_id: order.orderId,
+
+      notes: {
+        userId: userData?.id || "guest",
+        rechargePackId: packId,
+      },
+
+      handler: async function (response) {
+        console.log("Payment Success:", response);
+
+        toast.success("Payment Successful");
+
+        await refetch();
+      },
+
+      modal: {
+        ondismiss: function () {
+          toast.error("Payment Cancelled");
+        },
+      },
+
+      theme: {
+        color: "#fff49e",
+      },
+    };
+
+    setAlert(false);
+
+    const razor = new window.Razorpay(options);
+
+    razor.open();
+  } catch (error) {
+    console.error("Checkout Error:", error);
+
+    setAlert(false);
+
+    toast.error(error.message || "Payment failed");
+  }
+};
 
   if (!open) return null;
 
@@ -191,7 +243,7 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
             viewBox="-6 -6 24 24"
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="xMinYMin"
-            class="jam jam-close"
+            className="jam jam-close"
           >
             <path d="M7.314 5.9l3.535-3.536A1 1 0 1 0 9.435.95L5.899 4.485 2.364.95A1 1 0 1 0 .95 2.364l3.535 3.535L.95 9.435a1 1 0 1 0 1.414 1.414l3.535-3.535 3.536 3.535a1 1 0 1 0 1.414-1.414L7.314 5.899z" />
           </svg>
@@ -235,21 +287,23 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
           <p className="text-center text-sm font-semibold text-[#2f1254] mb-2">
             Recharge to seek blessing
           </p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {rechargeOptions.map((amt) => (
-              <button
-                aria-label={`Recharge ₹${amt}`}
-                onClick={() => handleCheckout(amt)}
-                key={amt}
-                className="px-3 py-2 text-xs sm:text-sm rounded-full bg-yellow-100 hover:bg-yellow-300 text-[#2f1254] font-semibold shadow-[2px_2px_6px_#b9b9b9]"
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {rechargePacks.map((pack) => (
+              <div
+                key={pack.id}
+                onClick={() => handleCheckout(pack.price, pack.id)}
+                className="cursor-pointer p-3 rounded-xl border border-yellow-300 bg-yellow-50 hover:bg-yellow-100 transition"
               >
-                ₹{amt}
-              </button>
+                <p className="font-bold text-[#2f1254]">₹{pack.price}</p>
+
+                <p className="text-xs text-gray-600">{pack.name}</p>
+
+                <p className="text-[11px] text-green-700">
+                  {pack.talktime} Min
+                </p>
+              </div>
             ))}
           </div>
-          {/* <p className="text-[12px] text-center mt-2 text-yellow-700 font-medium">
-            Get ₹49 cashback in wallet on this recharge.
-          </p> */}
         </div>
 
         <div className="flex justify-between items-center">
@@ -261,7 +315,11 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
               </p>
             ) : (
               <p className="text-gray-700 font-semibold">
-                ₹{(userData?.balance_amount + priceupdate).toFixed(2)}
+                ₹
+                {(
+                  Number(walletData?.getUserWallet?.balanceCoins || 0) +
+                  Number(priceupdate || 0)
+                ).toFixed(2)}
               </p>
             )}
 
@@ -277,8 +335,7 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
           </button>
         </div>
       </div>
-      <AlertLoading show={loading} title="Please Wait.." />
-      <AlertLoading show={alert} title="Please Wait.." />
+     <AlertLoading show={showAlert} title="Please Wait.." />
     </div>
   );
 }

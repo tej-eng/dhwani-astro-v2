@@ -6,6 +6,7 @@ import AstrologerList from "../AstrologerList";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useAuth } from "@/app/context/authContext";
+import { GET_ASTROLOGERS_GUEST, GET_ASTROLOGERS_USER } from "@/app/graphql/gqlQuery";
 
 /* ---------------- AUTH ---------------- */
 
@@ -13,82 +14,11 @@ import { useAuth } from "@/app/context/authContext";
 
 /* ---------------- GUEST ---------------- */
 
-const GET_ASTROLOGERS_GUEST = gql`
-  query GetAstrologers($searchInput: AstrologerSearchInput) {
-    getAstrologerListBySearch(searchInput: $searchInput) {
-      data {
-        id
-        profilePic
-        name
-        experience
-        rating
-        skills
-        languages
 
-        activeOffer {
-          id
-          offerName
-          price
-          description
-        }
-
-        pricing {
-          type
-          price
-          offerPrice
-          commissionPercent
-          isActive
-        }
-      }
-
-      totalPages
-      currentPage
-      totalCount
-    }
-  }
-`;
 
 /* ---------------- AUTH USER ---------------- */
 
-const GET_ASTROLOGERS_USER = gql`
-  query GetAstrologerListForUser(
-    $searchInput: AstrologerSearchInput
-  ) {
-    getAstrologerListForUser(
-      searchInput: $searchInput
-    ) {
-      totalCount
-      currentPage
-      totalPages
 
-      data {
-        id
-        profilePic
-        name
-        experience
-        rating
-        skills
-        languages
-
-        activeOffer {
-          id
-          offerName
-          price
-          description
-        }
-
-        pricing {
-          type
-          price
-          originalPrice
-          offerPrice
-          commissionPercent
-          isActive
-        }
-      }
-    }
-  }
-`;
 
 export default function Page() {
   const params = useParams();
