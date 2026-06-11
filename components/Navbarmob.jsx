@@ -88,7 +88,7 @@ export default function Navbarmob() {
       src: "/prblm/social-work.png",
       alt: "Dhwani",
       ulname: `${t.navbar.n6}`,
-      href: "/dhServices",
+      href: "/dhwani-services",
     },
   ];
 

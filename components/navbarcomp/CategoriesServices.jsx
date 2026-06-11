@@ -11,16 +11,18 @@ import useScrollZoom from "@/Hooks/scrollZoom";
 import { useQuery } from "@apollo/client/react";
 import { GET_CATEGORY } from "@/app/graphql/gqlQuery";
 
-export default function Healing() {
+export default function CategoryServices({
+  categorySlug,
+}){
   const [search, setSearch] = useState("");
   const { messages: t } = useLanguage();
   useScrollZoom(".head-wrap");
 
-  const { data, loading, error } = useQuery(GET_CATEGORY, {
-    variables: {
-      slug: "healing",
-    },
-  });
+const { data, loading, error } = useQuery(GET_CATEGORY, {
+  variables: {
+    slug: categorySlug,
+  },
+});
 
   const filteredData =
     data?.getCategory?.services?.filter((item) =>
@@ -78,7 +80,7 @@ export default function Healing() {
                     </span>
                   </div>
                   <Link
-                    href={`/healing/${heal.slug}`}
+                   href={`/dhwani-services/${categorySlug}/${heal.slug}`}
                     className="bg-[#8a2be2] w-[80%] text-white px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-medium hover:bg-[#7325c0] transition"
                   >
                     {t?.healing?.book || "Book Now"}

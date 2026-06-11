@@ -4,22 +4,51 @@ import Image from "next/image";
 
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import StarRating from "@/components/Homepagecomp/Remedosha/StarRating";
-import { AlertLoading, SingleButton } from "@/app/common";
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { fetchUsersRequest } from "@/app/redux/reducer/astrologer/UserFollowSlice";
-import { getHistoryRequest } from "@/app/redux/reducer/astrologer/getFollowHistory";
-
 import Link from "next/link";
-import { fetchAstrologers } from "@/app/redux/reducer/astrologer/astrlogerSlice";
 import CustomButton from "@/components/Custom/CustomButton";
 import GiftPop from "@/components/Smcompo/GiftPop";
 import { useLanguage } from "@/app/context/LangContext";
+import { AlertLoading, SingleButton } from "@/app/common";
 
 import { useRouter } from "next/navigation";
 import { GET_ASTROLOGER_BY_ID } from "@/app/graphql/gqlQuery";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+export const FOLLOW_ASTROLOGER = gql`
+  mutation FollowAstrologer($astrologerId: ID!) {
+    followAstrologer(astrologerId: $astrologerId) {
+      success
+      message
+    }
+  }
+`;
+
+export const UNFOLLOW_ASTROLOGER = gql`
+  mutation UnfollowAstrologer($astrologerId: ID!) {
+    unfollowAstrologer(astrologerId: $astrologerId) {
+      success
+      message
+    }
+  }
+`;
+
+export const IS_FOLLOWING = gql`
+  query IsFollowing($astrologerId: ID!) {
+    isFollowing(astrologerId: $astrologerId) {
+      isFollowing
+    }
+  }
+`;
+
+export const GET_ASTROLOGER_FOLLOWERS_COUNT = gql`
+  query GetAstrologerFollowersCount($astrologerId: ID!) {
+    getAstrologerFollowersCount(astrologerId: $astrologerId) {
+      totalFollowers
+    }
+  }
+`;
 
 export default function ProfileAstro({ astrologerId }) {
   const router = useRouter();
@@ -36,81 +65,122 @@ export default function ProfileAstro({ astrologerId }) {
     skip: !id,
     fetchPolicy: "network-only",
   });
+  console.log("Astrologer ID:", id);
+  console.log("Skip Value:", !id);
+  const {
+    data: followStatusData,
+    loading: followLoadingStatus,
+    error: followError,
+    refetch: refetchFollow,
+  } = useQuery(IS_FOLLOWING, {
+    variables: {
+      astrologerId: id,
+    },
+    skip: !id,
+    fetchPolicy: "network-only",
+  });
+
+  const {
+    data: followersCountData,
+    loading: followersCountLoading,
+    error: followersCountError,
+    refetch: refetchFollowersCount,
+  } = useQuery(GET_ASTROLOGER_FOLLOWERS_COUNT, {
+    variables: {
+      astrologerId: id,
+    },
+    skip: !id,
+    fetchPolicy: "network-only",
+  });
+  const followersCount =
+    followersCountData?.getAstrologerFollowersCount?.totalFollowers || 0;
+  useEffect(() => {
+    console.log("Follow Query Data:", followStatusData);
+    console.log("Follow Query Error:", followError);
+    console.log("Follow Query Loading:", followLoadingStatus);
+  }, [followStatusData, followError, followLoadingStatus]);
+
+  useEffect(() => {
+    console.log("Followers Count Data:", followersCountData);
+    console.log("Followers Count Error:", followersCountError);
+    console.log("Followers Count Loading:", followersCountLoading);
+  }, [followersCountData, followersCountError, followersCountLoading]);
 
   const astrologerdetail = astrologerResponse?.getAstrologerById;
-  const dispatch = useDispatch();
   const { messages: t } = useLanguage();
 
   const [showGiftPopup, setShowGiftPopup] = useState(false);
 
-  const [astrofollow, setAstroFollow] = useState("");
-  const [hide, setHide] = useState(true);
+  const [astrofollow, setAstroFollow] = useState(false);
+
+  useEffect(() => {
+    console.log("Follow Status Data:", followStatusData);
+    if (typeof followStatusData?.isFollowing === "boolean") {
+      console.log("Follow Status Data:", followStatusData);
+      setAstroFollow(followStatusData.isFollowing);
+    }
+  }, [followStatusData]);
+
+  const [followAstrologer, { loading: followLoading }] =
+    useMutation(FOLLOW_ASTROLOGER);
+
+  const [unfollowAstrologer, { loading: unfollowLoading }] =
+    useMutation(UNFOLLOW_ASTROLOGER);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
-  const { loading } = useSelector((state) => state.followastrologer);
-  const { resposeData } = useSelector((state) => state.getfollowhistory);
-
-  useEffect(() => {
-    if (id) {
-      dispatch(getHistoryRequest({ astro_id: parseInt(id) }));
-    }
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (resposeData?.follow_status !== undefined) {
-      setAstroFollow(resposeData.follow_status);
-    }
-  }, [resposeData]);
-  const follow = () => {
-    dispatch(
-      fetchUsersRequest({
-        astro_id: parseInt(id),
-        follow_status: 1,
-      }),
-    );
-    setAstroFollow(1);
-    setHide(false);
-    toast.success(
-      `We will notify you when ${
-        astrologerdetail?.displayName || astrologerdetail?.name
-      } goes live, comes online, or runs an offer!`,
-    );
-  };
-
-  const { data = [] } = useSelector((state) => state.astrologerReducer);
-
-  useEffect(() => {
-    if (!data?.sortedAstrologers || data.sortedAstrologers.length === 0) {
-      dispatch(fetchAstrologers({ page: 1, limit: 6 }));
-    }
-  }, [dispatch, data.sortedAstrologers, data]);
-
-  const astrologersData = useMemo(() => {
-    if (Array.isArray(data?.sortedAstrologers)) {
-      return data.sortedAstrologers;
-    }
-  }, [data]);
-
-  const astrologerlist = useMemo(() => {
-    const list = astrologersData?.filter((item) => item.availability === 1);
-    return list;
-  }, [astrologersData]);
+  // const astrologerlist = useMemo(() => {
+  //   const list = astrologersData?.filter((item) => item.availability === 1);
+  //   return list;
+  // }, []);
 
   const useunfollow = () => setShowConfirmModal(true);
 
-  const unfollow = (confirm) => {
-    if (confirm) {
-      dispatch(
-        fetchUsersRequest({
-          astro_id: parseInt(id),
-          follow_status: 0,
-        }),
-      );
-      setAstroFollow(0);
-      setHide(false);
-      toast.success("Astrologer unfollowed successfully!");
+  const unfollow = async (confirm) => {
+    if (!confirm) return;
+
+    try {
+      const { data } = await unfollowAstrologer({
+        variables: {
+          astrologerId: id,
+        },
+      });
+
+      if (data?.unfollowAstrologer?.success) {
+        setAstroFollow(false);
+
+        await Promise.all([refetchFollow(), refetchFollowersCount()]);
+
+        toast.success(
+          data.unfollowAstrologer.message ||
+            "Astrologer unfollowed successfully",
+        );
+      }
+
       setShowConfirmModal(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+  const follow = async () => {
+    try {
+      const { data } = await followAstrologer({
+        variables: {
+          astrologerId: id,
+        },
+      });
+
+      if (data?.followAstrologer?.success) {
+        setAstroFollow(true);
+
+        await Promise.all([refetchFollow(), refetchFollowersCount()]);
+
+        toast.success(
+          data.followAstrologer.message || "Astrologer followed successfully",
+        );
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -136,14 +206,8 @@ export default function ProfileAstro({ astrologerId }) {
     );
   }
 
-  const profileData = astrologerdetail;
-
   const chatPricing = astrologerdetail?.pricing?.find(
     (item) => item.type === "CHAT",
-  );
-
-  const callPricing = astrologerdetail?.pricing?.find(
-    (item) => item.type === "CALL",
   );
 
   return (
@@ -172,24 +236,25 @@ export default function ProfileAstro({ astrologerId }) {
               height={100}
               className="border-4 border-yellow-400 rounded-full w-35 h-35 object-cover"
             />
-
-            {astrofollow === 1 ? (
+            {followLoadingStatus ? (
+              <CustomButton variant="yellow" disabled>
+                Please Wait...
+              </CustomButton>
+            ) : astrofollow ? (
               <CustomButton
                 variant="yellow"
+                disabled={unfollowLoading}
                 onClick={useunfollow}
-                aria-label="Unfollow Astrologer"
-                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit"
               >
-                <h5 className="text-white ">Following</h5>
+                {unfollowLoading ? "Please Wait..." : "Following"}
               </CustomButton>
             ) : (
               <CustomButton
                 variant="yellow"
+                disabled={followLoading}
                 onClick={follow}
-                aria-label="Follow Astrologer"
-                className="px-4 py-2 mt-1 text-sm text-black bg-yellow-400 rounded-full shadow w-fit"
               >
-                <h5 className="text-white">Follow</h5>
+                {followLoading ? "Please Wait..." : "Follow"}
               </CustomButton>
             )}
 
@@ -233,7 +298,7 @@ export default function ProfileAstro({ astrologerId }) {
               </span>
 
               <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
-                <span className="font-semibold">Call/Chat Charges:</span>
+                {/* <span className="font-semibold">Call/Chat Charges:</span> */}
                 <span className="font-bold charge-price flex items-center gap-2">
                   {/* {astro?.disc_chat_charge ? (
                     <>
@@ -321,7 +386,7 @@ export default function ProfileAstro({ astrologerId }) {
                 </h5>
 
                 <div className="flex flex-wrap justify-center gap-4">
-                  {astrologerlist.length > 0 ? (
+                  {false > 0 ? (
                     astrologerlist.map((astro, index) => (
                       <div
                         key={index}
@@ -446,15 +511,30 @@ export default function ProfileAstro({ astrologerId }) {
                 <div className="text-gray-500">No reviews yet</div>
               )}
             </div>
+            <div className="flex items-center gap-4">
+              <span className="font-semibold text-black">
+                {astrologerdetail?.rating || 0}/5
+              </span>
+
+              <StarRating
+                className="text-yellow-500"
+                onRate={(val) => console.log("Rated:", val)}
+              />
+            </div>
+
+            <div className="text-sm font-medium text-gray-700">
+              👥 {followersCount} Followers
+            </div>
           </div>
         </div>
       </div>
 
-      {showConfirmModal && (
+ {showConfirmModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60">
           <div className="p-6 bg-white rounded-lg shadow-lg">
             <p className="text-sm text-center text-black">
-              Are you sure you want to unfollow {astro?.full_name}?
+              Are you sure you want to unfollow{" "}
+              {astrologerdetail?.displayName || astrologerdetail?.name}?
             </p>
             <div className="flex justify-center gap-4 mt-4">
               <button
@@ -482,8 +562,10 @@ export default function ProfileAstro({ astrologerId }) {
         onClose={() => setShowGiftPopup(false)}
       />
 
-      <AlertLoading show={loading} title="Please Wait.." />
-      <AlertLoading show={astrologerloading} title="Please Wait" />
+      <AlertLoading
+        show={followLoading || unfollowLoading}
+        title="Please Wait..."
+      />
     </div>
   );
 }
