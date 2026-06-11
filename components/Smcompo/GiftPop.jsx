@@ -4,16 +4,8 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { AlertLoading } from "@/app/common";
-import {
-  addGiftRequest,
-  clearGiftState,
-} from "@/app/redux/reducer/giftSlice/giftSlice";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
-import {
-  sendPaymentDetail,
-  resetStatusCode,
-} from "@/app/redux/reducer/payment/rechargeSlice";
 import { GET_GIFTS } from "@/app/graphql/gqlQuery";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
