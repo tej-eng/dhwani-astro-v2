@@ -15,6 +15,8 @@ import {
 } from "@/app/graphql/gqlQuery";
 import { useMutation, useQuery } from "@apollo/client/react";
 import Selectastro from "@/components/Healing/Selectastro";
+import { gql } from "@apollo/client";
+import Script from "next/script";
 export default function Forminp({
   formDat,
   setformDat,
@@ -40,6 +42,32 @@ export default function Forminp({
       skip: !showAstroModal,
     },
   );
+
+//   const CREATE_HEALING_ORDER = gql`
+//   mutation CreateHealingOrder($bookingId: String!) {
+//     createHealingOrder(bookingId: $bookingId) {
+//       success
+//       orderId
+//       amount
+//       currency
+//       bookingId
+//     }
+//   }
+// `;
+
+const CREATE_HEALING_ORDER = gql`
+  mutation CreateHealingOrder($bookingId: ID!) {
+    createHealingOrder(bookingId: $bookingId) {
+      success
+      orderId
+      amount
+      currency
+      bookingId
+    }
+  }
+`;
+
+const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
 
   const [createBooking, { loading: bookingLoading }] = useMutation(
     CREATE_SERVICE_BOOKING,
@@ -111,6 +139,36 @@ export default function Forminp({
     }
   };
 
+
+
+//   const handleAstrologerSelect = async (astrologer) => {
+//   try {
+//     const { data } = await updateBookingAstrologer({
+//       variables: {
+//         bookingId,
+//         astrologerId: astrologer.id,
+//       },
+//     });
+
+//     console.log("UPDATE RESPONSE", data);
+
+//     const updatedBooking = data?.updateBookingAstrologer;
+
+//     const amount = encryptData(
+//       updatedBooking?.amount || pageContent.price
+//     );
+
+//     const encryptedBookingId = encryptData(bookingId);
+
+//     router.push(
+//       `/inHealing/${page_name}/paynow?amount=${amount}&bookingId=${encryptedBookingId}`
+//     );
+//   } catch (err) {
+//   console.error("FULL ERROR", err);
+//   toast.error(err.message);
+// }
+// };
+
 const handleAstrologerSelect = async (astrologer) => {
   try {
     const { data } = await updateBookingAstrologer({
@@ -120,23 +178,60 @@ const handleAstrologerSelect = async (astrologer) => {
       },
     });
 
-    console.log("UPDATE RESPONSE", data);
+    const booking =
+      data?.updateBookingAstrologer;
 
-    const updatedBooking = data?.updateBookingAstrologer;
+    const orderRes = await createHealingOrder({
+      variables: {
+        bookingId: booking.id,
+      },
+    });
 
-    const amount = encryptData(
-      updatedBooking?.amount || pageContent.price
-    );
+    const order =
+      orderRes?.data?.createHealingOrder;
 
-    const encryptedBookingId = encryptData(bookingId);
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || rzp_test_SNXjhTOgP1CIx0,
 
-    router.push(
-      `/inHealing/${page_name}/paynow?amount=${amount}&bookingId=${encryptedBookingId}`
-    );
+      amount: order.amount,
+
+      currency: order.currency,
+
+      name: "Dhwani Astro LLP",
+
+      description: "Healing Service Payment",
+
+      order_id: order.orderId,
+
+      notes: {
+        bookingId: booking.id,
+        astrologerId: astrologer.id,
+        "bookingType":"service",
+      },
+
+      handler: async function (response) {
+        console.log("Payment Success", response);
+
+        toast.success("Payment Successful");
+
+        // Call verify payment mutation here
+      },
+
+      modal: {
+        ondismiss: function () {
+          toast.error("Payment Cancelled");
+        },
+      },
+    };
+
+    const razorpay = new window.Razorpay(options);
+
+    razorpay.open();
   } catch (err) {
-  console.error("FULL ERROR", err);
-  toast.error(err.message);
-}
+    console.error(err);
+
+    toast.error(err.message);
+  }
 };
 
   return (
@@ -144,6 +239,10 @@ const handleAstrologerSelect = async (astrologer) => {
       className={`flex text-black flex-col w-full border border-gray-100 bg-white max-w-5xl shadow-lg rounded-2xl px-4 py-5
         ${pathname.startsWith("/inHealing") ? "mt-0 " : "mt-30"} `}
     >
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+      />
       <div className="flex items-center justify-between ">
         <h5 className="text-xl place-self-center  font-semibold text-black justify-center text-center py-2">
           Basic Details :
