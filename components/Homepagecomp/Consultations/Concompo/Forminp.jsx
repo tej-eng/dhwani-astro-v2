@@ -111,38 +111,36 @@ export default function Forminp({
     }
   };
 
-const handleAstrologerSelect = async (astrologer) => {
-  try {
-    const { data } = await updateBookingAstrologer({
-      variables: {
-        bookingId,
-        astrologerId: astrologer.id,
-      },
-    });
+  const handleAstrologerSelect = async (astrologer) => {
+    try {
+      const { data } = await updateBookingAstrologer({
+        variables: {
+          bookingId,
+          astrologerId: astrologer.id,
+        },
+      });
 
-    console.log("UPDATE RESPONSE", data);
+      console.log("UPDATE RESPONSE", data);
 
-    const updatedBooking = data?.updateBookingAstrologer;
+      const updatedBooking = data?.updateBookingAstrologer;
 
-    const amount = encryptData(
-      updatedBooking?.amount || pageContent.price
-    );
+      const amount = encryptData(updatedBooking?.amount || pageContent.price);
 
-    const encryptedBookingId = encryptData(bookingId);
+      const encryptedBookingId = encryptData(bookingId);
 
-    router.push(
-      `/inHealing/${page_name}/paynow?amount=${amount}&bookingId=${encryptedBookingId}`
-    );
-  } catch (err) {
-  console.error("FULL ERROR", err);
-  toast.error(err.message);
-}
-};
+      router.push(
+        `/inHealing/${page_name}/paynow?amount=${amount}&bookingId=${encryptedBookingId}`,
+      );
+    } catch (err) {
+      console.error("FULL ERROR", err);
+      toast.error(err.message);
+    }
+  };
 
   return (
     <div
       className={`flex text-black flex-col w-full border border-gray-100 bg-white max-w-5xl shadow-lg rounded-2xl px-4 py-5
-        ${pathname.startsWith("/inHealing") ? "mt-0 " : "mt-30"} `}
+        ${pathname.startsWith("/healingservices") ? "mt-0 " : "mt-30"} `}
     >
       <div className="flex items-center justify-between ">
         <h5 className="text-xl place-self-center  font-semibold text-black justify-center text-center py-2">

@@ -79,11 +79,7 @@ export default function Dhservices() {
           >
             <div className="block">
               <div className="relative w-full sm:h-50 h-35 overflow-hidden">
-                <Image
-                  src={
-                    `https://www.dhwaniastro.com${item.image}` ||
-                    "/placeholder.webp"
-                  }
+                <Image src={`https://www.dhwaniastro.com${item.image}` || "/placeholder.webp"}
                   alt={item.name}
                   width={300}
                   height={160}

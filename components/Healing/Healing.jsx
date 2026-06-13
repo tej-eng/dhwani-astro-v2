@@ -78,10 +78,10 @@ export default function Healing() {
                     </span>
                   </div>
                   <Link
-                    href={`/healing/${heal.slug}`}
+                 href={`/dhwani-services/healing/${heal.slug}`}
                     className="bg-[#8a2be2] w-[80%] text-white px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-medium hover:bg-[#7325c0] transition"
                   >
-                    {t?.healing?.book || "Book Now"}
+                    {t?.healing?.book || "Book Noww"}
                   </Link>
                 </div>
               </div>

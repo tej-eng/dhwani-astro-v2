@@ -80,7 +80,7 @@ export default function Navbarmob() {
       src: "/prblm/healingnw.png",
       alt: "Heal",
       ulname: `${t.navbar.n5}`,
-      href: "/inHealing",
+      href: "/healingservices",
     },
     // { id: 6, src: "/prblm/puja.png", alt: "Puja", ulname: "Online Puja", href: "/online-puja" },
     {

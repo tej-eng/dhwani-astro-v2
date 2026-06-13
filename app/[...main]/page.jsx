@@ -65,8 +65,7 @@ export default function ServicePage() {
     const navmainComponent = {
         chatAstro: <Chatastro />,
         callAstro: <Callastro />,
-        dhServices: <Dhservices />,
-        inHealing: <Healing />,
+        healingservices: <Healing />,
         inHoroscope: <Inhoro />,
         inKundli: <Kundlimain />,
         blogComp: <Blogcomp />,
@@ -250,7 +249,7 @@ export default function ServicePage() {
         "marriage",
         "pregnancy",
         "education",
-        "inHealing",
+        "healingservices",
         "inKundli",
     ];
 
@@ -273,7 +272,7 @@ export default function ServicePage() {
         ) {
             Componentrender = paynow[path[2]];
         } else if (
-            path[0] === "inHealing" &&
+            path[0] === "healingservices" &&
             getKundlibtn[path[1]] &&
             tarotpredict[path[2]]
         ) {
@@ -293,7 +292,7 @@ export default function ServicePage() {
         }
     } else if (
         path.length === 4 &&
-        path[0] === "inHealing" &&
+        path[0] === "healingservices" &&
         getKundlibtn[path[1]] &&
         tarotpredict[path[2]] &&
         paynow[path[3]]
