@@ -10,6 +10,7 @@ import { useLanguage } from "@/app/context/LangContext";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import { useQuery } from "@apollo/client/react";
 import { GET_CATEGORY } from "@/app/graphql/gqlQuery";
+import CategorySkeleton from "../Custom/categorySkeleton";
 
 export default function CategoryServices({
   categorySlug,
@@ -28,9 +29,19 @@ const { data, loading, error } = useQuery(GET_CATEGORY, {
     data?.getCategory?.services?.filter((item) =>
       item.name.toLowerCase().includes(search.toLowerCase()),
     ) || [];
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+ if (loading) {
+  return (
+    <section className="relative flex flex-col items-center self-center p-2 sm:p-5 w-full xl:w-[90%]">
+      <Searchtop
+        searchPlaceholder
+        searchValue=""
+        onSearchChange={() => {}}
+      />
+
+      <CategorySkeleton />
+    </section>
+  );
+}
 
   if (error) {
     return <p>Error loading services</p>;
