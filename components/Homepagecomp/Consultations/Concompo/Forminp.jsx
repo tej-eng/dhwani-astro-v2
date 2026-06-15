@@ -176,15 +176,6 @@ export default function Forminp({
         },
       });
 
-  const handleAstrologerSelect = async (astrologer) => {
-    try {
-      const { data } = await updateBookingAstrologer({
-        variables: {
-          bookingId,
-          astrologerId: astrologer.id,
-        },
-      });
-
       const booking = data?.updateBookingAstrologer;
 
       setShowAstroModal(false); // add this
@@ -319,7 +310,6 @@ export default function Forminp({
   }
 };
   
-
 
   return (
     <>
