@@ -199,6 +199,12 @@ export default function Header({ openSignInModal }) {
                   >
                     🛒 Transaction
                   </Link>
+                  <Link
+                    href="/dashboard/my-services"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                  >
+                    🛒 My Services
+                  </Link>
                 </div>
               </div>
             )}

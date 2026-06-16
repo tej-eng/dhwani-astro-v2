@@ -33,7 +33,6 @@ export default function Forminp({
   const [bookingId, setBookingId] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("ONLINE");
   // ONLINE | WALLET
   const { data: astroData, loading: astroLoading } = useQuery(
     GET_ASTROLOGERS_USER,
@@ -49,57 +48,26 @@ export default function Forminp({
   );
 
 
-  const CREATE_HEALING_ORDER = gql`
-    mutation CreateHealingOrder($bookingId: ID!, $useWallet: Boolean!) {
-      createHealingOrder(bookingId: $bookingId, useWallet: $useWallet) {
-        success
-        orderId
-        bookingId
-        currency
-        totalAmount
-        walletAmount
-        payableAmount
-      }
-    }
-  `;
-
-  const GET_USER_WALLET = gql`
-    query GetUserWallet {
-      getUserWallet {
-        balanceCoins
-        lockedCoins
-      }
-    }
-  `;
-  const CONFIRM_WALLET_BOOKING = gql`
-  mutation ConfirmWalletBooking(
-    $bookingId: ID!
-    $astrologerId: ID!
-    $walletAmount: Float!
-  ) {
-    confirmWalletBooking(
-      bookingId: $bookingId
-      astrologerId: $astrologerId
-      walletAmount: $walletAmount
-    ) {
+ const CREATE_HEALING_ORDER = gql`
+  mutation CreateHealingOrder($bookingId: ID!) {
+    createHealingOrder(bookingId: $bookingId) {
       success
-      message
-      booking {
-        id
-        bookingStatus
-        paymentStatus
-      }
+      orderId
+      bookingId
+      currency
+      totalAmount
+      payableAmount
     }
   }
 `;
+
+  
   const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
-  const { data: walletData } = useQuery(GET_USER_WALLET);
 
   const [createBooking, { loading: bookingLoading }] = useMutation(
     CREATE_SERVICE_BOOKING,
   );
   const [updateBookingAstrologer] = useMutation(UPDATE_BOOKING_ASTROLOGER);
-  const [confirmWalletBooking] = useMutation(CONFIRM_WALLET_BOOKING);
 
   console.log("xsaxasxxxxxxxxxxxxxxxxxxxxxxxx", pagedata);
 
@@ -167,86 +135,67 @@ export default function Forminp({
   };
 
   
-  const handleAstrologerSelect = async (astrologer) => {
-    try {
-      const { data } = await updateBookingAstrologer({
-        variables: {
-          bookingId,
-          astrologerId: astrologer.id,
-        },
-      });
-
-      const booking = data?.updateBookingAstrologer;
-
-      setShowAstroModal(false); // add this
-
-      setPaymentData({
-        bookingId: booking.id,
+ const handleAstrologerSelect = async (astrologer) => {
+  try {
+    const { data } = await updateBookingAstrologer({
+      variables: {
+        bookingId,
         astrologerId: astrologer.id,
-        totalAmount: booking.amount || pageContent.price,
-        walletBalance: walletData?.getUserWallet?.balanceCoins || 0,
-      });
+      },
+    });
 
-      setShowPaymentModal(true);
-    } catch (err) {
-      toast.error(err.message);
+    const booking = data?.updateBookingAstrologer;
+
+    setShowAstroModal(false);
+
+    const orderRes = await createHealingOrder({
+      variables: {
+        bookingId: booking.id,
+      },
+    });
+
+    const order = orderRes?.data?.createHealingOrder;
+
+    if (!order) {
+      toast.error("Failed to create order");
+      return;
     }
-  };
 
-  const handlePaymentMethodContinue = async () => {
-    try {
-      debugger;
-      setCreatingOrder(true);
-
-      const orderRes = await createHealingOrder({
-        variables: {
-          bookingId: paymentData.bookingId,
-          useWallet: paymentMethod === "WALLET",
-        },
-      });
-
-      const order = orderRes?.data?.createHealingOrder;
-
-      if (!order) {
-        toast.error("Failed to create order");
-        return;
-      }
-
-     if (order.payableAmount <= 0) {
-  const walletUsed =
-    Number(order.walletAmount || 0);
-
-  const confirmRes = await confirmWalletBooking({
-    variables: {
-      bookingId: paymentData.bookingId,
-      astrologerId: paymentData.astrologerId,
-      walletAmount: walletUsed,
-    },
-  });
-
-  if (
-    confirmRes?.data?.confirmWalletBooking?.success
-  ) {
-    toast.success(
-      confirmRes.data.confirmWalletBooking.message ||
-        "Booking Confirmed"
-    );
-
-   // router.push("/payment-success");
-  } else {
-    toast.error("Failed to confirm booking");
+    handleRazorpay({
+      ...order,
+      bookingId: booking.id,
+      astrologerId: astrologer.id,
+    });
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
   }
+};
 
-  return;
-}
+ const handlePaymentMethodContinue = async () => {
+  try {
+    setCreatingOrder(true);
 
-      handleRazorpay(order);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setCreatingOrder(false);
+    const orderRes = await createHealingOrder({
+      variables: {
+        bookingId: paymentData.bookingId,
+      },
+    });
+
+    const order = orderRes?.data?.createHealingOrder;
+
+    if (!order) {
+      toast.error("Failed to create order");
+      return;
     }
-  };
+
+    handleRazorpay(order);
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setCreatingOrder(false);
+  }
+};
  const handleRazorpay = (order) => {
   try {
     if (!window.Razorpay) {
@@ -269,11 +218,11 @@ export default function Forminp({
 
       order_id: order.orderId,
 
-      notes: {
-        bookingId: paymentData.bookingId,
-        astrologerId: paymentData.astrologerId,
-        serviceType: "service",
-      },
+     notes: {
+  bookingId: order.bookingId,
+  astrologerId: order.astrologerId,
+  serviceType: "SERVICE",
+},
 
       handler: async function (response) {
         console.log("Payment Success", response);
@@ -485,92 +434,7 @@ export default function Forminp({
           onClose={() => setShowAstroModal(false)}
         />
       </div>
-      {showPaymentModal && paymentData && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl">
-            <h2 className="text-2xl font-bold text-center mb-5">
-              Choose Payment Method
-            </h2>
-
-            <div className="bg-gray-50 rounded-xl p-4 mb-5">
-              <div className="flex justify-between">
-                <span>Service Amount</span>
-                <span className="font-semibold">
-                  ₹{paymentData.totalAmount}
-                </span>
-              </div>
-
-              <div className="flex justify-between mt-2 text-green-600">
-                <span>Wallet Balance</span>
-                <span>₹{paymentData.walletBalance}</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="border rounded-xl p-4 flex gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={paymentMethod === "WALLET"}
-                  onChange={() => setPaymentMethod("WALLET")}
-                />
-
-                <div>
-                  <p className="font-semibold">Wallet + Online Payment</p>
-
-                  <p className="text-sm text-green-600">
-                    Available ₹{paymentData.walletBalance}
-                  </p>
-                  {paymentMethod === "WALLET" && (
-                    <div className="mt-2 text-xs text-green-600">
-                      Wallet balance will be used first. Remaining amount will
-                      be collected online.
-                    </div>
-                  )}
-                </div>
-              </label>
-
-              <label
-                className={`border rounded-xl p-4 flex gap-3 ${
-                  paymentData.walletBalance <= 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
-              >
-                <input
-                  type="radio"
-                  checked={paymentMethod === "ONLINE"}
-                  onChange={() => setPaymentMethod("ONLINE")}
-                />
-
-                <div>
-                  <p className="font-semibold">Pay Online</p>
-
-                  <p className="text-sm text-gray-500">
-                    UPI • Cards • Net Banking
-                  </p>
-                </div>
-              </label>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1 border rounded-xl py-3"
-              >
-                Cancel
-              </button>
-
-              <button
-                disabled={creatingOrder}
-                onClick={handlePaymentMethodContinue}
-                className="flex-1 bg-[#C89B3C] text-white rounded-xl py-3 disabled:opacity-50"
-              >
-                {creatingOrder ? "Processing..." : "Continue"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </>
   );
 }
