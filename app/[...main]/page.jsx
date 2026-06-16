@@ -8,9 +8,7 @@ import Callastro from "@/components/navbarcomp/Callastro";
 import Dhservices from "@/components/navbarcomp/Dhservices";
 import Healing from "@/components/Healing/Healing";
 import Kuninter from "@/components/Kundli/Kundliinter/Kuninter";
-import Blogcomp from "@/components/navbarcomp/Blogcomp";
 import Numerohome from "@/components/navbarcomp/Numerohome";
-import Inblog from "@/components/navbarcomp/Inblog";
 import Formdcalc from "@/components/Homepagecomp/Formdcalc";
 import Muhurata from "@/components/Homepagecomp/Perastroserv/Muhurata";
 import Yearlyy from "@/components/Homepagecomp/Perastroserv/Yearly";
@@ -68,7 +66,6 @@ export default function ServicePage() {
         healingservices: <Healing />,
         inHoroscope: <Inhoro />,
         inKundli: <Kundlimain />,
-        blogComp: <Blogcomp />,
         problemLove: <Loveproblem />,
         numerohome: <Numerohome />,
         formdcalc: <Formdcalc />,
@@ -111,7 +108,6 @@ export default function ServicePage() {
     const getKundlibtn = {
         getKundlipage: <Kuninter />,
 
-        inblog: <Inblog />,
         repack: <RePack />,
         signin: <SignInModal />,
         astrowaitpop: <AstrowaitPop />,
