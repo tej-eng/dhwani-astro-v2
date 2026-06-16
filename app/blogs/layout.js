@@ -1,0 +1,38 @@
+"use client";
+
+import { useQuery } from "@apollo/client/react";
+import { GET_BLOG_CATEGORIES, GET_BLOGS } from "../graphql/gqlQuery";
+
+import BlogSidebar from "./BlogSidebar";
+import { BlogProvider } from "../context/blogContext";
+
+export default function BlogLayout({ children }) {
+  const { data: categoryData } = useQuery(GET_BLOG_CATEGORIES);
+
+  const { data: blogsData,  loading: blogsLoading } = useQuery(GET_BLOGS);
+
+  const blogs = blogsData?.blogs || [];
+
+  const categories = categoryData?.blogCategories || [];
+
+  const recentBlogs = blogs.slice(0, 5);
+
+  return (
+    <BlogProvider
+      value={{
+        blogs,
+        categories,
+        recentBlogs,
+        blogsLoading
+      }}
+    >
+      <div className="container mx-auto py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-3">{children}</div>
+
+          <BlogSidebar categories={categories} recentBlogs={recentBlogs} />
+        </div>
+      </div>
+    </BlogProvider>
+  );
+}

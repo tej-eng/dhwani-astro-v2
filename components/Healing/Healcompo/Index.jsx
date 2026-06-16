@@ -21,8 +21,7 @@ import Image from "next/image";
 const Heal = ({ categorySlug, serviceSlug }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-    const [sData, setSData] = useState(null);
-
+  const [sData, setSData] = useState(null);
 
   const [pkgId, setPkgId] = useState(null);
   const [formInput, setFormInput] = useState(false);
@@ -41,32 +40,32 @@ const Heal = ({ categorySlug, serviceSlug }) => {
     txt: "",
   });
 
-const { data, loading, error } = useQuery(GET_SERVICE, {
-  variables: {
-    slug: serviceSlug,
-  },
-});
-const service = data?.getService;
-useEffect(() => {
-  console.log("===== QUERY STATE =================================");
-  console.log("slug:", serviceSlug);
-  console.log("loading:", loading);
-  console.log("error:", error);
-  console.log("data:", data);
-}, [loading, error, data, serviceSlug]);
+  const { data, loading, error } = useQuery(GET_SERVICE, {
+    variables: {
+      slug: serviceSlug,
+    },
+  });
+  const service = data?.getService;
+  useEffect(() => {
+    console.log("===== QUERY STATE =================================");
+    console.log("slug:", serviceSlug);
+    console.log("loading:", loading);
+    console.log("error:", error);
+    console.log("data:", data);
+  }, [loading, error, data, serviceSlug]);
 
-console.log("data =>", data);
-console.log("loading =>", loading);
-console.log("error =>", error);
-console.log("serviceSlug =>", serviceSlug);
+  console.log("data =>", data);
+  console.log("loading =>", loading);
+  console.log("error =>", error);
+  console.log("serviceSlug =>", serviceSlug);
 
-if (loading) {
-  return <div>Loading...</div>;
-}
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-if (error) {
-  return <div>{error.message}</div>;
-}
+  if (error) {
+    return <div>{error.message}</div>;
+  }
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -150,11 +149,7 @@ if (error) {
 
         <div className="md:w-1/2 w-full py-4 px-3  sm:pr-8 flex flex-col justify-between">
           {!formInput && (
-            <Healdetail
-              data={service}
-              pkgId={pkgId}
-              setPkgId={setPkgId}
-            />
+            <Healdetail data={service} pkgId={pkgId} setPkgId={setPkgId} />
           )}
           {formInput && (
             <>
@@ -167,7 +162,7 @@ if (error) {
               />
             </>
           )}
-          {data && (
+          {data && !formInput && (
             <CustomButton
               aria-label="Book Healing Session"
               variant={"gcircle"}

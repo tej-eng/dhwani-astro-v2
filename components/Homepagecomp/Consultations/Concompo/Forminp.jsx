@@ -421,7 +421,7 @@ export default function Forminp({
             </div>
           </div>
 
-          <CustomButton type="submit" disabled={bookingLoading || astroLoading}>
+          <CustomButton className="rounded-xl bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-2 text-center items-center justify-center" type="submit" disabled={bookingLoading || astroLoading}>
             {bookingLoading ? "Processing..." : "Continue"}
           </CustomButton>
         </form>

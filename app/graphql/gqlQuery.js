@@ -308,3 +308,49 @@ export const UPDATE_BOOKING_ASTROLOGER = gql`
     }
   }
 `;
+
+export const GET_BLOGS = gql`
+  query GetBlogs {
+    blogs {
+      id
+      title
+      slug
+      featuredImage
+      createdAt
+        categories {
+        id
+        name
+        slug
+      }
+  
+    }
+  }
+`;
+
+export const GET_BLOG_BY_SLUG = gql`
+  query GetBlogBySlug($slug: String!) {
+    blogBySlug(slug: $slug) {
+      id
+      title
+      slug
+      content
+      featuredImage
+      createdAt
+
+      categories {
+        id
+        name
+        slug
+      }
+    }
+  }
+`;
+export const GET_BLOG_CATEGORIES = gql`
+  query GetBlogCategories {
+    blogCategories {
+      id
+      name
+      slug
+    }
+  }
+`;

@@ -14,6 +14,7 @@ import client from "@/utils/apolloClient";
 import LanguageSwitcher from "../components/Custom/LangSwitcher";
 import { useLanguage } from "../app/context/LangContext";
 import { AuthContext } from "@/app/context/authContext";
+import CustomButton from "./Custom/CustomButton";
 const LOGOUT_MUTATION = gql`
   mutation Logout {
     logout
@@ -101,11 +102,13 @@ export default function Header({ openSignInModal }) {
 
       <div className="items-center justify-end hidden w-1/3 gap-4 sm:flex sm:gap-2 sm:w-1/2">
         <LanguageSwitcher />
+        
+       <Link href="/blogs"   className="flex items-center gap-2 px-3 py-1 bg-[#f5f5a8] cursor-pointer text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]">Blog</Link>
 
         {!isLoggedIn && (
           <button
             onClick={openSignInModal}
-            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-md bg-[#b92c3a] text-[#FFD70a]"
+            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
           >
             {t?.header?.signIn || "Sign In"}
           </button>
@@ -115,7 +118,7 @@ export default function Header({ openSignInModal }) {
           <button
             onClick={LogOut}
             disabled={logoutLoading}
-            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-md bg-[#b92c3a] text-[#FFD70a]"
+            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
           >
             {logoutLoading
               ? "Signing Out..."
