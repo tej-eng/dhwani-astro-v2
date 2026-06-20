@@ -354,3 +354,64 @@ export const GET_BLOG_CATEGORIES = gql`
     }
   }
 `;
+
+export const GET_UPCOMING_LIVES = gql`
+  query GetUpcomingLives(
+    $page: Int
+    $limit: Int
+  ) {
+    getUpcomingLives(
+      page: $page
+      limit: $limit
+    ) {
+      data {
+        id
+        title
+        status
+        channelName
+        scheduledAt
+
+        astrologer {
+          id
+          name
+          displayName
+          profilePic
+          rating
+        }
+      }
+
+      totalCount
+      currentPage
+      totalPages
+    }
+  }
+`;
+export const JOIN_LIVE_STREAM = gql`
+  query JoinLiveStream(
+    $channelName: String!
+  ) {
+    joinLive(
+      channelName: $channelName
+    ) {
+      token
+      uid
+      appId
+      channelName
+    }
+  }
+`;
+
+export const START_LIVE = gql`
+  mutation StartLive(
+    $title: String!
+  ) {
+    startLive(
+      title: $title
+    ) {
+      token
+      uid
+      appId
+      channelName
+    }
+  }
+`;

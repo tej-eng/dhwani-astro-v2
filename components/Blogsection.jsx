@@ -115,14 +115,14 @@ export default function Blogsection() {
             <SwiperSlide key={blog.id}>
               <Link href={`/blogs/${blog.slug}`} className="head-wrap">
                 <div className="blog-bx rounded-2xl flex flex-col w-[90%] mx-auto">
-                  <Image
+                  {/* <Image
                     src={`https://www.dhwaniastro.com${blog.featuredImage}`}
                     className="bl-im rounded-2xl"
                     width={400}
                     height={250}
                     alt={blog.title}
                     priority={i === 0}
-                  />
+                  /> */}
 
                   <div className="bl-con px-2 flex flex-col justify-between">
                     <h6 className="bl-h line-clamp-2">{blog.title}</h6>

@@ -66,7 +66,7 @@ export default function Navbarmob() {
       src: "/ds-img/instagram-live.png",
       alt: "live",
       ulname: `${t.navbar.n3}`,
-      href: "",
+      href: "/astrologer/liveStream",
     },
     {
       id: 4,
