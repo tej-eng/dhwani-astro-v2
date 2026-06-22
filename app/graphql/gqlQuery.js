@@ -415,3 +415,118 @@ export const START_LIVE = gql`
     }
   }
 `;
+
+export const GET_FAQS = gql`
+  query GetFaqs {
+    getFaqs {
+      totalCount
+      data {
+        id
+        question
+        answer
+      }
+    }
+  }
+`;
+
+export const GET_TESTIMONIALS = gql`
+  query GetTestimonials {
+    getTestimonials {
+      totalCount
+      data {
+        id
+        name
+        image
+        address
+        rating
+        content
+      }
+    }
+  }
+`;
+
+export const GET_ABOUT_PAGE = gql`
+  query GetAboutPage {
+    getAboutPage {
+      id
+      pageType
+      heroTitle
+      heroDescription
+
+      mentors {
+        name
+        image
+        description
+        designation
+      }
+
+      founders {
+        name
+        image
+        description
+        designation
+      }
+
+      metaTitle
+      metaDescription
+      keywords
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const GET_DISCLAIMER_PAGE = gql`
+  query GetDisclaimerPage {
+    getDisclaimerPage {
+      id
+      title
+      content
+      metaTitle
+      metaDescription
+      keywords
+      status
+    }
+  }
+`;
+export const GET_PRIVACY_PAGE = gql`
+  query GetPrivacyPage {
+    getPrivacyPage {
+      id
+      title
+      content
+      metaTitle
+      metaDescription
+      keywords
+      status
+    }
+  }
+`;
+export const GET_REFUND_POLICY_PAGE = gql`
+  query GetRefundPolicyPage {
+    getRefundPolicyPage {
+      id
+      title
+      content
+      metaTitle
+      metaDescription
+      keywords
+      status
+    }
+  }
+`;
+export const GET_BANNERS = gql`
+  query GetBanners($language: String) {
+    getBanners(language: $language) {
+      totalCount
+      data {
+        id
+        imageUrl
+        heading
+        language
+      }
+    }
+  }
+`;
+
+

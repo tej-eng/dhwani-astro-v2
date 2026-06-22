@@ -196,7 +196,7 @@ export default function Footerlinks() {
                         d="M15.563,40.836c0.195,0.195,0.451,0.293,0.707,0.293s0.512-0.098,0.707-0.293l15-15c0.391-0.391,0.391-1.023,0-1.414l-15-15c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414l14.293,14.293L15.563,39.422C15.172,39.813,15.172,40.446,15.563,40.836z"
                       />
                     </svg>
-                    <Link href="/disclaimer" className="text-xs sm:text-sm lg:text-sm">
+                    <Link href="/static/disclaimer" className="text-xs sm:text-sm lg:text-sm">
                       {t?.footer?.astro4 || "Disclaimer"}
                     </Link>
                   </li>
@@ -259,7 +259,7 @@ export default function Footerlinks() {
                         d="M15.563,40.836c0.195,0.195,0.451,0.293,0.707,0.293s0.512-0.098,0.707-0.293l15-15c0.391-0.391,0.391-1.023,0-1.414l-15-15c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414l14.293,14.293L15.563,39.422C15.172,39.813,15.172,40.446,15.563,40.836z"
                       />
                     </svg>
-                    <Link href="/aboutp" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.about || "About Us"}</Link>
+                    <Link href="/static/about" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.about || "About Us"}</Link>
                   </li>
                   <li className="flex items-center gap-0.5">
                     <svg
@@ -274,7 +274,7 @@ export default function Footerlinks() {
                         d="M15.563,40.836c0.195,0.195,0.451,0.293,0.707,0.293s0.512-0.098,0.707-0.293l15-15c0.391-0.391,0.391-1.023,0-1.414l-15-15c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414l14.293,14.293L15.563,39.422C15.172,39.813,15.172,40.446,15.563,40.836z"
                       />
                     </svg>
-                    <Link href="/privacyp" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.privacy || "Privacy Policy"}</Link>
+                    <Link href="/static/privacy" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.privacy || "Privacy Policy"}</Link>
                   </li>
                   <li className="flex items-center gap-0.5">
                     <svg
@@ -289,7 +289,7 @@ export default function Footerlinks() {
                         d="M15.563,40.836c0.195,0.195,0.451,0.293,0.707,0.293s0.512-0.098,0.707-0.293l15-15c0.391-0.391,0.391-1.023,0-1.414l-15-15c-0.391-0.391-1.023-0.391-1.414,0s-0.391,1.023,0,1.414l14.293,14.293L15.563,39.422C15.172,39.813,15.172,40.446,15.563,40.836z"
                       />
                     </svg>
-                    <Link href="/refundp" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.refund || "Refund Policy"}</Link>
+                    <Link href="/static/refund" className="text-xs sm:text-sm lg:text-sm">{t?.footer?.refund || "Refund Policy"}</Link>
                   </li>
                 </ul>
               </div>

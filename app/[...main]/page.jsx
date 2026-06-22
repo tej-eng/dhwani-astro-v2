@@ -42,10 +42,7 @@ import SignInModal from "@/components/Homepagecomp/Signin/Signin";
 import Doubleform from "../doubleform/page";
 import AstroCCard from "@/components/navbarcomp/AstroCCard";
 import RePack from "@/components/Smcompo/RePack";
-import AboutP from "@/components/Homepagecomp/FootPages/AboutUsp";
-import PrivacyP from "@/components/Homepagecomp/FootPages/PrivacyP";
-import RefundP from "@/components/Homepagecomp/FootPages/RefundP";
-import Disclaimer from "@/components/Homepagecomp/FootPages/Disclaimer";
+
 import Userchatscr from "@/components/Smcompo/Userchatscr";
 import AstrowaitPop from "@/components/Smcompo/AstrowaitPop";
 import Lalkitab from "@/app/freeservices/kundali/getKundaliPage/lalkitab/LalkitabClient";
@@ -94,10 +91,7 @@ export default function ServicePage() {
         signin: <SignInModal />,
         doubleform: <Doubleform />,
         ccpage: <AstroCCard />,
-        aboutp: <AboutP />,
-        privacyp: <PrivacyP />,
-        refundp: <RefundP />,
-        disclaimer: <Disclaimer />,
+
         userchat: <Userchatscr />,
         lalkitab: <Lalkitab />,
         webmob: <CallOptionModal />,
