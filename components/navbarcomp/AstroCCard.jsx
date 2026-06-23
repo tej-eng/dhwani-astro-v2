@@ -170,21 +170,31 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       width={50}
                       height={50}
                       loading="lazy"
-                      alt="Astro Image" 
+                      alt="Astro Image"
                       onClick={() => astrologerprofile(astro?.id)}
                     />
                     <div className="hidden md:flex space-x-4 justify-around w-[80%]">
                       <CustomButton
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
-                        onClick={() =>
+                        onClick={() => {
+                          if (!astro?.isOnline) {
+                            astrologeroffline();
+                            return;
+                          }
+
+                          if (astro?.isBusy) {
+                            astrologerbusy();
+                            return;
+                          }
+
                           handleClick({
                             id: astro?.id,
                             mode,
                             price: astro?.price,
                             astro,
-                          })
-                        }
+                          });
+                        }}
                       >
                         <h5 className="text-white">
                           {mode === "chat" ? "Start Chat" : "Start Call"}
@@ -200,6 +210,25 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       >
                         {astro?.name}
                       </h2>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            astro?.isOnline
+                              ? astro?.isBusy
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        />
+
+                        <span className="text-xs font-semibold">
+                          {!astro?.isOnline
+                            ? "Offline"
+                            : astro?.isBusy
+                              ? "Busy"
+                              : "Online"}
+                        </span>
+                      </div>
 
                       <p className="text-xs font-semibold text-black break-all line-clamp-1">
                         {astro?.skills?.join(", ")}
@@ -243,14 +272,24 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       <CustomButton
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
-                        onClick={() =>
+                        onClick={() => {
+                          if (!astro?.isOnline) {
+                            astrologeroffline();
+                            return;
+                          }
+
+                          if (astro?.isBusy) {
+                            astrologerbusy();
+                            return;
+                          }
+
                           handleClick({
                             id: astro?.id,
                             mode,
                             price: astro?.price,
                             astro,
-                          })
-                        }
+                          });
+                        }}
                       >
                         <h5 className="text-white">{buttonLabel}</h5>
                       </CustomButton>

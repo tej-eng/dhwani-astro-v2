@@ -144,6 +144,8 @@ export default function RequestForm({ mode, astroId }) {
       place: "",
       latitude: "",
       longitude: "",
+      source:"WEB",
+
     },
   });
 
@@ -216,6 +218,7 @@ export default function RequestForm({ mode, astroId }) {
       setValue("dob", user?.birthDate ? user.birthDate.split("T")[0] : "");
       setValue("time", user?.birthTime || "");
       setValue("occupation", user?.occupation || "");
+      setValue("source", "WEB");
 
       if (user?.countryCode && countries.length > 0) {
         const matched = countries.find((c) => c.dialCode === user.countryCode);
@@ -243,6 +246,7 @@ export default function RequestForm({ mode, astroId }) {
         dispatch,
         router,
         userId: id,
+        source:"WEB",
       });
     } finally {
       setIsSubmitting(false);

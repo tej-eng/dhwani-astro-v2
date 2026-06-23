@@ -27,6 +27,7 @@ const GET_USER_CHAT_HISTORY = gql`
         roomId
         sessionId
         status
+        source
         durationMinutes
         ratePerMin
         coinsDeducted
@@ -98,7 +99,7 @@ export default function ChatHistoryPage() {
           <h1 className="text-3xl font-bold text-purple-900">Chat History</h1>
 
           <p className="text-gray-500">
-            View all your astrologer chat sessions
+            View all your user chat sessions
           </p>
         </div>
       </div>
@@ -114,28 +115,28 @@ export default function ChatHistoryPage() {
         </div>
 
         <div className="p-4 bg-white shadow rounded-2xl">
-          <p className="text-sm text-gray-500">Coins Deducted</p>
+          <p className="text-sm text-gray-500">Amount Deducted</p>
 
           <h2 className="mt-2 text-2xl font-bold">
             {history?.summary?.totalCoinsDeducted || 0}
           </h2>
         </div>
-
+{/* 
         <div className="p-4 bg-white shadow rounded-2xl">
           <p className="text-sm text-gray-500">Coins Earned</p>
 
           <h2 className="mt-2 text-2xl font-bold">
             {history?.summary?.totalCoinsEarned || 0}
           </h2>
-        </div>
+        </div> */}
 
-        <div className="p-4 bg-white shadow rounded-2xl">
+        {/* <div className="p-4 bg-white shadow rounded-2xl">
           <p className="text-sm text-gray-500">Commission</p>
 
           <h2 className="mt-2 text-2xl font-bold">
             {history?.summary?.totalCommission || 0}
           </h2>
-        </div>
+        </div> */}
       </div>
 
       {/* FILTERS */}
@@ -235,11 +236,14 @@ export default function ChatHistoryPage() {
                     </span>
 
                     <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
-                      🪙 {chat?.coinsDeducted} coins
+                      🪙 {chat?.coinsDeducted} amount
                     </span>
 
                     <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
                       ₹ {chat?.ratePerMin}/min
+                    </span>
+                    <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
+                       {chat?.source}
                     </span>
 
                     <span

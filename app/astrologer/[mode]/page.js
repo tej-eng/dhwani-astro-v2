@@ -8,15 +8,7 @@ import { useQuery } from "@apollo/client/react";
 import { useAuth } from "@/app/context/authContext";
 import { GET_ASTROLOGERS_GUEST, GET_ASTROLOGERS_USER } from "@/app/graphql/gqlQuery";
 
-/* ---------------- AUTH ---------------- */
 
-
-
-/* ---------------- GUEST ---------------- */
-
-
-
-/* ---------------- AUTH USER ---------------- */
 
 
 

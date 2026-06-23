@@ -12,6 +12,7 @@ export const createRequestAndEmit = async ({
   dispatch,
   router,
   userId,
+  source,
 }) => {
   try {
     const formattedBirthDate =
@@ -36,6 +37,7 @@ export const createRequestAndEmit = async ({
           latitude: Number(profileData.latitude),
           longitude: Number(profileData.longitude),
           requestType: mode === "call" ? "CALL" : "CHAT",
+          source:"WEB",
         },
       },
     });
@@ -102,6 +104,7 @@ export const createRequestAndEmit = async ({
       pricingType,
 
       mode: mode === "call" ? "CALL" : "CHAT",
+      source:"WEB",
     };
 
     const eventName = mode === "call" ? "call_request" : "chat_request";

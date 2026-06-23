@@ -238,6 +238,8 @@ export const GET_ASTROLOGERS_USER = gql`
         rating
         skills
         languages
+        isBusy
+        isOnline
 
         activeOffer {
           id
@@ -270,6 +272,8 @@ export const GET_ASTROLOGERS_GUEST = gql`
         rating
         skills
         languages
+        isBusy
+        isOnline
 
         activeOffer {
           id
