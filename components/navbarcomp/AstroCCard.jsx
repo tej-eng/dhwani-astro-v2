@@ -141,6 +141,33 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
   const buttonLabel =
     mode === "call" ? `${t?.astrocard?.call}` : `${t?.astrocard?.chat}`;
 
+  const getAstroStatus = (astro) => {
+    const serviceActive =
+      mode === "chat" ? astro?.isChatActive : astro?.isCallActive;
+
+    if (!astro?.isOnline || !serviceActive) {
+      return {
+        status: "Offline",
+        color: "bg-red-500",
+        canConnect: false,
+      };
+    }
+
+    if (astro?.isBusy) {
+      return {
+        status: "Busy",
+        color: "bg-yellow-500",
+        canConnect: false,
+      };
+    }
+
+    return {
+      status: "Online",
+      color: "bg-green-500",
+      canConnect: true,
+    };
+  };
+
   return (
     <section className="relative flex flex-col items-center w-full p-2 sm:p-5">
       <section className="chatastro-cards-main items-center flex-wrap gap-2 sm:gap-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 justify-around w-full lg:w-[95%]">
@@ -178,12 +205,14 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
                         onClick={() => {
-                          if (!astro?.isOnline) {
+                          const status = getAstroStatus(astro);
+
+                          if (status.status === "Offline") {
                             astrologeroffline();
                             return;
                           }
 
-                          if (astro?.isBusy) {
+                          if (status.status === "Busy") {
                             astrologerbusy();
                             return;
                           }
@@ -210,25 +239,20 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       >
                         {astro?.name}
                       </h2>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            astro?.isOnline
-                              ? astro?.isBusy
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                        />
+                      {(() => {
+                        const status = getAstroStatus(astro);
 
-                        <span className="text-xs font-semibold">
-                          {!astro?.isOnline
-                            ? "Offline"
-                            : astro?.isBusy
-                              ? "Busy"
-                              : "Online"}
-                        </span>
-                      </div>
+                        return (
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`w-2 h-2 rounded-full ${status.color}`}
+                            />
+                            <span className="text-xs font-semibold">
+                              {status.status}
+                            </span>
+                          </div>
+                        );
+                      })()}
 
                       <p className="text-xs font-semibold text-black break-all line-clamp-1">
                         {astro?.skills?.join(", ")}
@@ -273,12 +297,14 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
                         onClick={() => {
-                          if (!astro?.isOnline) {
+                          const status = getAstroStatus(astro);
+
+                          if (status.status === "Offline") {
                             astrologeroffline();
                             return;
                           }
 
-                          if (astro?.isBusy) {
+                          if (status.status === "Busy") {
                             astrologerbusy();
                             return;
                           }

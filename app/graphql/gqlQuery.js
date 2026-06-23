@@ -240,6 +240,9 @@ export const GET_ASTROLOGERS_USER = gql`
         languages
         isBusy
         isOnline
+        isChatActive
+        isCallActive
+        isLiveActive
 
         activeOffer {
           id
@@ -274,6 +277,9 @@ export const GET_ASTROLOGERS_GUEST = gql`
         languages
         isBusy
         isOnline
+        isChatActive
+        isCallActive
+        isLiveActive
 
         activeOffer {
           id
