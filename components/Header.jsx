@@ -47,26 +47,29 @@ export default function Header({ openSignInModal }) {
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
   const LogOut = async () => {
-    try {
-      const result = await logoutMutation().catch(() => {});
-      console.log("Logout result:", result.data.logout);
-      if (result.data.logout) {
-        localStorage.removeItem("user");
-        setUser(null);
-        // setIsLoggedIn(false);
-        await client.clearStore();
-        await persistor.purge();
-        //  setIsLoggedIn(false);
-        toast.success("Logged out successfully");
-        router.refresh();
-        router.push("/");
-      } else {
-        toast.error("Logout failed");
-      }
-    } catch (err) {
-      console.error("Logout error:", err);
+  try {
+    const result = await logoutMutation();
+
+    console.log("Logout result:", result?.data?.logout);
+
+    if (result?.data?.logout) {
+      localStorage.removeItem("user");
+      setUser(null);
+
+      await client.clearStore();
+      await persistor.purge();
+
+      toast.success("Logged out successfully");
+      router.refresh();
+      router.push("/");
+    } else {
+      toast.error("Logout failed");
     }
-  };
+  } catch (err) {
+    console.error("Logout error:", err);
+    toast.error("Logout failed");
+  }
+};
 
   // ==============================
   // CLICK OUTSIDE DROPDOWN

@@ -783,11 +783,14 @@ const UserChat = ({
       toast.success("Review submitted successfully");
 
       setShowReviewPopup(false);
-      dispatch(removeActiveRequest(room_Id));
+     // dispatch(removeActiveRequest(room_Id));
 
-      setTimeout(() => {
-        router.push("/astrologer/chat");
-      }, 8000);
+     router.push("/astrologer/chat");
+
+      // setTimeout(() => {
+      //   setShowReviewPopup(false);
+      //   router.push("/astrologer/chat");
+      // }, 8000);
     } catch (error) {
       console.error("Review error:", error);
       toast.error("Failed to submit review");
