@@ -97,11 +97,6 @@ export default function RequestForm({ mode, astroId }) {
     const originalEmit = socket.emit;
 
     socket.emit = function (...args) {
-      console.log(
-        "🚀 FRONTEND SOCKET EMITxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:",
-        args[0],
-        args[1],
-      );
       return originalEmit.apply(this, args);
     };
 
@@ -212,7 +207,6 @@ export default function RequestForm({ mode, astroId }) {
   }, [userInfo, countries, setValue]);
 
   const onSubmit = async (data) => {
-    console.log("FORM DATA xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=>", data);
     if (isSubmitting) return;
 
     setIsSubmitting(true);
@@ -425,10 +419,7 @@ export default function RequestForm({ mode, astroId }) {
 
                 <LocationSelector
                   onSelect={(loc) => {
-                    console.log(
-                      "LOCATION SELECTEDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                      loc,
-                    );
+                   
                     setValue("place", loc?.city || "", {
                       shouldValidate: true,
                     });

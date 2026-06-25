@@ -69,7 +69,6 @@ export default function Forminp({
   );
   const [updateBookingAstrologer] = useMutation(UPDATE_BOOKING_ASTROLOGER);
 
-  console.log("xsaxasxxxxxxxxxxxxxxxxxxxxxxxx", pagedata);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,7 +122,6 @@ export default function Forminp({
         },
       });
 
-      console.log("BOOKING CREATED", data);
 
       const booking = data?.createServiceBooking;
 
@@ -206,7 +204,7 @@ export default function Forminp({
     console.log("Opening Razorpay", order);
 
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
       amount: Number(order.payableAmount) * 100,
 
@@ -225,7 +223,6 @@ export default function Forminp({
 },
 
       handler: async function (response) {
-        console.log("Payment Success", response);
 
         toast.success("Payment Successful");
 
@@ -234,7 +231,6 @@ export default function Forminp({
 
       modal: {
         ondismiss: function () {
-          console.log("Payment Closed");
           toast.error("Payment Cancelled");
         },
       },
