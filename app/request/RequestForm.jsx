@@ -49,20 +49,7 @@ const GET_USER_BY_ID = gql`
     }
   }
 `;
-const GET_PROFILE_BY_ID = gql`
-  query recentIntakes($id: String!) {
-    getRecentProfile(id: $id) {
-      id
-      name
-      countryCode
-      mobile
-      gender
-      birthDate
-      birthTime
-      occupation
-    }
-  }
-`;
+
 
 const GET_ASTROLOGER_BY_ID = gql`
   query GetAstrologerById($id: String!) {
@@ -171,10 +158,7 @@ export default function RequestForm({ mode, astroId }) {
     skip: !id,
   });
 
-  const { data: profileInfo } = useQuery(GET_PROFILE_BY_ID, {
-    variables: { id },
-    skip: !id,
-  });
+  
 
   const { data: astrologerInfo, loading } = useQuery(GET_ASTROLOGER_BY_ID, {
     variables: { id: astro_id },
