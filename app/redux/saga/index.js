@@ -31,7 +31,7 @@ import getCouponListSaga from './coupon/getCouponListSaga';
 
 export default function* rootSaga() {
   yield all([authSaga(),
-  astrologerSaga(),
+  //astrologerSaga(),
   intakeSaga(),
   packSaga(),
   paymentdetailSaga(),
