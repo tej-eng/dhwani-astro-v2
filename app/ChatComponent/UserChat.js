@@ -134,7 +134,13 @@ const UserChat = ({
     sender: "Astrologer",
     message:
       "Hey there! Welcome back 😊 Our consultant is reviewing your chat...",
-    time: new Date().toISOString(),
+    time: new Date().toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }),
   };
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -294,12 +300,10 @@ const UserChat = ({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      console.log("Image preview generated");
       setImagePreview(reader.result);
     };
 
     reader.readAsDataURL(file);
-    console.log("Selected file:", file);
     setImageFile(file);
   };
   const uploadToServer = async (file) => {
@@ -373,7 +377,6 @@ const UserChat = ({
 
           if (selectedPack) {
             const newTime = timeLeft + selectedPack.talktime * 60;
-            console.log("New Time After Recharge:", newTime);
             customer_recharge_completed(newTime); // Send updated time to backend
 
             setTimeLeft(newTime); // Update local timer
@@ -385,7 +388,6 @@ const UserChat = ({
 
         modal: {
           ondismiss: function () {
-            console.log("Payment popup closed");
             customer_recharge_fail();
             //  USER CLOSED PAYMENT
             toast.error("Payment Cancelled");
@@ -453,7 +455,6 @@ const UserChat = ({
 
     ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach(
       (key) => {
-        console.log("Removing localStorage key:", key);
         localStorage.removeItem(key);
       },
     );
@@ -475,7 +476,6 @@ const UserChat = ({
     const isEnded = localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
     if (isEnded) {
-      console.log("Chat already ended → skip join");
       return;
     }
 
@@ -487,8 +487,6 @@ const UserChat = ({
 
     //  First time join
     if (!alreadyJoined) {
-      console.log("First join");
-
       socket.emit("joinChat", {
         username: "customer",
         room_id: room_Id,
@@ -501,8 +499,6 @@ const UserChat = ({
 
     //  Refresh → allow rejoin
     if (isReload) {
-      console.log("Reload → rejoining");
-
       socket.emit("joinChat", {
         username: "customer",
         room_id: room_Id,
@@ -518,11 +514,8 @@ const UserChat = ({
         localStorage.getItem(`chatCompleted_${room_Id}`) === "true";
 
       if (isEnded) {
-        console.log("Reconnect blocked → chat ended");
         return;
       }
-
-      console.log("Reconnect → safe rejoin");
 
       socket.emit("joinChat", {
         username: "customer",
@@ -546,6 +539,7 @@ const UserChat = ({
     if (!socket) return;
 
     socket.on("receive_message", (data) => {
+      console.log("data----------------------:", data);
       setMessages((prev) => {
         //  prevent duplicate
         const alreadyExists = prev.some((msg) => msg.msg_id === data.msg_id);
@@ -709,7 +703,7 @@ const UserChat = ({
       received_id: astroid,
       sender: "user",
       message: message.trim(),
-      image: tempImage, //  show instantly
+      image: tempImage,
       replyTo: replyTo
         ? {
             sender: replyTo.sender,
@@ -717,7 +711,13 @@ const UserChat = ({
             image: replyTo.image || null,
           }
         : null,
-      time: new Date().toISOString(),
+      time: new Date().toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      }),
     };
 
     //SHOW IN UI IMMEDIATELY
@@ -756,7 +756,6 @@ const UserChat = ({
 
   const handleSubmitReview = async () => {
     if (chatEndedRef.current) {
-      console.log("Review already submitted blocked");
       return;
     }
 
@@ -796,6 +795,15 @@ const UserChat = ({
   };
 
   const isLoading = userLoading || intakeLoading;
+
+  const formatISTTime = (time) => {
+    return new Date(time).toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
   // ================= UI =================
 
@@ -908,13 +916,7 @@ const UserChat = ({
               {/* TIME */}
               {msg.time && (
                 <div className="text-[10px] text-gray-400 mt-1 text-right">
-                  {new Date(msg.time).toLocaleTimeString("en-IN", {
-                    timeZone: "Asia/Kolkata",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: true,
-                  })}
+                  {msg.time}
                 </div>
               )}
 
