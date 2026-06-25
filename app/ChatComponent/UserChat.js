@@ -808,7 +808,7 @@ const UserChat = ({
       <div className="bg-gradient-to-r from-purple-900 to-purple-700 text-white px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Image
-            src={`/ds-img/${astro_Image}`}
+             src={astro_Image  ? `https://www.dhwaniastro.com${astro_Image}` : "/man.png" }
             width={45}
             height={45}
             alt="astro"

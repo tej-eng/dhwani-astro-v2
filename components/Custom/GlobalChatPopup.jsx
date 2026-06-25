@@ -21,7 +21,7 @@ export default function GlobalChatPopup() {
           <ChatRequestCard
             room_Id={request.roomId}
             astro_Name={request.astrologer?.name || ""}
-            astroimage={request.astrologer?.profile_image || ""}
+            astroimage={request.astrologer?.profilePic || ""}
             astro_id={request.astrologer?.id || ""}
             chat_time={request.chatTime}
             user_Id={request.userId}

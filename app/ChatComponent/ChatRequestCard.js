@@ -265,7 +265,7 @@ const ChatRequestCard = ({
 
       const activeRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
-      // ✅ 1. ACTIVE CHAT — HIGHEST PRIORITY
+      // 1. ACTIVE CHAT — HIGHEST PRIORITY
       if (activeRoom === room_Id) {
         setChatActive(true);
         setShowWaitingPopup(false);
@@ -277,10 +277,10 @@ const ChatRequestCard = ({
           joinpersonid: user_Id,
         });
 
-        return; // 🛑 VERY IMPORTANT
+        return;
       }
 
-      // ✅ 2. QUEUE REJOIN
+      //  2. QUEUE REJOIN
       if (localStorage.getItem(`queue_${room_Id}`)) {
         socket.emit("rejoin_queue", {
           room_id: room_Id,
@@ -290,7 +290,7 @@ const ChatRequestCard = ({
         return;
       }
 
-      // ✅ 3. REQUEST REJOIN
+      //  3. REQUEST REJOIN
       if (localStorage.getItem(`chat_request_${room_Id}`)) {
         socket.emit("rejoin_queue", {
           room_id: room_Id,
@@ -321,7 +321,7 @@ const ChatRequestCard = ({
         return;
       }
 
-      // ✅ 4. NEW REQUEST (ONLY IF NOTHING ELSE)
+      //  4. NEW REQUEST (ONLY IF NOTHING ELSE)
       if (localStorage.getItem(`activeChatRoom_${room_Id}`) === room_Id) {
         return;
       }
@@ -565,7 +565,6 @@ const ChatRequestCard = ({
   // CANCEL
   // =========================================================
   const handleRequestCancel = (type) => {
-    console.log("❌ CANCELLING REQUEST, type:", type);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     console.log("Emitting cancel eventttttt:", `cancel_${type}_request`);
     socket?.emit(`cancel_${type}_request`, {
@@ -617,8 +616,8 @@ const ChatRequestCard = ({
       {showWaitingPopup && (
         <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
           <Image
-            src="/ds-img/a.jpg"
-            alt="Neha Verma"
+           src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
+            alt="Neha Vermaaaa"
             width={50}
             height={50}
             className="rounded-full object-cover"
@@ -640,8 +639,9 @@ const ChatRequestCard = ({
 
       {!showWaitingPopup && showQueuePopup && (
         <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
+          
           <Image
-            src="/ds-img/a.jpg"
+            src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
             alt="Neha Verma"
             width={50}
             height={50}
