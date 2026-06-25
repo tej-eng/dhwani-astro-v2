@@ -30,9 +30,7 @@ const GET_RECHARGE_PACKS = gql`
   }
 `;
 const CREATE_REVIEW = gql`
-  mutation CreateReview(
-    $input: CreateReviewInput!
-  ) {
+  mutation CreateReview($input: CreateReviewInput!) {
     createReview(input: $input) {
       success
       message
@@ -268,14 +266,14 @@ const UserChat = ({
     fetchMessages();
   }, [room_Id]);
   const formatTime = (seconds) => {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
 
-  return `${hrs.toString().padStart(2, "0")}:${mins
-    .toString()
-    .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-};
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   // Get user from localStorage safely (client-side only)
   useEffect(() => {
@@ -453,11 +451,12 @@ const UserChat = ({
     localStorage.removeItem("activeRequest");
     localStorage.removeItem(`chat_request_${room_Id}`);
 
-
-    ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
-      console.log("Removing localStorage key:", key);
-      localStorage.removeItem(key);
-    });
+    ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach(
+      (key) => {
+        console.log("Removing localStorage key:", key);
+        localStorage.removeItem(key);
+      },
+    );
 
     if (!socket) return;
 
@@ -579,14 +578,18 @@ const UserChat = ({
     socket.on("leave_chat", (data) => {
       if (data.roomId === room_Id) {
         localStorage.removeItem(`chatJoined_${room_Id}`);
-        ["chatActive", `activeChatRoom_${room_Id}`, "activeChatSession"].forEach((key) => {
+        [
+          "chatActive",
+          `activeChatRoom_${room_Id}`,
+          "activeChatSession",
+        ].forEach((key) => {
           localStorage.removeItem(key);
         });
-        
+
         setLeaveMessage("Chat ended by astrologer");
         setShowReviewPopup(true);
         setTimeout(() => {
-           dispatch(removeActiveRequest(room_Id));
+          dispatch(removeActiveRequest(room_Id));
           router.push("/astrologer/chat");
         }, 18000);
         // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
@@ -600,7 +603,7 @@ const UserChat = ({
     });
 
     //  Completed Chat
-    socket.on("chatCompleted", (data) => { 
+    socket.on("chatCompleted", (data) => {
       if (data.roomId !== room_Id) return;
 
       if (chatEndedRef.current) return; //  prevent duplicate
@@ -614,13 +617,9 @@ const UserChat = ({
       localStorage.removeItem("activeChatSession");
       // dispatch(removeActiveRequest(room_Id));
 
-
-
-
       setTimeout(() => {
         router.push("/astrologer/chat");
-              dispatch(removeActiveRequest(room_Id));
-
+        dispatch(removeActiveRequest(room_Id));
       }, 18000);
     });
 
@@ -713,10 +712,10 @@ const UserChat = ({
       image: tempImage, //  show instantly
       replyTo: replyTo
         ? {
-          sender: replyTo.sender,
-          message: replyTo.message,
-          image: replyTo.image || null,
-        }
+            sender: replyTo.sender,
+            message: replyTo.message,
+            image: replyTo.image || null,
+          }
         : null,
       time: new Date().toISOString(),
     };
@@ -753,7 +752,7 @@ const UserChat = ({
     }
   };
 
-    // ================= REVIEW =================
+  // ================= REVIEW =================
 
   const handleSubmitReview = async () => {
     if (chatEndedRef.current) {
@@ -808,7 +807,11 @@ const UserChat = ({
       <div className="bg-gradient-to-r from-purple-900 to-purple-700 text-white px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Image
-             src={astro_Image  ? `https://www.dhwaniastro.com${astro_Image}` : "/man.png" }
+            src={
+              astro_Image
+                ? `https://www.dhwaniastro.com${astro_Image}`
+                : "/man.png"
+            }
             width={45}
             height={45}
             alt="astro"
@@ -871,8 +874,9 @@ const UserChat = ({
             key={i}
             onMouseEnter={() => setHoveredIndex(i)}
             onMouseLeave={() => setHoveredIndex(null)}
-            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
+            className={`flex ${
+              msg.sender === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
               {/*  REPLY CONTEXT */}
@@ -904,7 +908,13 @@ const UserChat = ({
               {/* TIME */}
               {msg.time && (
                 <div className="text-[10px] text-gray-400 mt-1 text-right">
-                  {msg.time}
+                  {new Date(msg.time).toLocaleTimeString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  })}
                 </div>
               )}
 
