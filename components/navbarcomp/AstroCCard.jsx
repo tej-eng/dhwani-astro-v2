@@ -145,19 +145,33 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
     const serviceActive =
       mode === "chat" ? astro?.isChatActive : astro?.isCallActive;
 
-    if (!astro?.isOnline || !serviceActive) {
+    // Astrologer is offline
+    if (!astro?.isOnline) {
       return {
         status: "Offline",
         color: "bg-red-500",
         canConnect: false,
+        disabled: true,
       };
     }
 
+    // Chat/Call service is disabled
+    if (!serviceActive) {
+      return {
+        status: "Online",
+        color: "bg-green-500",
+        canConnect: false,
+        disabled: true,
+      };
+    }
+
+    // Astrologer is busy
     if (astro?.isBusy) {
       return {
         status: "Busy",
         color: "bg-yellow-500",
-        canConnect: false,
+        canConnect: true,
+        disabled: false,
       };
     }
 
@@ -165,6 +179,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
       status: "Online",
       color: "bg-green-500",
       canConnect: true,
+      disabled: false,
     };
   };
 
@@ -204,18 +219,30 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       <CustomButton
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
+                        disabled={getAstroStatus(astro).disabled}
+                        className={
+                          getAstroStatus(astro).disabled
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }
                         onClick={() => {
                           const status = getAstroStatus(astro);
 
-                          if (status.status === "Offline") {
-                            astrologeroffline();
+                          if (!status.canConnect) {
+                            if (!astro?.isOnline) {
+                              astrologeroffline();
+                            } else if (
+                              (mode === "chat" && !astro?.isChatActive) ||
+                              (mode === "call" && !astro?.isCallActive)
+                            ) {
+                              toast.error(
+                                mode === "chat"
+                                  ? "Chat service is currently unavailable."
+                                  : "Call service is currently unavailable.",
+                              );
+                            }
                             return;
                           }
-
-                          // if (status.status === "Busy") {
-                          //   astrologerbusy();
-                          //   return;
-                          // }
 
                           handleClick({
                             id: astro?.id,
@@ -296,18 +323,30 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       <CustomButton
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"
+                        disabled={getAstroStatus(astro).disabled}
+                        className={
+                          getAstroStatus(astro).disabled
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }
                         onClick={() => {
                           const status = getAstroStatus(astro);
 
-                          if (status.status === "Offline") {
-                            astrologeroffline();
+                          if (!status.canConnect) {
+                            if (!astro?.isOnline) {
+                              astrologeroffline();
+                            } else if (
+                              (mode === "chat" && !astro?.isChatActive) ||
+                              (mode === "call" && !astro?.isCallActive)
+                            ) {
+                              toast.error(
+                                mode === "chat"
+                                  ? "Chat service is currently unavailable."
+                                  : "Call service is currently unavailable.",
+                              );
+                            }
                             return;
                           }
-
-                          // if (status.status === "Busy") {
-                          //   astrologerbusy();
-                          //   return;
-                          // }
 
                           handleClick({
                             id: astro?.id,
