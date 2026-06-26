@@ -73,7 +73,7 @@ const Heal = ({ categorySlug, serviceSlug }) => {
     setFormInput(true);
     setSData(false);
 
-    toast.success("Session selected. Proceeding to booking...");
+    //toast.success("Session selected. Proceeding to booking...");
   };
 
   const handleForm = () => {

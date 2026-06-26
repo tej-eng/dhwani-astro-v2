@@ -67,18 +67,21 @@ export default function ProfileAstro({ astrologerId }) {
   });
   console.log("Astrologer ID:", id);
   console.log("Skip Value:", !id);
-  const {
-    data: followStatusData,
-    loading: followLoadingStatus,
-    error: followError,
-    refetch: refetchFollow,
-  } = useQuery(IS_FOLLOWING, {
-    variables: {
-      astrologerId: id,
-    },
-    skip: !id,
-    fetchPolicy: "network-only",
-  });
+
+
+ const {
+  data: followStatusData,
+  loading: followLoadingStatus,
+  error: followError,
+  refetch: refetchFollow,
+} = useQuery(IS_FOLLOWING, {
+  variables: {
+    astrologerId: id,
+  },
+  skip: !id,
+  fetchPolicy: "network-only",
+  notifyOnNetworkStatusChange: true,
+});
 
   const {
     data: followersCountData,
@@ -94,17 +97,8 @@ export default function ProfileAstro({ astrologerId }) {
   });
   const followersCount =
     followersCountData?.getAstrologerFollowersCount?.totalFollowers || 0;
-  useEffect(() => {
-    console.log("Follow Query Data:", followStatusData);
-    console.log("Follow Query Error:", followError);
-    console.log("Follow Query Loading:", followLoadingStatus);
-  }, [followStatusData, followError, followLoadingStatus]);
+ 
 
-  useEffect(() => {
-    console.log("Followers Count Data:", followersCountData);
-    console.log("Followers Count Error:", followersCountError);
-    console.log("Followers Count Loading:", followersCountLoading);
-  }, [followersCountData, followersCountError, followersCountLoading]);
 
   const astrologerdetail = astrologerResponse?.getAstrologerById;
   const { messages: t } = useLanguage();
@@ -113,13 +107,11 @@ export default function ProfileAstro({ astrologerId }) {
 
   const [astrofollow, setAstroFollow] = useState(false);
 
-  useEffect(() => {
-    console.log("Follow Status Data:", followStatusData);
-    if (typeof followStatusData?.isFollowing === "boolean") {
-      console.log("Follow Status Data:", followStatusData);
-      setAstroFollow(followStatusData.isFollowing);
-    }
-  }, [followStatusData]);
+ useEffect(() => {
+  setAstroFollow(
+    followStatusData?.isFollowing?.isFollowing ?? false
+  );
+}, [followStatusData]);
 
   const [followAstrologer, { loading: followLoading }] =
     useMutation(FOLLOW_ASTROLOGER);

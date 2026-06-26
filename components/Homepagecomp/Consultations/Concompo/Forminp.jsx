@@ -201,8 +201,6 @@ export default function Forminp({
       return;
     }
 
-    console.log("Opening Razorpay", order);
-
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 

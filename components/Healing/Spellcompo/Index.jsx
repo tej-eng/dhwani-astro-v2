@@ -24,7 +24,7 @@ const Spell = ({ pageName }) => {
       return;
     }
 
-    toast.success('Session selected. Proceeding to booking...') ;
+    //toast.success('Session selected. Proceeding to booking...') ;
     setTimeout(() => {
       router.push(`/spelling/${pageName}/selectastro`);
     }, 1000);
