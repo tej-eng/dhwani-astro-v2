@@ -124,11 +124,11 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
     );
   };
 
-  const astrologerbusy = () => {
-    toast.success(
-      "Astrologer selected by you is Busy now so please choose another astrologer.",
-    );
-  };
+  // const astrologerbusy = () => {
+  //   toast.success(
+  //     "Astrologer selected by you is Busy now so please choose another astrologer.",
+  //   );
+  // };
 
   const astrologerprofile = (id) => {
     setAlert(true);
@@ -212,10 +212,10 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                             return;
                           }
 
-                          if (status.status === "Busy") {
-                            astrologerbusy();
-                            return;
-                          }
+                          // if (status.status === "Busy") {
+                          //   astrologerbusy();
+                          //   return;
+                          // }
 
                           handleClick({
                             id: astro?.id,
@@ -304,10 +304,10 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                             return;
                           }
 
-                          if (status.status === "Busy") {
-                            astrologerbusy();
-                            return;
-                          }
+                          // if (status.status === "Busy") {
+                          //   astrologerbusy();
+                          //   return;
+                          // }
 
                           handleClick({
                             id: astro?.id,

@@ -54,11 +54,11 @@ export default function Recastro() {
         }, 1000);
     };
 
-    const astrologerbusy = () => {
-        toast.success(
-            "Astrologer selected by you is Busy now so please choose another astrologer."
-        );
-    };
+    // const astrologerbusy = () => {
+    //     toast.success(
+    //         "Astrologer selected by you is Busy now so please choose another astrologer."
+    //     );
+    // };
 
 
 
