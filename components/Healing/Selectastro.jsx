@@ -25,7 +25,10 @@ return (
       </h2>
 
       <div className="grid sm:grid-cols-3 lg:grid-cols-4 grid-cols-1 gap-4">
-        {astrologers?.map((astro) => (
+      {astrologers?.map((mapping) => {
+  const astro = mapping.astrologer;
+
+  return (
           <div
             key={astro.id}
             className="bg-[#e0e5ec8d] rounded-lg p-2 shadow-lg"
@@ -35,7 +38,11 @@ return (
               <div className="w-1/3 place-self-center">
                 <div className="relative w-full h-22 rounded overflow-hidden">
                   <Image
-                    src={astro.profilePic || "/defaultastro.png"}
+             src={
+  astro?.profilePic
+    ? `https://www.dhwaniastro.com${astro.profilePic}`
+    : "/defaultastro.png"
+}
                     alt={astro.name}
                     width={100}
                     height={100}
@@ -46,16 +53,16 @@ return (
 
               <div className="flex-1 flex flex-col items-center text-center">
                 <h6 className="text-base font-semibold text-black mb-1">
-                  {astro.name}
+                  {astro.displayName}
                 </h6>
 
                 <p className="text-sm mb-1">
                   <span className="block text-white text-xs p-1 rounded-lg truncate bg-[linear-gradient(to_right,_#a65ed6cf_54%,_#ba38cbbb_100%)]">
-                    {astro.skills?.join(", ")}
+                  {astro.skills?.join(", ")}
                   </span>
 
                   <span className="inline-block mt-1 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg text-xs">
-                    {astro.languages?.join(", ")}
+            {astro.languages?.join(", ")}
                   </span>
                 </p>
 
@@ -64,9 +71,12 @@ return (
                     <span>⭐ {astro.rating || 0}</span>
                     <span>{astro.experience} Years</span>
                   </div>
+                  <p className="text-green-600 font-semibold mt-2">
+  ₹ {mapping.price} / Session
+</p>
 
                   <CustomButton
-                    onClick={() => onSelect(astro)}
+               onClick={() => onSelect(mapping)}
                     variant="green"
                   >
                     Select
@@ -76,7 +86,9 @@ return (
 
             </div>
           </div>
-        ))}
+            );
+})}
+       
       </div>
     </div>
   </div>

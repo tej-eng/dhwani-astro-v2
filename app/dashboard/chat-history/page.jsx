@@ -5,6 +5,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Image from "next/image";
 import ChatMessagePopUp from "../ChatMessagePopUp";
+import RemedyModal from "../RemedyModal";
 
 const GET_USER_CHAT_HISTORY = gql`
   query GetUserChatHistory($filter: UserChatHistoryFilterInput) {
@@ -51,7 +52,8 @@ const GET_USER_CHAT_HISTORY = gql`
 export default function ChatHistoryPage() {
   const [page, setPage] = useState(1);
   const [openChatModal, setOpenChatModal] = useState(false);
-
+  const [openRemedyModal, setOpenRemedyModal] = useState(false);
+  const [selectedRemedySession, setSelectedRemedySession] = useState("");
   const [selectedSessionId, setSelectedSessionId] = useState("");
 
   const [filters, setFilters] = useState({
@@ -98,9 +100,7 @@ export default function ChatHistoryPage() {
         <div>
           <h1 className="text-3xl font-bold text-purple-900">Chat History</h1>
 
-          <p className="text-gray-500">
-            View all your user chat sessions
-          </p>
+          <p className="text-gray-500">View all your user chat sessions</p>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function ChatHistoryPage() {
             {history?.summary?.totalCoinsDeducted || 0}
           </h2>
         </div>
-{/* 
+        {/* 
         <div className="p-4 bg-white shadow rounded-2xl">
           <p className="text-sm text-gray-500">Coins Earned</p>
 
@@ -219,8 +219,6 @@ export default function ChatHistoryPage() {
             <div className="flex flex-col justify-between gap-4 md:flex-row">
               {/* LEFT */}
               <div className="flex gap-4">
-              
-
                 <div>
                   <h2 className="text-xl font-semibold">
                     {chat?.astrologer?.name}
@@ -243,7 +241,7 @@ export default function ChatHistoryPage() {
                       ₹ {chat?.ratePerMin}/min
                     </span>
                     <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
-                       {chat?.source}
+                      {chat?.source}
                     </span>
 
                     <span
@@ -256,8 +254,6 @@ export default function ChatHistoryPage() {
                       {chat?.status}
                     </span>
                   </div>
-
-                
                 </div>
               </div>
 
@@ -268,6 +264,15 @@ export default function ChatHistoryPage() {
 
                   <p>{new Date(chat?.createdAt).toLocaleTimeString()}</p>
                 </div>
+                <button
+                  onClick={() => {
+                    setSelectedRemedySession(chat.sessionId);
+                    setOpenRemedyModal(true);
+                  }}
+                  className="px-3 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700"
+                >
+                  View Remedy
+                </button>
                 <span
                   className="flex items-center justify-center transition-all cursor-pointer hover:scale-105"
                   onClick={() => {
@@ -335,6 +340,11 @@ export default function ChatHistoryPage() {
         open={openChatModal}
         onClose={() => setOpenChatModal(false)}
         sessionId={selectedSessionId}
+      />
+      <RemedyModal
+        open={openRemedyModal}
+        onClose={() => setOpenRemedyModal(false)}
+        sessionId={selectedRemedySession}
       />
     </div>
   );

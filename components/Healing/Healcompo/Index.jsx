@@ -14,7 +14,7 @@ import { validateEmail, validatePhone } from "@/app/helper/validation";
 import { encryptData } from "@/app/helper/cryptoHelper";
 import Freereport from "@/components/Smcompo/Freereport";
 import Searchtop from "@/components/Smcompo/Searchtop";
-import { GET_SERVICE } from "@/app/graphql/gqlQuery";
+import { GET_CATEGORY, GET_SERVICE } from "@/app/graphql/gqlQuery";
 import { useQuery } from "@apollo/client/react";
 import Image from "next/image";
 
@@ -45,7 +45,17 @@ const Heal = ({ categorySlug, serviceSlug }) => {
       slug: serviceSlug,
     },
   });
-  const service = data?.getService;
+const service = data?.getService;
+
+const startingPrice =
+  service?.astrologerMappings?.length > 0
+    ? Math.min(
+        ...service.astrologerMappings.map((item) => Number(item.price))
+      )
+    : service?.price;
+
+
+
   useEffect(() => {
     console.log("===== QUERY STATE =================================");
     console.log("slug:", serviceSlug);
@@ -139,7 +149,7 @@ const Heal = ({ categorySlug, serviceSlug }) => {
               </h1>
               <div className="flex items-center mt-0 space-x-2">
                 <span className="text-base font-semibold text-purple-600 sm:text-lg">
-                  Starting From: ₹ {service?.price}
+                  Starting From: ₹ {startingPrice }
                 </span>
                 <span className="text-sm text-gray-500">(Per Session)</span>
               </div>
@@ -149,7 +159,7 @@ const Heal = ({ categorySlug, serviceSlug }) => {
 
         <div className="md:w-1/2 w-full py-4 px-3  sm:pr-8 flex flex-col justify-between">
           {!formInput && (
-            <Healdetail data={service} pkgId={pkgId} setPkgId={setPkgId} />
+            <Healdetail sp={startingPrice} data={service} pkgId={pkgId} setPkgId={setPkgId} />
           )}
           {formInput && (
             <>
