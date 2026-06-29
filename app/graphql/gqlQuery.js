@@ -9,6 +9,19 @@ export const CREATE_APPLICATION = gql`
     }
   }
 `;
+export const CREATE_HEALING_ORDER = gql`
+mutation CreateHealingOrder($bookingId: ID!) {
+  createHealingOrder(bookingId: $bookingId) {
+    success
+    orderId
+    currency
+
+    totalAmount
+    payableAmount
+
+    bookingId
+  }
+}`
 
 // export const GET_ASTROLOGER_PROFILE = gql`
 //   query GetAstrologerProfile {
@@ -138,7 +151,7 @@ export const GET_GIFTS = gql`
 `;
 
 export const GET_SERVICES = gql`
-  query GetServices {
+ query GetServices {
     getServices {
       id
       name
@@ -152,6 +165,10 @@ export const GET_SERVICES = gql`
         id
         name
         slug
+      }
+      astrologerMappings {
+        price
+
       }
     }
   }
@@ -172,6 +189,25 @@ export const GET_SERVICE = gql`
         id
         name
       }
+
+      astrologerMappings {
+        id
+        price
+
+        astrologer {
+          id
+          name
+          displayName
+          profilePic
+          experience
+          rating
+          skills
+          languages
+          about
+
+       
+        }
+      }
     }
   }
 `;
@@ -188,22 +224,26 @@ export const GET_CATEGORIES = gql`
 `;
 
 export const GET_CATEGORY = gql`
- query GetCategory($slug: String!) {
-  getCategory(slug: $slug) {
-    id
-    name
-    slug
-
-    services {
+  query GetCategory($slug: String!) {
+    getCategory(slug: $slug) {
       id
       name
       slug
-      image
-      description
-      price
+
+      services {
+        id
+        name
+        slug
+        image
+        description
+        price
+
+        astrologerMappings {
+          price
+        }
+      }
     }
   }
-}
 `;
 
 export const CREATE_SERVICE_BOOKING = gql`
@@ -534,6 +574,51 @@ export const GET_BANNERS = gql`
         imageUrl
         heading
         language
+      }
+    }
+  }
+`;
+export const GET_SESSION_REMEDY = gql`
+  query GetSessionRemedy($sessionId: ID!) {
+    getSessionRemedy(sessionId: $sessionId) {
+      id
+      remedyText
+      createdAt
+      astrologerName
+    }
+  }
+`;
+export const GET_COUPONS = gql`
+  query GetCoupons {
+    getCoupons {
+      id
+      code
+      type
+      percentage
+      flatAmount
+      maxDiscount
+      minOrderAmount
+      description
+    }
+  }
+`;
+export const GET_SERVICE_BOOKING = gql`
+  query GetServiceBooking($bookingId: ID!) {
+    getServiceBooking(bookingId: $bookingId) {
+      id
+      amount
+      bookingStatus
+      paymentStatus
+
+      service {
+        id
+        name
+      }
+
+      astrologer {
+        id
+        displayName
+        profilePic
       }
     }
   }

@@ -12,36 +12,30 @@ import { useQuery } from "@apollo/client/react";
 import { GET_CATEGORY } from "@/app/graphql/gqlQuery";
 import CategorySkeleton from "../Custom/categorySkeleton";
 
-export default function CategoryServices({
-  categorySlug,
-}){
+export default function CategoryServices({ categorySlug }) {
   const [search, setSearch] = useState("");
   const { messages: t } = useLanguage();
   useScrollZoom(".head-wrap");
 
-const { data, loading, error } = useQuery(GET_CATEGORY, {
-  variables: {
-    slug: categorySlug,
-  },
-});
+  const { data, loading, error } = useQuery(GET_CATEGORY, {
+    variables: {
+      slug: categorySlug,
+    },
+  });
 
   const filteredData =
     data?.getCategory?.services?.filter((item) =>
       item.name.toLowerCase().includes(search.toLowerCase()),
     ) || [];
- if (loading) {
-  return (
-    <section className="relative flex flex-col items-center self-center p-2 sm:p-5 w-full xl:w-[90%]">
-      <Searchtop
-        searchPlaceholder
-        searchValue=""
-        onSearchChange={() => {}}
-      />
+  if (loading) {
+    return (
+      <section className="relative flex flex-col items-center self-center p-2 sm:p-5 w-full xl:w-[90%]">
+        <Searchtop searchPlaceholder searchValue="" onSearchChange={() => {}} />
 
-      <CategorySkeleton />
-    </section>
-  );
-}
+        <CategorySkeleton />
+      </section>
+    );
+  }
 
   if (error) {
     return <p>Error loading services</p>;
@@ -84,14 +78,15 @@ const { data, loading, error } = useQuery(GET_CATEGORY, {
                 <div className="flex flex-col items-center justify-around w-full gap-2 mt-1 mb-1 sm:mt-3 lg:flex-row sm:gap-3">
                   <div className="flex flex-col items-center w-full gap-1">
                     <span className="inline-block text-[#8a2be2] bg-white px-2 py-1 rounded-full font-bold text-xs sm:text-base shadow-md">
-                      ₹ {heal.price}{" "}
+                      Starting ₹ {heal.price ?? "--"}
                       <span className="text-[10px] sm:text-xs">
-                        {t?.healing?.per || "Per Session"}
+                        {" /"}
+                        {t?.healing?.per || " Session"}
                       </span>
                     </span>
                   </div>
                   <Link
-                   href={`/dhwani-services/${categorySlug}/${heal.slug}`}
+                    href={`/dhwani-services/${categorySlug}/${heal.slug}`}
                     className="bg-[#8a2be2] w-[80%] text-white px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-medium hover:bg-[#7325c0] transition"
                   >
                     {t?.healing?.book || "Book Now"}
