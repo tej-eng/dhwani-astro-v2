@@ -14,6 +14,7 @@ import {
   sendPaymentDetail,
   resetStatusCode,
 } from "../../../app/redux/reducer/payment/rechargeSlice";
+import { CREATE_HEALING_ORDER } from "@/app/graphql/gqlQuery";
 
 const CREATE_ORDER = gql`
   mutation CreateOrder($input: CreateOrderInput!) {
@@ -27,12 +28,14 @@ const CREATE_ORDER = gql`
 `;
 
 export default function PayOPT({
+  type,
   amount,
   oriamount,
   coupon_id,
   couponprice,
   packid,
-}) {
+  bookingId,
+}){
   const searchParams = useSearchParams();
 
   const payAmount = amount || 0;
@@ -53,7 +56,9 @@ export default function PayOPT({
 
   const [loading, setLoading] = useState(false);
 
-  const [createOrder] = useMutation(CREATE_ORDER);
+const [createOrder] = useMutation(CREATE_ORDER);
+
+const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
 
   useEffect(() => {
     if (userData) {
@@ -79,16 +84,33 @@ export default function PayOPT({
     try {
       setLoading(true);
 
-      // CREATE ORDER USING GRAPHQL
-      const { data } = await createOrder({
-        variables: {
-          input: {
-            rechargePackId: packid,
-          },
-        },
-      });
+     let order;
 
-      const order = data?.createOrder;
+if (type === "RECHARGE") {
+
+    const { data } = await createOrder({
+        variables: {
+            input: {
+                  rechargePackId: packid,
+    couponId: coupon_id,
+            },
+        },
+    });
+
+    order = data.createOrder;
+
+} else {
+
+    const { data } = await createHealingOrder({
+        variables: {
+             bookingId,
+        couponId: coupon_id,
+        },
+    });
+
+    order = data.createHealingOrder;
+
+}
 
       console.log("GraphQL Order:", order);
 
@@ -111,7 +133,10 @@ export default function PayOPT({
 
         name: "Dhwani Astro LLP",
 
-        description: "Recharge Payment",
+      description:
+type === "RECHARGE"
+    ? "Wallet Recharge"
+    : "Healing Service",
 
         order_id: order.orderId,
 
@@ -120,15 +145,28 @@ export default function PayOPT({
           email: "",
           contact: "",
         },
-
-        notes: {
-          userId: user?.id || "test-user-1",
-          source: "dhwaniastro",
-          rechargePackId: packid || "pack_001",
-          coins: 100,
-        },
+notes:
+type === "RECHARGE"
+? {
+   userId: user?.id || "",
+      rechargePackId: packid,
+}
+: {
+      userId: user.id,
+      bookingId,
+},
 
         handler: async function (response) {
+          if(type==="RECHARGE"){
+
+   dispatch(sendPaymentDetail());
+
+}
+if(type==="SERVICE"){
+
+   route.push("/my-bookings");
+
+}
           console.log("Razorpay Response:", response);
 
           toast.success("Payment Successful");

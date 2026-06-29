@@ -34,18 +34,7 @@ export default function Forminp({
   const [paymentData, setPaymentData] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // ONLINE | WALLET
-  const { data: astroData, loading: astroLoading } = useQuery(
-    GET_ASTROLOGERS_USER,
-    {
-      variables: {
-        searchInput: {
-          page: 1,
-          limit: 20,
-        },
-      },
-      skip: !showAstroModal,
-    },
-  );
+
 
 
  const CREATE_HEALING_ORDER = gql`
@@ -133,7 +122,9 @@ export default function Forminp({
   };
 
   
- const handleAstrologerSelect = async (astrologer) => {
+const handleAstrologerSelect = async (mapping) => {
+  const astrologer = mapping.astrologer;
+
   try {
     const { data } = await updateBookingAstrologer({
       variables: {
@@ -159,11 +150,15 @@ export default function Forminp({
       return;
     }
 
-    handleRazorpay({
-      ...order,
-      bookingId: booking.id,
-      astrologerId: astrologer.id,
-    });
+
+
+
+router.push(`/buy-services/payment-options/${booking.id}`);
+    // handleRazorpay({
+    //   ...order,
+    //   bookingId: booking.id,
+    //   astrologerId: astrologer.id,
+    // });
   } catch (err) {
     console.error(err);
     toast.error(err.message);
@@ -224,7 +219,7 @@ export default function Forminp({
 
         toast.success("Payment Successful");
 
-        router.push("/payment-success");
+        router.push("/");
       },
 
       modal: {
@@ -252,7 +247,8 @@ export default function Forminp({
     toast.error("Unable to open payment gateway");
   }
 };
-  
+  console.log("pageContent", pageContent);
+console.log("astrologerMappings", pageContent?.astrologerMappings);
 
   return (
     <>
@@ -415,15 +411,16 @@ export default function Forminp({
             </div>
           </div>
 
-          <CustomButton className="rounded-xl bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-2 text-center items-center justify-center" type="submit" disabled={bookingLoading || astroLoading}>
+          <CustomButton className="rounded-xl bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-2 text-center items-center justify-center" type="submit" disabled={bookingLoading }>
             {bookingLoading ? "Processing..." : "Continue"}
           </CustomButton>
         </form>
 
         <Selectastro
+        
           open={showAstroModal}
-          astrologers={astroData?.getAstrologerListForUser?.data || []}
-          loading={astroLoading}
+          astrologers={pageContent?.astrologerMappings || []}
+          loading={bookingLoading}
           onSelect={handleAstrologerSelect}
           onClose={() => setShowAstroModal(false)}
         />
