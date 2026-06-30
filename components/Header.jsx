@@ -29,7 +29,6 @@ export default function Header({ openSignInModal }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  console.log("isssssssssssssssssss", isLoggedIn);
 
   // useEffect(() => {
   //   const storedUser = localStorage.getItem("user");
@@ -49,8 +48,6 @@ export default function Header({ openSignInModal }) {
   const LogOut = async () => {
   try {
     const result = await logoutMutation();
-
-    console.log("Logout result:", result?.data?.logout);
 
     if (result?.data?.logout) {
       localStorage.removeItem("user");

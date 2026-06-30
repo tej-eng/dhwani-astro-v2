@@ -8,17 +8,10 @@ import { useQuery } from "@apollo/client/react";
 import { useAuth } from "@/app/context/authContext";
 import { GET_ASTROLOGERS_GUEST, GET_ASTROLOGERS_USER } from "@/app/graphql/gqlQuery";
 
-
-
-
-
 export default function Page() {
   const params = useParams();
   const mode = params?.mode;
 
-  /* ---------- CHECK LOGIN ---------- */
-
-  
 
 const { isLoggedIn, authLoading  } = useAuth();
 
@@ -26,20 +19,6 @@ const selectedQuery = isLoggedIn
   ? GET_ASTROLOGERS_USER
   : GET_ASTROLOGERS_GUEST;
 
-console.log("isLoggedIn", isLoggedIn);
-console.log(
-  "Selected Query",
-  isLoggedIn
-    ? "GET_ASTROLOGERS_USER"
-    : "GET_ASTROLOGERS_GUEST"
-);
-
-
-
-
-console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx",selectedQuery?.definitions?.[0]?.name?.value);
-
-  /* ---------- ASTRO LIST ---------- */
 
 const { data, loading, error, fetchMore } =
   useQuery(selectedQuery, {

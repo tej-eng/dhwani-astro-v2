@@ -7,7 +7,6 @@ import AstroCCard from "@/components/navbarcomp/AstroCCard";
 
 export default function AstrologerList({ serverdata, fetchMore, mode }) {
   const { messages: t } = useLanguage();
-  console.log("Fetched Dataxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:",serverdata, fetchMore);
 
   const [search, setSearch] = useState("");
   const [sortType, setSortType] = useState("ratingHigh");

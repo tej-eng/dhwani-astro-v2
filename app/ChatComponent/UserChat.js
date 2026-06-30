@@ -539,7 +539,6 @@ const UserChat = ({
     if (!socket) return;
 
     socket.on("receive_message", (data) => {
-      console.log("data----------------------:", data);
       setMessages((prev) => {
         //  prevent duplicate
         const alreadyExists = prev.some((msg) => msg.msg_id === data.msg_id);

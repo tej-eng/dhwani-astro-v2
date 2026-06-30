@@ -41,11 +41,9 @@ const ChatRequestCard = ({
     if (!socket) return;
 
     socket.onAny((event, ...args) => {
-      console.log("📡 SOCKET EVENT:", event, args);
     });
 
     socket.on("connect", () => {
-      console.log("✅ SOCKET CONNECTED:", socket.id);
     });
 
     return () => {
@@ -90,7 +88,6 @@ const ChatRequestCard = ({
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
         localStorage.removeItem(`timer_${room_Id}`);
-        console.log("⏰ TIMER EXPIRED for room:TTTTTTTTTTTTTTTTYPE", type);
         if (socket) {
           if (socket.connected) {
             socket.emit("autodisconnect", {
@@ -261,8 +258,6 @@ const ChatRequestCard = ({
     if (!socket) return;
 
     const handleConnect = () => {
-      console.log("🔌 CONNECT HANDLER");
-
       const activeRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
       // 1. ACTIVE CHAT — HIGHEST PRIORITY
@@ -361,9 +356,6 @@ const ChatRequestCard = ({
     if (!socket) return;
 
     const handleAccepted = (data) => {
-      console.log("ACCEPTED DATA:", data);
-      console.log("ROOM:", room_Id);
-
       if (data.roomid !== room_Id) return;
 
       if (timerIntervalRef.current) {
@@ -395,8 +387,6 @@ const ChatRequestCard = ({
     };
 
     const handleCallCancelled = (data) => {
-      console.log("📞 CALL CANCELLED EVENT:", data);
-
       if (data.roomId !== room_Id) return;
 
       if (timerIntervalRef.current) {
@@ -423,8 +413,6 @@ const ChatRequestCard = ({
     };
 
     const handleQueue = (data) => {
-      console.log("QUEUE EVENT:", data);
-
       // OPTIONAL SAFETY
       if (data.roomid && data.roomid !== room_Id) {
         return;
@@ -448,8 +436,6 @@ const ChatRequestCard = ({
     };
 
     const handleReject = (data) => {
-      console.log("REJECT EVENT:", data);
-
       if (data.roomid !== room_Id) return;
 
       if (timerIntervalRef.current) {
@@ -479,8 +465,6 @@ const ChatRequestCard = ({
     };
 
     const handleCallAccepted = (data) => {
-      console.log("CALL ACCEPTED:", data);
-
       if (data.roomId !== room_Id) return;
 
       if (timeoutHandledRef.current) return;
@@ -566,7 +550,6 @@ const ChatRequestCard = ({
   // =========================================================
   const handleRequestCancel = (type) => {
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    console.log("Emitting cancel eventttttt:", `cancel_${type}_request`);
     socket?.emit(`cancel_${type}_request`, {
       room_id: room_Id,
       astroid: astro_id,
