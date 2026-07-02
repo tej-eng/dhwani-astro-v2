@@ -10,10 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 
-import {
-  sendPaymentDetail,
-  resetStatusCode,
-} from "../../../app/redux/reducer/payment/rechargeSlice";
 import { CREATE_HEALING_ORDER } from "@/app/graphql/gqlQuery";
 
 const CREATE_ORDER = gql`
@@ -33,22 +29,17 @@ export default function PayOPT({
   oriamount,
   coupon_id,
   couponprice,
+  coupon_code,
   packid,
   bookingId,
-}){
+}) {
   const searchParams = useSearchParams();
 
   const payAmount = amount || 0;
 
-  const dispatch = useDispatch();
+  const { statusCode } = useSelector((state) => state.recharge_payment);
 
-  const { statusCode } = useSelector(
-    (state) => state.recharge_payment
-  );
-
-  const { userData } = useSelector(
-    (state) => state.getuserDetail
-  );
+  const { userData } = useSelector((state) => state.getuserDetail);
 
   const [user, setUserData] = useState("");
 
@@ -56,9 +47,9 @@ export default function PayOPT({
 
   const [loading, setLoading] = useState(false);
 
-const [createOrder] = useMutation(CREATE_ORDER);
+  const [createOrder] = useMutation(CREATE_ORDER);
 
-const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
+  const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
 
   useEffect(() => {
     if (userData) {
@@ -75,8 +66,6 @@ const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
       toast.success("Payment Add successfully!");
 
       route.push("/chat-with-astrologer");
-
-      dispatch(resetStatusCode());
     }
   }, [statusCode]);
 
@@ -84,33 +73,31 @@ const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
     try {
       setLoading(true);
 
-     let order;
+      let order;
 
-if (type === "RECHARGE") {
-
-    const { data } = await createOrder({
-        variables: {
+      if (type === "RECHARGE") {
+        const { data } = await createOrder({
+          variables: {
             input: {
-                  rechargePackId: packid,
-    couponId: coupon_id,
+              rechargePackId: packid,
+              coupan_code: coupon_code || "",
             },
-        },
-    });
+          },
+        });
 
-    order = data.createOrder;
+        order = data.createOrder;
+      } else {
+        const { data } = await createHealingOrder({
+          variables: {
+            input: {
+              bookingId,
+              couponCode: coupon_code,
+            },
+          },
+        });
 
-} else {
-
-    const { data } = await createHealingOrder({
-        variables: {
-             bookingId,
-        couponId: coupon_id,
-        },
-    });
-
-    order = data.createHealingOrder;
-
-}
+        order = data.createHealingOrder;
+      }
 
       console.log("GraphQL Order:", order);
 
@@ -124,55 +111,46 @@ if (type === "RECHARGE") {
 
       const options = {
         key:
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-          "rzp_test_SNXjhTOgP1CIx0",
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
         amount: order.amount,
-
         currency: order.currency,
+        order_id: order.orderId,
 
         name: "Dhwani Astro LLP",
 
-      description:
-type === "RECHARGE"
-    ? "Wallet Recharge"
-    : "Healing Service",
-
-        order_id: order.orderId,
+        description:
+          type === "RECHARGE" ? "Wallet Recharge" : "Healing Service",
 
         prefill: {
           name: "",
           email: "",
           contact: "",
         },
-notes:
-type === "RECHARGE"
-? {
-   userId: user?.id || "",
-      rechargePackId: packid,
-}
-: {
-      userId: user.id,
-      bookingId,
-},
 
+        notes:
+          type === "RECHARGE"
+            ? {
+                userId: user?.id || "",
+                rechargePackId: packid,
+                couponCode: coupon_code || "testing",
+                originalAmount: order.originalAmount,
+                discount: order.discount,
+                finalAmount: order.finalAmount,
+              }
+            : {
+                userId: user.id,
+                bookingId,
+              },
         handler: async function (response) {
-          if(type==="RECHARGE"){
-
-   dispatch(sendPaymentDetail());
-
-}
-if(type==="SERVICE"){
-
-   route.push("/my-bookings");
-
-}
+          if (type === "RECHARGE") {
+          }
+          if (type === "SERVICE") {
+            route.push("/my-bookings");
+          }
           console.log("Razorpay Response:", response);
 
           toast.success("Payment Successful");
-
-          // OPTIONAL:
-          // dispatch(sendPaymentDetail(...))
         },
 
         modal: {
@@ -243,10 +221,7 @@ if(type==="SERVICE"){
           </button>
         ))}
 
-        <AlertLoading
-          show={loading}
-          title="Please Waiting..."
-        />
+        <AlertLoading show={loading} title="Please Waiting..." />
       </div>
     </div>
   );

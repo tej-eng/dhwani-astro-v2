@@ -50,7 +50,6 @@ const GET_USER_BY_ID = gql`
   }
 `;
 
-
 const GET_ASTROLOGER_BY_ID = gql`
   query GetAstrologerById($id: String!) {
     getAstrologerById(id: $id) {
@@ -126,8 +125,7 @@ export default function RequestForm({ mode, astroId }) {
       place: "",
       latitude: "",
       longitude: "",
-      source:"WEB",
-
+      source: "WEB",
     },
   });
 
@@ -152,8 +150,6 @@ export default function RequestForm({ mode, astroId }) {
     variables: { id },
     skip: !id,
   });
-
-  
 
   const { data: astrologerInfo, loading } = useQuery(GET_ASTROLOGER_BY_ID, {
     variables: { id: astro_id },
@@ -224,7 +220,7 @@ export default function RequestForm({ mode, astroId }) {
         dispatch,
         router,
         userId: id,
-        source:"WEB",
+        source: "WEB",
       });
     } finally {
       setIsSubmitting(false);
@@ -299,6 +295,12 @@ export default function RequestForm({ mode, astroId }) {
                     placeholder="Enter your name here"
                     className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
                     error={errors.name?.message}
+                    maxLength={150}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 150) {
+                        field.onChange(e);
+                      }
+                    }}
                   />
                 )}
               />
@@ -343,6 +345,13 @@ export default function RequestForm({ mode, astroId }) {
                         placeholder="Enter your contact number here"
                         className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
                         error={errors.phone?.message}
+                        maxLength={15}
+                        onChange={(e) => {
+                          const value = e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 15);
+                          field.onChange(value);
+                        }}
                       />
                     )}
                   />
@@ -406,6 +415,7 @@ export default function RequestForm({ mode, astroId }) {
                     className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
                     options={occupation_list}
                     error={errors.occupation?.message}
+                    maxLength={150}
                   />
                 )}
               />
@@ -419,7 +429,6 @@ export default function RequestForm({ mode, astroId }) {
 
                 <LocationSelector
                   onSelect={(loc) => {
-                   
                     setValue("place", loc?.city || "", {
                       shouldValidate: true,
                     });

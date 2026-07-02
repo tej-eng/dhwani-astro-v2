@@ -177,6 +177,7 @@ if (
   packid={pack.id}
   coupon_id={selectedCoupon?.id ?? null}
   couponprice={discountAmount}
+  coupon_code={selectedCoupon?.code ?? null}
 />
 
       </div>

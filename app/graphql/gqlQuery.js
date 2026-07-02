@@ -10,8 +10,8 @@ export const CREATE_APPLICATION = gql`
   }
 `;
 export const CREATE_HEALING_ORDER = gql`
-mutation CreateHealingOrder($bookingId: ID!) {
-  createHealingOrder(bookingId: $bookingId) {
+mutation CreateHealingOrder($input: CreateHealingOrderInput!) {
+  createHealingOrder(input: $input) {
     success
     orderId
     currency
@@ -21,7 +21,8 @@ mutation CreateHealingOrder($bookingId: ID!) {
 
     bookingId
   }
-}`
+}
+`;
 
 // export const GET_ASTROLOGER_PROFILE = gql`
 //   query GetAstrologerProfile {

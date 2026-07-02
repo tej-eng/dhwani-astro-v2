@@ -996,6 +996,7 @@ const UserChat = ({
               sendMessage();
             }
           }}
+          maxLength={200}
           className="flex-1 border px-3 py-2 rounded-full"
           placeholder="Type message..."
         />
