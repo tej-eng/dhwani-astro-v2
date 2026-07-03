@@ -14,6 +14,7 @@ const GET_CHAT_MESSAGES = gql`
       sender
       message
       image
+      time
     }
   }
 `;
@@ -69,7 +70,7 @@ export default function ChatMessagePopUp({ open, onClose, sessionId }) {
                 <div
                   key={msg?.msg_id}
                   className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-                 >
+                >
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-3 shadow ${
                       isUser
@@ -77,7 +78,6 @@ export default function ChatMessagePopUp({ open, onClose, sessionId }) {
                         : "bg-purple-900 text-white"
                     }`}
                   >
-               
                     <p
                       className={`mb-1 text-xs font-semibold ${
                         isUser ? "text-purple-900" : "text-gray-300"
@@ -86,9 +86,13 @@ export default function ChatMessagePopUp({ open, onClose, sessionId }) {
                       {msg?.sender}
                     </p>
 
-                   
                     {msg?.message && (
-                      <p className="break-words">{msg?.message}</p>
+                      <>
+                        <p className="break-words">{msg.message}</p>
+                        <p className="text-[11px] text-gray-500 mt-1">
+                          {msg.time}
+                        </p>
+                      </>
                     )}
 
                     {/* IMAGE */}

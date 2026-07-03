@@ -5,6 +5,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Image from "next/image";
 import ChatMessagePopUp from "../ChatMessagePopUp";
+import RemedyPopUp from "../RemedyPopUp";
 
 const GET_USER_CHAT_HISTORY = gql`
   query GetUserChatHistory($filter: UserChatHistoryFilterInput) {
@@ -53,6 +54,7 @@ export default function ChatHistoryPage() {
   const [openChatModal, setOpenChatModal] = useState(false);
 
   const [selectedSessionId, setSelectedSessionId] = useState("");
+  const [openRemedyModal, setOpenRemedyModal] = useState(false);
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -98,9 +100,7 @@ export default function ChatHistoryPage() {
         <div>
           <h1 className="text-3xl font-bold text-purple-900">Chat History</h1>
 
-          <p className="text-gray-500">
-            View all your user chat sessions
-          </p>
+          <p className="text-gray-500"></p>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function ChatHistoryPage() {
             {history?.summary?.totalCoinsDeducted || 0}
           </h2>
         </div>
-{/* 
+        {/* 
         <div className="p-4 bg-white shadow rounded-2xl">
           <p className="text-sm text-gray-500">Coins Earned</p>
 
@@ -219,8 +219,6 @@ export default function ChatHistoryPage() {
             <div className="flex flex-col justify-between gap-4 md:flex-row">
               {/* LEFT */}
               <div className="flex gap-4">
-              
-
                 <div>
                   <h2 className="text-xl font-semibold">
                     {chat?.astrologer?.name}
@@ -243,7 +241,7 @@ export default function ChatHistoryPage() {
                       ₹ {chat?.ratePerMin}/min
                     </span>
                     <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
-                       {chat?.source}
+                      {chat?.source}
                     </span>
 
                     <span
@@ -256,8 +254,6 @@ export default function ChatHistoryPage() {
                       {chat?.status}
                     </span>
                   </div>
-
-                
                 </div>
               </div>
 
@@ -265,26 +261,50 @@ export default function ChatHistoryPage() {
               <div className="flex flex-col justify-between">
                 <div className="text-sm text-right text-gray-500">
                   <p>{new Date(chat?.createdAt).toLocaleDateString()}</p>
-
                   <p>{new Date(chat?.createdAt).toLocaleTimeString()}</p>
                 </div>
-                <span
-                  className="flex items-center justify-center transition-all cursor-pointer hover:scale-105"
-                  onClick={() => {
-                    setSelectedSessionId(chat?.sessionId);
-                    setOpenChatModal(true);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height={20}
-                    width={20}
-                    viewBox="0 0 640 640"
-                    className="fill-purple-900"
+
+                <div className="flex items-center justify-end gap-4 mt-4">
+                  {/* View Chat */}
+                  <span
+                    title="View Chat"
+                    className="flex items-center justify-center transition-all cursor-pointer hover:scale-110"
+                    onClick={() => {
+                      setSelectedSessionId(chat?.sessionId);
+                      setOpenChatModal(true);
+                    }}
                   >
-                    <path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z" />
-                  </svg>
-                </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height={22}
+                      width={22}
+                      viewBox="0 0 640 640"
+                      className="fill-purple-900"
+                    >
+                      <path d="M320 96C239.2 96 174.5 132.8 127.4 176.6C80.6 220.1 49.3 272 34.4 307.7C31.1 315.6 31.1 324.4 34.4 332.3C49.3 368 80.6 420 127.4 463.4C174.5 507.1 239.2 544 320 544C400.8 544 465.5 507.2 512.6 463.4C559.4 419.9 590.7 368 605.6 332.3C608.9 324.4 608.9 315.6 605.6 307.7C590.7 272 559.4 220 512.6 176.6C465.5 132.9 400.8 96 320 96zM176 320C176 240.5 240.5 176 320 176C399.5 176 464 240.5 464 320C464 399.5 399.5 464 320 464C240.5 464 176 399.5 176 320zM320 256C320 291.3 291.3 320 256 320C244.5 320 233.7 317 224.3 311.6C223.3 322.5 224.2 333.7 227.2 344.8C240.9 396 293.6 426.4 344.8 412.7C396 399 426.4 346.3 412.7 295.1C400.5 249.4 357.2 220.3 311.6 224.3C316.9 233.6 320 244.4 320 256z" />
+                    </svg>
+                  </span>
+
+                  {/* View Remedy */}
+                  <span
+                    title="View Remedies"
+                    className="flex items-center justify-center transition-all cursor-pointer hover:scale-110"
+                    onClick={() => {
+                      setSelectedSessionId(chat?.sessionId);
+                      setOpenRemedyModal(true);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height={22}
+                      width={22}
+                      viewBox="0 0 512 512"
+                      className="fill-green-600"
+                    >
+                      <path d="M256 48C141.1 48 48 141.1 48 256s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48zm96 224H160c-8.8 0-16-7.2-16-16s7.2-16 16-16h80v-80c0-8.8 7.2-16 16-16s16 7.2 16 16v80h80c8.8 0 16 7.2 16 16s-7.2 16-16 16z" />
+                    </svg>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -334,6 +354,11 @@ export default function ChatHistoryPage() {
       <ChatMessagePopUp
         open={openChatModal}
         onClose={() => setOpenChatModal(false)}
+        sessionId={selectedSessionId}
+      />
+      <RemedyPopUp
+        open={openRemedyModal}
+        onClose={() => setOpenRemedyModal(false)}
         sessionId={selectedSessionId}
       />
     </div>
