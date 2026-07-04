@@ -10,18 +10,16 @@ export const CREATE_APPLICATION = gql`
   }
 `;
 export const CREATE_HEALING_ORDER = gql`
-mutation CreateHealingOrder($input: CreateHealingOrderInput!) {
-  createHealingOrder(input: $input) {
-    success
-    orderId
-    currency
-
-    totalAmount
-    payableAmount
-
-    bookingId
+  mutation CreateHealingOrder($input: CreateHealingOrderInput!) {
+    createHealingOrder(input: $input) {
+      success
+      orderId
+      bookingId
+      currency
+      totalAmount
+      payableAmount
+    }
   }
-}
 `;
 
 // export const GET_ASTROLOGER_PROFILE = gql`

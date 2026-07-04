@@ -91,7 +91,7 @@ export default function PayOPT({
           variables: {
             input: {
               bookingId,
-              couponCode: coupon_code,
+              couponCode: "askfkasf",
             },
           },
         });
@@ -146,7 +146,7 @@ export default function PayOPT({
           if (type === "RECHARGE") {
           }
           if (type === "SERVICE") {
-            route.push("/my-bookings");
+            route.push("/");
           }
           console.log("Razorpay Response:", response);
 

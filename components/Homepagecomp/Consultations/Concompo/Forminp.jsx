@@ -37,21 +37,21 @@ export default function Forminp({
 
 
 
- const CREATE_HEALING_ORDER = gql`
-  mutation CreateHealingOrder($bookingId: ID!) {
-    createHealingOrder(bookingId: $bookingId) {
-      success
-      orderId
-      bookingId
-      currency
-      totalAmount
-      payableAmount
-    }
-  }
-`;
+//  const CREATE_HEALING_ORDER = gql`
+//   mutation CreateHealingOrder($bookingId: ID!) {
+//     createHealingOrder(bookingId: $bookingId) {
+//       success
+//       orderId
+//       bookingId
+//       currency
+//       totalAmount
+//       payableAmount
+//     }
+//   }
+// `;
 
   
-  const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
+  // const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
 
   const [createBooking, { loading: bookingLoading }] = useMutation(
     CREATE_SERVICE_BOOKING,
@@ -137,18 +137,18 @@ const handleAstrologerSelect = async (mapping) => {
 
     setShowAstroModal(false);
 
-    const orderRes = await createHealingOrder({
-      variables: {
-        bookingId: booking.id,
-      },
-    });
+    // const orderRes = await createHealingOrder({
+    //   variables: {
+    //     bookingId: booking.id,
+    //   },
+    // });
 
-    const order = orderRes?.data?.createHealingOrder;
+    // const order = orderRes?.data?.createHealingOrder;
 
-    if (!order) {
-      toast.error("Failed to create order");
-      return;
-    }
+    // if (!order) {
+    //   toast.error("Failed to create order");
+    //   return;
+    // }
 
 
 
@@ -165,90 +165,90 @@ router.push(`/buy-services/payment-options/${booking.id}`);
   }
 };
 
- const handlePaymentMethodContinue = async () => {
-  try {
-    setCreatingOrder(true);
+//  const handlePaymentMethodContinue = async () => {
+//   try {
+//     setCreatingOrder(true);
 
-    const orderRes = await createHealingOrder({
-      variables: {
-        bookingId: paymentData.bookingId,
-      },
-    });
+//     // const orderRes = await createHealingOrder({
+//     //   variables: {
+//     //     bookingId: paymentData.bookingId,
+//     //   },
+//     // });
 
-    const order = orderRes?.data?.createHealingOrder;
+//     const order = orderRes?.data?.createHealingOrder;
 
-    if (!order) {
-      toast.error("Failed to create order");
-      return;
-    }
+//     if (!order) {
+//       toast.error("Failed to create order");
+//       return;
+//     }
 
-    handleRazorpay(order);
-  } catch (err) {
-    toast.error(err.message);
-  } finally {
-    setCreatingOrder(false);
-  }
-};
- const handleRazorpay = (order) => {
-  try {
-    if (!window.Razorpay) {
-      toast.error("Razorpay SDK not loaded");
-      return;
-    }
+//     handleRazorpay(order);
+//   } catch (err) {
+//     toast.error(err.message);
+//   } finally {
+//     setCreatingOrder(false);
+//   }
+// };
+//  const handleRazorpay = (order) => {
+//   try {
+//     if (!window.Razorpay) {
+//       toast.error("Razorpay SDK not loaded");
+//       return;
+//     }
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
+//     const options = {
+//       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
-      amount: Number(order.payableAmount) * 100,
+//       amount: Number(order.payableAmount) * 100,
 
-      currency: order.currency || "INR",
+//       currency: order.currency || "INR",
 
-      name: "Dhwani Astro LLP",
+//       name: "Dhwani Astro LLP",
 
-      description: "Healing Service Payment",
+//       description: "Healing Service Payment",
 
-      order_id: order.orderId,
+//       order_id: order.orderId,
 
-     notes: {
-  bookingId: order.bookingId,
-  astrologerId: order.astrologerId,
-  serviceType: "SERVICE",
-},
+//      notes: {
+//   bookingId: order.bookingId,
+//   astrologerId: order.astrologerId,
+//   serviceType: "SERVICE",
+// },
 
-      handler: async function (response) {
+//       handler: async function (response) {
 
-        toast.success("Payment Successful");
+//         toast.success("Payment Successful");
 
-        router.push("/");
-      },
+//         router.push("/");
+//       },
 
-      modal: {
-        ondismiss: function () {
-          toast.error("Payment Cancelled");
-        },
-      },
+//       modal: {
+//         ondismiss: function () {
+//           toast.error("Payment Cancelled");
+//         },
+//       },
 
-      theme: {
-        color: "#C89B3C",
-      },
-    };
+//       theme: {
+//         color: "#C89B3C",
+//       },
+//     };
 
-    const razorpay = new window.Razorpay(options);
+//     const razorpay = new window.Razorpay(options);
 
-    razorpay.on("payment.failed", function (response) {
-      console.error("Payment Failed", response.error);
+//     razorpay.on("payment.failed", function (response) {
+//       console.error("Payment Failed", response.error);
 
-      toast.error(response.error.description);
-    });
+//       toast.error(response.error.description);
+//     });
 
-    razorpay.open();
-  } catch (error) {
-    console.error("Razorpay Error", error);
-    toast.error("Unable to open payment gateway");
-  }
-};
-  console.log("pageContent", pageContent);
-console.log("astrologerMappings", pageContent?.astrologerMappings);
+//     razorpay.open();
+//   } catch (error) {
+//     console.error("Razorpay Error", error);
+//     toast.error("Unable to open payment gateway");
+//   }
+// };
+//   console.log("pageContent", pageContent);
+// console.log("astrologerMappings", pageContent?.astrologerMappings);
 
   return (
     <>
@@ -256,10 +256,10 @@ console.log("astrologerMappings", pageContent?.astrologerMappings);
         className={`flex text-black flex-col w-full border border-gray-100 bg-white max-w-5xl shadow-lg rounded-2xl px-4 py-5
         ${pathname.startsWith("/inHealing") ? "mt-0 " : "mt-30"} `}
       >
-        <Script
+        {/* <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="afterInteractive"
-        />
+        /> */}
         <div className="flex items-center justify-between ">
           <h5 className="text-xl place-self-center  font-semibold text-black justify-center text-center py-2">
             Basic Details :
