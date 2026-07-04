@@ -12,7 +12,7 @@ import { gql } from "@apollo/client";
 // =========================
 // GRAPHQL MUTATION - UPLOAD CALL RECORDING
 // =========================
-export const UPLOAD_CALL_RECORDING = gql`
+const UPLOAD_CALL_RECORDING = gql`
   mutation UploadCallRecording(
     $recording: Upload!
     $roomId: String!
