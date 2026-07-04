@@ -23,7 +23,7 @@ export default function RemedyPopUp({ open, onClose, sessionId }) {
     skip: !sessionId || !open,
     fetchPolicy: "network-only",
   });
-
+  console.log("testing");
   const remedies = data?.getSessionRemedies || [];
 
   if (!open) return null;
