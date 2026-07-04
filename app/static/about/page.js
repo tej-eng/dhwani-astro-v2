@@ -1,13 +1,24 @@
 import Image from "next/image";
 import { GET_ABOUT_PAGE } from "@/app/graphql/gqlQuery";
 import serverApollo from "@/utils/serverApollo";
-export const revalidate = 604800; 
+//export const revalidate = 604800; 
 
 export default async function AboutP() {
-  const { data } = await serverApollo.query({
-    query: GET_ABOUT_PAGE,
-   fetchPolicy: "cache-first"
-  });
+const res = await fetch(
+  "https://dhwaniastro.com/userAuth/graphql",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: GET_ABOUT_PAGE.loc?.source.body,
+    }),
+    cache: "force-cache",
+  }
+);
+
+const { data } = await res.json();
 
   const about = data?.getAboutPage;
 
