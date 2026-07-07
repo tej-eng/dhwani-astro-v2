@@ -134,6 +134,11 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
       toast.success(data.sendGift.message);
 
       await refetch();
+     
+  setSelected(null);
+
+  
+  onClose();
     } catch (err) {
       toast.error(err.message);
     }

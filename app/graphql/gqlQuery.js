@@ -115,7 +115,10 @@ export const GET_ASTROLOGER_BY_ID = gql`
       languages
       skills
       problems
-
+isEligibleChat
+isEligibleCall
+isEligibleVideo
+isEligibleAudio
       pricing {
         id
         type
@@ -622,5 +625,30 @@ export const GET_SERVICE_BOOKING = gql`
     }
   }
 `;
+
+export const GET_ASTROLOGER_REVIEWS = gql`
+query GetAstrologerReviews(
+  $astrologerId: ID!
+  $page: Int
+  $limit: Int
+) {
+  getAstrologerReviews(
+    astrologerId: $astrologerId
+    page: $page
+    limit: $limit
+  ) {
+    totalCount
+    averageRating
+
+    data {
+      id
+      userName
+      rating
+      comment
+      reply
+      createdAt
+    }
+  }
+}`;
 
 

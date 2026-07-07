@@ -13,9 +13,10 @@ import { useLanguage } from "@/app/context/LangContext";
 import { AlertLoading, SingleButton } from "@/app/common";
 
 import { useRouter } from "next/navigation";
-import { GET_ASTROLOGER_BY_ID } from "@/app/graphql/gqlQuery";
+import { GET_ASTROLOGER_BY_ID, GET_ASTROLOGER_REVIEWS } from "@/app/graphql/gqlQuery";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
+import RecentRequestPopup from "@/components/Custom/RecentRequestPopUp";
 export const FOLLOW_ASTROLOGER = gql`
   mutation FollowAstrologer($astrologerId: ID!) {
     followAstrologer(astrologerId: $astrologerId) {
@@ -53,7 +54,12 @@ export const GET_ASTROLOGER_FOLLOWERS_COUNT = gql`
 export default function ProfileAstro({ astrologerId }) {
   const router = useRouter();
   const id = astrologerId;
-
+const [showRecentPopup, setShowRecentPopup] = useState(false);
+const [selectedMode, setSelectedMode] = useState("");
+const openRequestPopup = (mode) => {
+  setSelectedMode(mode);
+  setShowRecentPopup(true);
+};
   const {
     data: astrologerResponse,
     loading: astrologerloading,
@@ -175,7 +181,16 @@ export default function ProfileAstro({ astrologerId }) {
       toast.error(error.message);
     }
   };
-
+  const { data: reviewResponse } = useQuery(GET_ASTROLOGER_REVIEWS, {
+  variables: {
+    astrologerId: id,
+    page: 1,
+    limit: 10,
+  },
+  skip: !id,
+});
+const reviews =
+  reviewResponse?.getAstrologerReviews?.data || [];
   if (astrologerloading) {
     return (
       <div className="text-center text-gray-600 mt-10">
@@ -201,6 +216,9 @@ export default function ProfileAstro({ astrologerId }) {
   const chatPricing = astrologerdetail?.pricing?.find(
     (item) => item.type === "CHAT",
   );
+  const callPricing = astrologerdetail?.pricing?.find(
+  (item) => item.type === "CALL"
+);
 
   return (
     <div className="w-full p-3 pt-5 md:pt-5">
@@ -288,11 +306,11 @@ export default function ProfileAstro({ astrologerId }) {
               <span className="text-sm font-semibold text-black">
                 {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
-
+{/* 
               <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
-                {/* <span className="font-semibold">Call/Chat Charges:</span> */}
+                <span className="font-semibold">Call/Chat Charges:</span>
                 <span className="font-bold charge-price flex items-center gap-2">
-                  {/* {astro?.disc_chat_charge ? (
+                  {astro?.disc_chat_charge ? (
                     <>
                       <span className="text-lg text-red-600 font-extrabold">
                         ₹{astro.disc_chat_charge}
@@ -305,7 +323,7 @@ export default function ProfileAstro({ astrologerId }) {
                     <span className="text-lg">
                       ₹{astro.astro_chat_charges}/min
                     </span>
-                  )} */}
+                  )}
                   {chatPricing?.offerPrice ? (
                     <>
                       <span className="text-lg text-red-600 font-extrabold">
@@ -320,7 +338,7 @@ export default function ProfileAstro({ astrologerId }) {
                     <span>₹{chatPricing?.price}/min</span>
                   )}
                 </span>
-              </div>
+              </div> */}
             </div>
 
             <div className="sm:w-60 lg:w-120 w-full flex flex-col text-black">
@@ -344,14 +362,31 @@ export default function ProfileAstro({ astrologerId }) {
               </div>
 
               <div className="flex items-center justify-center gap-5 mt-6 text-sm sm:flex-col lg:flex-row md:text-base">
-                {/* <SingleButton
-                  astro_charge_chat={astrologerdetail?.astro_call_charges}
-                  astro_charge_call={astrologerdetail?.astro_chat_charges}
-                  disprice_chat={astrologerdetail?.disc_chat_charge}
-                  disprice_call={astrologerdetail?.disc_chat_charge}
-                  availability={astrologerdetail?.availability}
-                  astro_id={id}
-                /> */}
+              <div className="flex gap-3 w-full">
+  <CustomButton
+    variant="green"
+    className="flex-1"
+    disabled={
+      !astrologerdetail?.isOnline || !astrologerdetail?.isChatActive
+    }
+    onClick={() => openRequestPopup("chat")}
+  >
+    Chat ₹
+    {chatPricing?.offerPrice || chatPricing?.price || 0}/min
+  </CustomButton>
+
+  <CustomButton
+    variant="yellow"
+    className="flex-1"
+    disabled={
+      !astrologerdetail?.isOnline || !astrologerdetail?.isCallActive
+    }
+    onClick={() => openRequestPopup("call")}
+  >
+    Call ₹
+    {callPricing?.offerPrice || callPricing?.price || 0}/min
+  </CustomButton>
+</div>
               </div>
             </div>
           </div>
@@ -422,13 +457,13 @@ export default function ProfileAstro({ astrologerId }) {
                 Ratings & Reviews
               </h5>
 
-              {astrologerdetail?.recentReviews?.length > 0 ? (
+              {reviews?.length > 0 ? (
                 <>
                   <div className="w-full max-w-xl space-y-5">
-                    {astrologerdetail.recentReviews
+                    {astrologerdetail.reviews
                       .slice(
                         0,
-                        showAll ? astrologerdetail.recentReviews.length : 3,
+                        showAll ? astrologerdetail.reviews.length : 3,
                       )
                       .map((review) => (
                         <div
@@ -488,7 +523,7 @@ export default function ProfileAstro({ astrologerId }) {
                       ))}
                   </div>
 
-                  {!showAll && astrologerdetail?.recentReviews?.length > 3 && (
+                  {!showAll && reviews?.length > 3 && (
                     <div className="mt-5">
                       <button
                         onClick={() => setShowAll(true)}
@@ -553,7 +588,13 @@ export default function ProfileAstro({ astrologerId }) {
         astro_id={astrologerdetail?.id}
         onClose={() => setShowGiftPopup(false)}
       />
-
+<RecentRequestPopup
+  show={showRecentPopup}
+  onClose={() => setShowRecentPopup(false)}
+  astroId={astrologerdetail?.id}
+  mode={selectedMode}
+  astrologer={astrologerdetail}
+/>
       <AlertLoading
         show={followLoading || unfollowLoading}
         title="Please Wait..."
