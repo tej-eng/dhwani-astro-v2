@@ -460,12 +460,9 @@ const reviews =
               {reviews?.length > 0 ? (
                 <>
                   <div className="w-full max-w-xl space-y-5">
-                    {astrologerdetail.reviews
-                      .slice(
-                        0,
-                        showAll ? astrologerdetail.reviews.length : 3,
-                      )
-                      .map((review) => (
+                   {(reviews || [])
+  .slice(0, showAll ? reviews.length : 3)
+  .map((review) => (
                         <div
                           key={review.id}
                           className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
@@ -477,14 +474,12 @@ const reviews =
 
                             <div className="text-right">
                               <p className="text-xs text-gray-400">
-                                {new Date(review.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  },
-                                )}
+                                {new Date(Number(review.createdAt)).toLocaleDateString("en-IN", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+  timeZone: "Asia/Kolkata",
+})}
                               </p>
 
                               <div>

@@ -68,7 +68,7 @@ const RePack = () => {
           {packData.map((pack) => (
             <div
               key={pack.id}
-              className="relative flex flex-col justify-between p-5 bg-white border border-gray-200 shadow-lg rounded-xl"
+              className="relative flex overflow-hidden flex-col justify-between p-5 bg-white border border-gray-200 shadow-lg rounded-xl"
             >
               <span className="rotate-[-42deg] w-28 text-center absolute top-[17px] left-[-27px] bg-gradient-to-r from-yellow-400 to-orange-400 text-[0.6rem] text-white px-2 py-1 rounded-tr-lg rounded-bl-lg shadow">
                 {t?.astrocard?.offer || "Special Offer"}
