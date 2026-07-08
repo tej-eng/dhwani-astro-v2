@@ -14,6 +14,7 @@ import ApolloWrapper from "./providers/ApolloWrapper";
 import { AuthProvider } from "./context/authContext";
 import GlobalChatPopup from "@/components/Custom/GlobalChatPopup";
 import CookieConsent from "@/components/cookieConsent";
+import LayoutWrapper from "./LayoutWrapper";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -55,13 +56,7 @@ export default function RootLayout({ children }) {
                 <SocketProvider>
                   <SignInModalWrapper>
                     <SocketProvider>
-                      <main className="flex justify-center w-full pt-12 lg:pt-37 md:pt-37">
-                        {children}
-                        <div id="modal-root" />
-                        <ChatToast />
-                      </main>
-                      <CookieConsent />
-                      <Footerlinks />
+                      <LayoutWrapper>{children}</LayoutWrapper>
                       <GlobalChatPopup />
                     </SocketProvider>
                   </SignInModalWrapper>

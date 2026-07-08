@@ -157,30 +157,18 @@ const formatDate = (dateValue) => {
       <div className="p-5 bg-white shadow-xl rounded-3xl">
 
         {/* HEADER */}
-        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
 
-          <div>
-            <h2 className="text-3xl font-bold text-black">
+        
+            <h2 className="text-2xl font-bold text-black">
               Call History
             </h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              User call session reports
-            </p>
-          </div>
-
-          <button
-            onClick={() => refetch()}
-            className="px-5 py-2 font-semibold text-white bg-purple-900 rounded-xl"
-          >
-            Refresh
-          </button>
         </div>
 
         {/* SUMMARY */}
-        <div className="grid gap-4 mb-6 md:grid-cols-4">
+        <div className="grid gap-4 mb-4 md:grid-cols-4">
 
-          <div className="p-5 bg-purple-100 rounded-2xl">
+          <div className="p-4 bg-violet-200 shadow flex items-center justify-between  rounded-2xl">
             <p className="text-sm text-gray-600">
               Total Calls
             </p>
@@ -190,7 +178,7 @@ const formatDate = (dateValue) => {
             </h3>
           </div>
 
-          <div className="p-5 bg-green-100 rounded-2xl">
+          <div className="p-4 bg-purple-200 shadow flex items-center justify-between  rounded-2xl">
             <p className="text-sm text-gray-600">
               Coins Deducted
             </p>
@@ -201,27 +189,7 @@ const formatDate = (dateValue) => {
             </h3>
           </div>
 
-          <div className="p-5 bg-blue-100 rounded-2xl">
-            <p className="text-sm text-gray-600">
-              Coins Earned
-            </p>
-
-            <h3 className="mt-2 text-2xl font-bold text-black">
-              {summary?.totalCoinsEarned ||
-                0}
-            </h3>
-          </div>
-
-          <div className="p-5 bg-red-100 rounded-2xl">
-            <p className="text-sm text-gray-600">
-              Commission
-            </p>
-
-            <h3 className="mt-2 text-2xl font-bold text-black">
-              {summary?.totalCommission ||
-                0}
-            </h3>
-          </div>
+     
         </div>
 
         {/* FILTERS */}
@@ -238,7 +206,7 @@ const formatDate = (dateValue) => {
                 search: e.target.value,
               })
             }
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
 
           {/* STATUS */}
@@ -252,7 +220,7 @@ const formatDate = (dateValue) => {
                 status: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           >
             <option value="">
               All Status
@@ -289,7 +257,7 @@ const formatDate = (dateValue) => {
                   e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
 
           {/* START DATE */}
@@ -304,7 +272,7 @@ const formatDate = (dateValue) => {
                 startDate: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
 
           {/* END DATE */}
@@ -319,181 +287,88 @@ const formatDate = (dateValue) => {
                 endDate: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
         </div>
 
-        {/* TABLE */}
-        <div className="overflow-auto border rounded-3xl">
+      {/* CALL LIST */}
+<div className="space-y-4 text-black">
+  {loading ? (
+    <div className="p-10 text-center">Loading call history...</div>
+  ) : error ? (
+    <div className="p-4 text-red-500 bg-white rounded-xl">
+      Failed to load data
+    </div>
+  ) : filteredData?.length === 0 ? (
+    <div className="p-10 text-center bg-white rounded-xl text-gray-500">
+      No call history found
+    </div>
+  ) : (
+    filteredData.map((call, index) => (
+      <div
+        key={call.sessionId || index}
+        className="p-4 bg-purple-50 shadow rounded-2xl"
+      >
+        <div className="flex flex-col justify-between gap-4 md:flex-row">
+          {/* LEFT */}
+          <div>
+            <h2 className="text-xl font-semibold">
+              {call?.astrologer?.name}
+            </h2>
 
-          <table className="w-full min-w-[1400px]">
+            <p className="mt-1 text-sm text-gray-500">
+              Session ID: {call?.sessionId?.slice(0, 8)}
+            </p>
 
-            <thead className="text-white bg-purple-900">
+            <div className="flex flex-wrap gap-3 mt-3">
+              <span className="px-3 py-1 text-xs bg-purple-200 rounded-full">
+                📞 {call?.durationMinutes} mins
+              </span>
 
-              <tr>
-                <th className="px-4 py-4 text-left">
-                  Astrologer
-                </th>
+              <span className="px-3 py-1 text-xs bg-violet-200 rounded-full">
+                🪙 {call?.coinsDeducted}
+              </span>
 
-             
+              <span className="px-3 py-1 text-xs bg-purple-300 rounded-full">
+                ₹ {call?.ratePerMin}/min
+              </span>
 
-                <th className="px-4 py-4 text-left">
-                  Status
-                </th>
+              <span
+                className={`px-3 py-1 text-xs rounded-full ${
+                  call?.status === "COMPLETED"
+                    ? "bg-green-100 text-green-700"
+                    : call?.status === "MISSED"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : call?.status === "REJECTED"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-blue-100 text-blue-700"
+                }`}
+              >
+                {call?.status}
+              </span>
+            </div>
+          </div>
 
-                <th className="px-4 py-4 text-left">
-                  Duration
-                </th>
+          {/* RIGHT */}
+          <div className="flex flex-col justify-between">
+            <div className="text-sm text-right text-gray-500">
+              <p>{new Date(call?.createdAt).toLocaleDateString()}</p>
+              <p>{new Date(call?.createdAt).toLocaleTimeString()}</p>
+            </div>
 
-                <th className="px-4 py-4 text-left">
-                  Rate/Min
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Coins Deducted
-                </th>
-
-         
-
-                <th className="px-4 py-4 text-left">
-                  Session ID
-                </th>
-
-            <th className="px-4 py-4 text-left">
-    Created Date
-  </th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-black"
-                  >
-                    Loading call history...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-red-500"
-                  >
-                    Failed to load data
-                  </td>
-                </tr>
-              ) : filteredData?.length ===
-                0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-gray-500"
-                  >
-                    No call history found
-                  </td>
-                </tr>
-              ) : (
-                filteredData?.map((item) => {
-                  const statusColor =
-                    item?.status ===
-                    "COMPLETED"
-                      ? "bg-green-100 text-green-600"
-                      : item?.status ===
-                        "MISSED"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : item?.status ===
-                        "REJECTED"
-                      ? "bg-red-100 text-red-600"
-                      : "bg-blue-100 text-blue-600";
-
-                  return (
-                    <tr
-                      key={item?.sessionId}
-                      className="border-b hover:bg-gray-50"
-                    >
-
-                      {/* ASTROLOGER */}
-                      <td className="px-4 py-4">
-
-                        <div className="flex items-center gap-3">
-
-                 
-                          <div>
-                            <p className="font-semibold text-black">
-                              {
-                                item
-                                  ?.astrologer
-                                  ?.name
-                              }
-                            </p>
-
-                      
-                          </div>
-                        </div>
-                      </td>
-
-
-                      {/* STATUS */}
-                      <td className="px-4 py-4">
-
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold ${statusColor}`}
-                        >
-                          {item?.status}
-                        </span>
-                      </td>
-
-                      {/* DURATION */}
-                      <td className="px-4 py-4 font-medium text-black">
-
-                        {
-                          item?.durationMinutes
-                        }{" "}
-                        min
-                      </td>
-
-                      {/* RATE */}
-                      <td className="px-4 py-4 text-black">
-
-                        ₹{" "}
-                        {item?.ratePerMin}
-                      </td>
-
-                      {/* COINS DEDUCTED */}
-                      <td className="px-4 py-4 font-semibold text-red-600">
-
-                        {
-                          item?.coinsDeducted
-                        }
-                      </td>
-
-                
-
-                      {/* SESSION */}
-                      <td className="px-4 py-4 text-sm text-black">
-
-                        {
-                          item?.sessionId
-                        }
-                      </td>
-
-               {/* CREATED DATE */}
-<td className="px-4 py-4 text-sm text-black whitespace-nowrap">
-
-  {formatDate(
-    item?.createdAt
-  )}
-</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+            <div className="flex justify-end mt-4">
+              <span
+                className="px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 rounded-full"
+              >
+                Call Session
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
+    ))
+  )}
+</div>
 
         {/* PAGINATION */}
         <div className="flex items-center justify-between mt-6">

@@ -623,4 +623,48 @@ export const GET_SERVICE_BOOKING = gql`
   }
 `;
 
+export const GET_USER_DASHBOARD = gql`
+  query GetUserDashboard {
+    getUserDashboard {
+      id
+      name
+      mobile
+      countryCode
+      gender
+      birthDate
+      birthTime
+      occupation
+      createdAt
 
+      wallet {
+        balanceCoins
+        lockedCoins
+      }
+
+      stats {
+        walletBalance
+        totalRecharge
+        totalRechargeCount
+        totalCalls
+        totalChats
+        totalReviews
+        totalFollowing
+        totalBookings
+        lastRechargeAmount
+        lastRechargeDate
+      }
+    }
+  }
+`;
+export const UPDATE_USER_PROFILE = gql`
+  mutation UpdateUserProfile($input: UpdateUserInput!) {
+    updateUserProfile(input: $input) {
+      id
+      name
+      gender
+      birthDate
+      birthTime
+      occupation
+    }
+  }
+`;

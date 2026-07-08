@@ -11,20 +11,14 @@ import { useOTP } from "@/Hooks/useOTP";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { useAuth } from "@/app/context/authContext";
+import { UPDATE_USER_PROFILE } from "@/app/graphql/gqlQuery";
 
 const loadrx = (name) =>
   dynamic(() => import("react-icons/rx").then((mod) => mod[name]));
 
 const RxCrossCircled = loadrx("RxCrossCircled");
 
-const UPDATE_PROFILE = gql`
-  mutation UpdateUserProfile($input: UpdateUserInput!) {
-    updateUserProfile(input: $input) {
-      id
-      name
-    }
-  }
-`;
+
 
 const SignInModal = ({ onClose }) => {
   const { setUser } = useAuth();
@@ -52,7 +46,7 @@ const SignInModal = ({ onClose }) => {
   const [existingUserName, setExistingUserName] = useState("");
   const [userName, setUserName] = useState("");
 
-  const [updateProfile] = useMutation(UPDATE_PROFILE);
+  const [updateProfile] = useMutation(UPDATE_USER_PROFILE);
 
   const { pendingRoute, setPendingRoute } = useAuth();
 
