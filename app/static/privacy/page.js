@@ -1,12 +1,23 @@
 import { GET_PRIVACY_PAGE } from "@/app/graphql/gqlQuery";
-import serverApollo from "@/utils/serverApollo";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
   try {
-    const { data } = await serverApollo.query({
-      query: GET_PRIVACY_PAGE,
-    });
+    const res = await fetch(
+      "https://dhwaniastro.com/userAuth/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: GET_PRIVACY_PAGE.loc?.source.body,
+        }),
+        cache: "force-cache",
+      }
+    );
+
+    const { data } = await res.json();
 
     const page = data?.getPrivacyPage;
 
@@ -38,14 +49,23 @@ export async function generateMetadata() {
   }
 }
 export default async function PrivacyP() {
-  const { data } = await serverApollo.query({
-    query: GET_PRIVACY_PAGE,
-  });
-
-  const privacy = data?.getPrivacyPage;
-  if (!privacy) {
-    notFound();
+const res = await fetch(
+  "https://dhwaniastro.com/userAuth/graphql",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: GET_PRIVACY_PAGE.loc?.source.body,
+    }),
+    cache: "force-cache",
   }
+);
+
+const { data } = await res.json();
+
+const privacy = data?.getPrivacyPage;
 
   return (
     <div className="w-full flex flex-col items-center">

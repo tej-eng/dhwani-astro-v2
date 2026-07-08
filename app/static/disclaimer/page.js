@@ -1,13 +1,24 @@
 
 import { GET_DISCLAIMER_PAGE } from "@/app/graphql/gqlQuery";
-import serverApollo from "@/utils/serverApollo";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
   try {
-    const { data } = await serverApollo.query({
-      query: GET_DISCLAIMER_PAGE,
-    });
+    const res = await fetch(
+      "https://dhwaniastro.com/userAuth/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: GET_DISCLAIMER_PAGE.loc?.source.body,
+        }),
+        cache: "force-cache",
+      }
+    );
+
+    const { data } = await res.json();
 
     const page = data?.getDisclaimerPage;
 
@@ -39,11 +50,23 @@ export async function generateMetadata() {
 
 export const dynamic = "force-static";
 export default async function Disclaimer() {
-  const { data } = await serverApollo.query({
-    query: GET_DISCLAIMER_PAGE,
-  });
+const res = await fetch(
+  "https://dhwaniastro.com/userAuth/graphql",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: GET_DISCLAIMER_PAGE.loc?.source.body,
+    }),
+    cache: "force-cache",
+  }
+);
 
-  const disclaimer = data?.getDisclaimerPage;
+const { data } = await res.json();
+
+const disclaimer = data?.getDisclaimerPage;
 
   if (!disclaimer) {
     notFound();

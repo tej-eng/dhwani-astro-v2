@@ -1,13 +1,24 @@
 
 import { GET_REFUND_POLICY_PAGE } from "@/app/graphql/gqlQuery";
-import serverApollo from "@/utils/serverApollo";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
   try {
-    const { data } = await serverApollo.query({
-      query: GET_REFUND_POLICY_PAGE,
-    });
+    const res = await fetch(
+      "https://dhwaniastro.com/userAuth/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: GET_REFUND_POLICY_PAGE.loc?.source.body,
+        }),
+        cache: "force-cache",
+      }
+    );
+
+    const { data } = await res.json();
 
     const page = data?.getRefundPolicyPage;
 
@@ -39,11 +50,23 @@ export async function generateMetadata() {
   }
 }
 export default async function RefundP() {
-  const { data } = await serverApollo.query({
-    query: GET_REFUND_POLICY_PAGE,
-  });
+const res = await fetch(
+  "https://dhwaniastro.com/userAuth/graphql",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: GET_REFUND_POLICY_PAGE.loc?.source.body,
+    }),
+    cache: "force-cache",
+  }
+);
 
-  const refund = data?.getRefundPolicyPage;
+const { data } = await res.json();
+
+const refund = data?.getRefundPolicyPage;
 
   if (!refund) {
     notFound();
