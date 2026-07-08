@@ -251,7 +251,7 @@ export default function Navbarmob() {
                 aria-label="Toggle Free Services Menu"
                 className="flex items-center justify-between w-full text-sm text-[#2f1254] hover:text-[#8334e4]"
                 onClick={() => setIsFreeOpen(!isFreeOpen)}
-              >
+               >
                 <div className="flex items-center space-x-3">
                   <Image
                     src="/prblm/prize.png"

@@ -24,12 +24,11 @@ const LOGOUT_MUTATION = gql`
 export default function Header({ openSignInModal }) {
   const { user, setUser, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const { messages: t } = useLanguage();
-  const [isUserOpen, setIsUserOpen] = useState(false);
+  // const [isUserOpen, setIsUserOpen] = useState(false);
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-
-
+  const [isUserOpen, setIsUserOpen] = useState(false);
   // useEffect(() => {
   //   const storedUser = localStorage.getItem("user");
 
@@ -46,27 +45,27 @@ export default function Header({ openSignInModal }) {
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
   const LogOut = async () => {
-  try {
-    const result = await logoutMutation();
+    try {
+      const result = await logoutMutation();
 
-    if (result?.data?.logout) {
-      localStorage.removeItem("user");
-      setUser(null);
+      if (result?.data?.logout) {
+        localStorage.removeItem("user");
+        setUser(null);
 
-      await client.clearStore();
-      await persistor.purge();
+        await client.clearStore();
+        await persistor.purge();
 
-      toast.success("Logged out successfully");
-      router.refresh();
-      router.push("/");
-    } else {
+        toast.success("Logged out successfully");
+        router.refresh();
+        router.push("/");
+      } else {
+        toast.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
       toast.error("Logout failed");
     }
-  } catch (err) {
-    console.error("Logout error:", err);
-    toast.error("Logout failed");
-  }
-};
+  };
 
   // ==============================
   // CLICK OUTSIDE DROPDOWN
@@ -102,8 +101,13 @@ export default function Header({ openSignInModal }) {
 
       <div className="items-center justify-end hidden w-1/3 gap-4 sm:flex sm:gap-2 sm:w-1/2">
         <LanguageSwitcher />
-        
-       <Link href="/blogs"   className="flex items-center gap-2 px-3 py-1 bg-[#f5f5a8] cursor-pointer text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]">Blog</Link>
+
+        <Link
+          href="/blogs"
+          className="flex items-center gap-2 px-3 py-1 bg-[#f5f5a8] cursor-pointer text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
+        >
+          Blog
+        </Link>
 
         {!isLoggedIn && (
           <button
@@ -113,44 +117,32 @@ export default function Header({ openSignInModal }) {
             {t?.header?.signIn || "Sign In"}
           </button>
         )}
-
         {isLoggedIn && (
-          <button
-            onClick={LogOut}
-            disabled={logoutLoading}
-            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
+          <div
+            className="relative user-container"
+            onMouseEnter={() => setIsUserOpen(true)}
+            onMouseLeave={() => setIsUserOpen(false)}
           >
-            {logoutLoading
-              ? "Signing Out..."
-              : t?.header?.signOut || "Sign Out"}
-          </button>
-        )}
-
-        {isLoggedIn && (
-          <div className="relative inline-block user-container">
-            <div
-              className="cursor-pointer"
-              onClick={() => setIsUserOpen((prev) => !prev)}
-            >
+            <button className="flex items-center gap-2">
               <Image
                 src="/ds-img/user2.webp"
                 width={35}
                 height={35}
                 alt="User"
-                loading="lazy"
               />
-            </div>
+
+              {/* <span className="text-white">{user?.name}</span> */}
+            </button>
 
             {isUserOpen && (
-              <div className="absolute right-0 z-50 w-72 mt-3 overflow-hidden text-black bg-white shadow-2xl rounded-2xl">
-                {/* TOP USER INFO */}
-                <div className="flex items-center gap-3 p-4 bg-purple-900">
+              <div className="absolute -right-15 top-full p-2 bg-purple-800  w-55 rounded-2xl  shadow-2xl border border-gray-600 z-50 overflow-hidden">
+                <div className="flex items-center gap-3 px-3 py-2 shadow-2xl bg-purple-500 rounded-full ">
                   <Image
                     src="/ds-img/user2.webp"
                     width={45}
                     height={45}
                     alt="User"
-                    className="rounded-full"
+                    className="rounded-full h-10 w-10"
                   />
 
                   <div>
@@ -159,55 +151,66 @@ export default function Header({ openSignInModal }) {
                     </h3>
 
                     <p className="text-sm text-gray-300">
-                      {user?.mobile || "User Account"}
+                      {user?.mobile || ""}
                     </p>
                   </div>
                 </div>
 
                 {/* MENU */}
-                <div className="p-2">
-                  <Link
-                    href="/dashboard/profile"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
-                  >
-                    👤 Profile
-                  </Link>
+                <div className="py-2 space-y-2">
+                  <div className="flex bg-violet-300 rounded-2xl px-2 py-2 flex-col gap-1">
+                    <Link
+                      href="/dashboard/profile"
+                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      👤 Profile
+                    </Link>
 
-                  <Link
-                    href="/dashboard/account"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
-                  >
-                    🪪 Account
-                  </Link>
+                    <Link
+                      href="/dashboard/account"
+                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      🪪 Account
+                    </Link>
 
-                  <hr className="my-2" />
+                    <Link
+                      href="/dashboard/chat-history"
+                      className="flex items-center  text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      💬 Chat History
+                    </Link>
 
-                  <Link
-                    href="/dashboard/chat-history"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
-                  >
-                    💬 Chat History
-                  </Link>
+                    <Link
+                      href="/dashboard/call-history"
+                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      📞 Call History
+                    </Link>
 
-                  <Link
-                    href="/dashboard/call-history"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
-                  >
-                    📞 Call History
-                  </Link>
+                    <Link
+                      href="/dashboard/transaction"
+                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      🛒 Transaction
+                    </Link>
 
-                  <Link
-                    href="/dashboard/transaction"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
+                    <Link
+                      href="/dashboard/my-services"
+                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      ✨ My Services
+                    </Link>
+                  </div>
+
+                  <button
+                    onClick={LogOut}
+                    disabled={logoutLoading}
+                    className=" px-8 py-2 w-fit justify-self-center text-left bg-red-500 text-center flex justify-center rounded-full  text-white hover:bg-red-400"
                   >
-                    🛒 Transaction
-                  </Link>
-                  <Link
-                    href="/dashboard/my-services"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100"
-                  >
-                    🛒 My Services
-                  </Link>
+                    {logoutLoading
+                      ? "Signing Out..."
+                      : t?.header?.signOut || "Sign Out"}
+                  </button>
                 </div>
               </div>
             )}

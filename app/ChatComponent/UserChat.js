@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { createReviewRequest } from "../redux/reducer/auth/reviewSlice";
 import { debug } from "three/src/nodes/utils/DebugNode";
 import { removeActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
+import { BiCheckDouble } from "react-icons/bi";
 
 // ================= GRAPHQL =================
 const GET_RECHARGE_PACKS = gql`
@@ -169,7 +170,7 @@ const UserChat = ({
   const [uploadImage] = useMutation(UPLOAD_IMAGE);
   const chatEndedRef = useRef(false);
   const hasJoinedRef = useRef(false);
-
+  const messageEndRef = useRef(null);
   const intervalRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const JOIN_KEY = `chatJoined_${room_Id}`;
@@ -534,7 +535,18 @@ const UserChat = ({
   useEffect(() => {
     hasJoinedRef.current = false;
   }, [room_Id]);
+  const firstLoad = useRef(true);
 
+  useEffect(() => {
+    if (!messageEndRef.current) return;
+
+    messageEndRef.current.scrollIntoView({
+      behavior: firstLoad.current ? "auto" : "smooth",
+      block: "end",
+    });
+
+    firstLoad.current = false;
+  }, [messages]);
   useEffect(() => {
     if (!socket) return;
 
@@ -560,7 +572,9 @@ const UserChat = ({
     });
 
     socket.on("typing", (data) => {
-      setTypingStatus(data.typing ? `${data.user_name} typing...` : "");
+      if (data.sender === "astrologer") {
+        setTypingStatus(data.typing ? "Astrologer typing..." : "");
+      }
     });
     //  socket.on("queue_position", (data) => {
     //    console.log("Queue Data:", data);
@@ -782,9 +796,9 @@ const UserChat = ({
       toast.success("Review submitted successfully");
 
       setShowReviewPopup(false);
-     // dispatch(removeActiveRequest(room_Id));
+      // dispatch(removeActiveRequest(room_Id));
 
-     router.push("/astrologer/chat");
+      router.push("/astrologer/chat");
 
       // setTimeout(() => {
       //   setShowReviewPopup(false);
@@ -810,257 +824,328 @@ const UserChat = ({
   // ================= UI =================
 
   return (
-    <div className="flex flex-col h-[80vh] max-w-2xl mx-auto border text-black rounded-xl shadow-lg overflow-hidden bg-white">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+    <div className="flex items-center justify-center h-screen justify-center items-center bg-[#120a18e7] relative overflow-hidden">
+      <div className="absolute w-[400px] h-[400px] bg-purple-600 opacity-20 blur-3xl rounded-full top-[-100px] left-[-100px]" />
+      <div className="absolute w-[500px] h-[500px] bg-violet-500 opacity-20 blur-3xl rounded-full bottom-[-100px] right-[-100px]" />
+      <div className="md:w-3/5 overflow-hidden w-full bg-white shadow-lg rounded-2xl md:p-4 flex flex-col md:h-[95vh] h-[100vh]">
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      {/* HEADER */}
-      <div className="bg-gradient-to-r from-purple-900 to-purple-700 text-white px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <Image
-            src={
-              astro_Image
-                ? `https://www.dhwaniastro.com${astro_Image}`
-                : "/man.png"
-            }
-            width={45}
-            height={45}
-            alt="astro"
-            className="rounded-full object-cover border"
-          />
-          <div>
-            <div className="font-semibold text-sm">{astro_Name}</div>
-            <div className="text-xs text-green-300">
-              {typingStatus || "Online"}
+        {/* HEADER */}
+        <div className="bg-gradient-to-r text-black from-purple-900 to-purple-700 rounded-full text-white px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Image
+              src={
+                astro_Image
+                  ? `https://www.dhwaniastro.com${astro_Image}`
+                  : "/man.png"
+              }
+              width={45}
+              height={45}
+              alt="astro"
+              className="h-auto rounded-full md:w-10 w-7"
+            />
+            <div>
+              <div className="font-semibold text-sm">{astro_Name}</div>
+              <div className="text-xs text-green-300">
+                {typingStatus || "Online"}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-sm bg-black/30 px-3 py-1 rounded-full">
-            ⏱ {formatTime(timeLeft)}s
-          </div>
-
-          <button
-            onClick={() => {
-              emitChatCompleted();
-              setShowReviewPopup(true);
-            }}
-            className="bg-red-500 px-3 py-1 rounded text-sm"
-          >
-            End
-          </button>
-        </div>
-      </div>
-      {/* =================  RECHARGE SECTION ================= */}
-      {timeLeft <= 60 && (
-        <div className="bg-yellow-100 px-4 py-3">
-          <p className="text-center text-red-500 text-xs font-semibold mb-2">
-            Your time is running low. Recharge now
-          </p>
-
-          {rechargePackLoading ? (
-            <p className="text-center text-xs">Loading packs...</p>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-3">
-              {rechargePacks.map((pack) => (
-                <button
-                  key={pack.id}
-                  onClick={() => handleCheckout(pack.price, pack.id)}
-                  id={pack.id}
-                  className="bg-red-500 text-white px-3 py-2 rounded-lg flex flex-col items-center text-xs"
-                >
-                  <span>₹ {pack.price}</span>
-                  <span>{pack.talktime} min</span>
-                </button>
-              ))}
+          <div className="flex items-center overflow-hidden gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-400 font-semibold text-[10px]">
+                Time :
+              </span>
+              <span className="border border-yellow-400 text-yellow-300 bg-white/10 font-medium shadow-2xl overflow-hidden rounded-full px-2 py-1 text-xs">
+                {formatTime(timeLeft)} Min
+              </span>
             </div>
-          )}
-        </div>
-      )}
-      {/* CHAT */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            onMouseEnter={() => setHoveredIndex(i)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            className={`flex ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div className="relative px-4 py-2 rounded-2xl max-w-[70%] text-sm shadow bg-white">
-              {/*  REPLY CONTEXT */}
-              {msg.replyTo && (
-                <div className="bg-gray-100 border-l-4 border-purple-500 p-2 mb-1 text-xs">
-                  <strong>{msg.replyTo.sender}</strong>:{" "}
-                  {msg.replyTo.message?.slice(0, 40)}
-                  {msg.replyTo.image && (
-                    <img
-                      src={msg.replyTo.image}
-                      className="w-10 h-10 mt-1 rounded"
-                    />
-                  )}
-                </div>
-              )}
 
-              {/* MESSAGE TEXT */}
-              {msg.message && <div>{msg.message}</div>}
-
-              {/* IMAGE DISPLAY */}
-              {msg.image && (
-                <img
-                  src={msg.image}
-                  alt="chat-img"
-                  className="mt-2 w-32 h-32 rounded-lg object-cover"
-                />
-              )}
-
-              {/* TIME */}
-              {msg.time && (
-                <div className="text-[10px] text-gray-400 mt-1 text-right">
-                  {msg.time}
-                </div>
-              )}
-
-              {/*  REPLY BUTTON (hover) */}
-              {hoveredIndex === i && (
-                <button
-                  onClick={() => setReplyTo(msg)}
-                  className="absolute -left-10 top-2 text-xs bg-gray-200 px-2 py-1 rounded"
-                >
-                  Reply
-                </button>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                emitChatCompleted();
+                setShowReviewPopup(true);
+              }}
+              className="bg-red-500 px-3 py-1 rounded-full cursor-pointer text-sm"
+            >
+              End
+            </button>
           </div>
-        ))}
-      </div>
-      {/*  REPLY PREVIEW */}
-      {replyTo && (
-        <div className="px-3 py-2 bg-blue-100 border-l-4 border-blue-500 text-xs flex justify-between items-center">
-          <div>
-            Replying to <b>{replyTo.sender}</b>: {replyTo.message?.slice(0, 40)}
-            {replyTo.image && (
-              <img
-                src={replyTo.image}
-                className="w-8 h-8 inline ml-2 rounded"
-              />
+        </div>
+        {/* =================  RECHARGE SECTION ================= */}
+        {timeLeft <= 60 && (
+          <div className="bg-yellow-100 px-4 py-3">
+            <p className="text-center text-red-500 text-xs font-semibold mb-2">
+              Your time is running low. Recharge now
+            </p>
+
+            {rechargePackLoading ? (
+              <p className="text-center text-xs">Loading packs...</p>
+            ) : (
+              <div className="flex flex-wrap justify-center gap-3">
+                {rechargePacks.map((pack) => (
+                  <button
+                    key={pack.id}
+                    onClick={() => handleCheckout(pack.price, pack.id)}
+                    id={pack.id}
+                    className="bg-red-500 text-white px-3 py-2 rounded-lg flex flex-col items-center text-xs"
+                  >
+                    <span>₹ {pack.price}</span>
+                    <span>{pack.talktime} min</span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
-          <button onClick={() => setReplyTo(null)}>✖</button>
+        )}
+        {/* CHAT */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 text-black space-y-2 ">
+          {messages.map((msg, i) => (
+            <div
+              key={i}
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className={`relative w-[60%] max-w-fit flex flex-col ${
+                msg.sender === "Astrologer"
+                  ? "justify-self-start bg-yellow-100 me-7"
+                  : "justify-self-end bg-purple-100 ms-7"
+              } rounded-lg px-3 py-2 text-gray-700 md:text-xs tracking-wide  text-[10px] gap-0.5`}
+            >
+              <div className="flex flex-col gap-0 msgs-det">
+                {/*  REPLY CONTEXT */}
+                {msg.replyTo && (
+                  <div className="bg-gray-100 rounded-lg border-l-4 border-purple-500 p-2 mb-1 text-xs">
+                    <strong>{msg.replyTo.sender}</strong>:{" "}
+                    {msg.replyTo.message?.slice(0, 40)}
+                    {msg.replyTo.image && (
+                      <img
+                        src={msg.replyTo.image}
+                        className="w-10 h-10 mt-1 rounded"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* MESSAGE TEXT */}
+                {msg.message && <div>{msg.message}</div>}
+
+                {msg.image && (
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setHoveredIndex(i)}
+                  >
+                    <img
+                      src={msg.image}
+                      className="mt-2 w-32 h-32 rounded-lg object-cover"
+                    />
+
+                    {hoveredIndex === i && (
+                      <button
+                        onClick={() => setReplyTo(msg)}
+                        className="absolute top-1 left-[-22px] group"
+                      >
+                        <span className="relative flex items-center justify-center w-8 h-8 border rounded-lg shadow bg-white">
+                          <svg
+                            fill="currentColor"
+                            width="16"
+                            height="16"
+                            className="text-blue-500"
+                            viewBox="0 0 640 640"
+                          >
+                            <path d="M364.2 82.4C376.2 87.4 384 99 384 112L384 192L432 192C529.2 192 608 270.8 608 368C608 481.3 526.5 531.9 507.8 542.1C505.3 543.5 502.5 544 499.7 544C488.8 544 480 535.1 480 524.3C480 516.8 484.3 509.9 489.8 504.8C499.2 496 512 478.4 512 448.1C512 395.1 469 352.1 416 352.1L384 352.1L384 432.1C384 445 376.2 456.7 364.2 461.7C352.2 466.7 338.5 463.9 329.3 454.8L169.3 294.8C156.8 282.3 156.8 262 169.3 249.5L329.3 89.5C338.5 80.3 352.2 77.6 364.2 82.6z" />
+                          </svg>
+
+                          <span className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-700 text-white text-[10px] rounded px-2 py-1">
+                            Reply
+                          </span>
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center self-end gap-1 time-check">
+                  <span className="text-gray-500 text-[10px]">{msg.time}</span>
+                  <span className="text-gray-500 text-[10px]">
+                    <BiCheckDouble size={10} style={{ color: "#32CD32" }} />
+                  </span>
+                </div>
+
+                {/*  REPLY BUTTON (hover) */}
+                {hoveredIndex === i && (
+                  <button
+                    onClick={() => setReplyTo(msg)}
+                    className="absolute top-[5px] left-[-22px] group"
+                  >
+                    <span className="relative flex items-center justify-center w-8 h-8 border rounded-lg shadow bg-white">
+                      <svg
+                        fill="currentColor"
+                        className="text-blue-500"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 640 640"
+                      >
+                        <path d="M364.2 82.4C376.2 87.4 384 99 384 112L384 192L432 192C529.2 192 608 270.8 608 368C608 481.3 526.5 531.9 507.8 542.1C505.3 543.5 502.5 544 499.7 544C488.8 544 480 535.1 480 524.3C480 516.8 484.3 509.9 489.8 504.8C499.2 496 512 478.4 512 448.1C512 395.1 469 352.1 416 352.1L384 352.1L384 432.1C384 445 376.2 456.7 364.2 461.7C352.2 466.7 338.5 463.9 329.3 454.8L169.3 294.8C156.8 282.3 156.8 262 169.3 249.5L329.3 89.5C338.5 80.3 352.2 77.6 364.2 82.6z" />
+                      </svg>
+
+                      <span className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-700 text-white text-[10px] rounded px-2 py-1">
+                        Reply
+                      </span>
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          <div ref={messageEndRef} />
         </div>
-      )}
 
-      {/*  IMAGE PREVIEW */}
-      {imagePreview && (
-        <div className="px-3 py-2 flex items-center gap-2">
-          <img src={imagePreview} className="w-16 h-16 object-cover rounded" />
-          <button
-            onClick={() => {
-              setImagePreview(null);
-              setImageFile(null);
-            }}
-            className="text-red-500"
-          >
-            Remove
-          </button>
-        </div>
-      )}
+        {replyTo && (
+          <div className="mx-3 mb-2 p-2 rounded-lg bg-blue-50 max-w-fit flex gap-5 text-black  border-l-4 border-purple-500 flex justify-between items-start">
+            <div className="text-xs">
+              <strong>Reply to {replyTo.sender}</strong>
 
-      {/* INPUT */}
-      <div className="flex gap-2 p-3 border-t items-center">
-        {/* FILE INPUT */}
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageChange}
-          className="hidden"
-        />
+              <div className="mt-1">{replyTo.message?.slice(0, 40)}</div>
 
-        {/* ATTACH BUTTON */}
-        <button
-          onClick={() => fileInputRef.current.click()}
-          className="text-purple-600"
-        >
-          📎
-        </button>
-
-        {/* TEXT INPUT */}
-        <input
-          value={message}
-          onChange={handleMessageChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          maxLength={200}
-          className="flex-1 border px-3 py-2 rounded-full"
-          placeholder="Type message..."
-        />
-
-        {/* SEND BUTTON */}
-        <button
-          onClick={sendMessage}
-          className="bg-purple-700 text-white px-4 rounded-full"
-        >
-          Send
-        </button>
-      </div>
-
-      {/* POPUPS */}
-      {showReviewPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-          <div className="bg-white w-[90%] max-w-md rounded-xl p-6">
-            <h2 className="text-xl text-center mb-4">Rate Your Experience</h2>
-
-            <div className="flex justify-center mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className={
-                    star <= rating ? "text-yellow-400" : "text-gray-300"
-                  }
-                >
-                  ★
-                </span>
-              ))}
+              {replyTo.image && (
+                <img src={replyTo.image} className="w-10 h-10 rounded mt-2" />
+              )}
             </div>
 
-            <textarea
-              value={reviewComment}
-              onChange={(e) => setReviewComment(e.target.value)}
-              className="w-full border mb-3 p-2"
+            <button
+              onClick={() => setReplyTo(null)}
+              className="text-red-500 cursor-pointer hover:scale-104"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/*  IMAGE PREVIEW */}
+        {imagePreview && (
+          <div className="px-3 py-2 flex items-center gap-2">
+            <img
+              src={imagePreview}
+              className="w-16 h-16 object-cover rounded"
+            />
+            <button
+              onClick={() => {
+                setImagePreview(null);
+                setImageFile(null);
+              }}
+              className="text-red-500"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center gap-2 relative">
+          <div className="flex  items-center w-full border text-black border-gray-300 overflow-hidden rounded-full h-13 shadow inp-attach ps-2 pe-3">
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              className="hidden"
             />
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  emitChatCompleted();
-                  setShowReviewPopup(false);
-                  router.push("/astrologer/chat");
-                }}
-                className="w-1/2 border py-2 rounded-lg"
+            <input
+              value={message}
+              onChange={handleMessageChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              maxLength={200}
+              className="flex-grow w-full text-black px-2 py-1 text-xs  border-0 rounded-lg outline-none resize-none placeholder:text-xs md:py-2 focus:outline-none"
+              placeholder="Type your message..."
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="p-1 text-xs text-white bg-purple-400 rounded-full flex items-center gap-1"
+              title="Add File"
+            >
+              <svg
+                height={18}
+                width={18}
+                className="cursor-pointer"
+                viewBox="0 0 640 640"
               >
-                Skip
-              </button>
+                <path d="M288.6 76.8C344.8 20.6 436 20.6 492.2 76.8C548.4 133 548.4 224.2 492.2 280.4L328.2 444.4C293.8 478.8 238.1 478.8 203.7 444.4C169.3 410 169.3 354.3 203.7 319.9L356.5 167.3C369 154.8 389.3 154.8 401.8 167.3C414.3 179.8 414.3 200.1 401.8 212.6L249 365.3C239.6 374.7 239.6 389.9 249 399.2C258.4 408.5 273.6 408.6 282.9 399.2L446.9 235.2C478.1 204 478.1 153.3 446.9 122.1C415.7 90.9 365 90.9 333.8 122.1L169.8 286.1C116.7 339.2 116.7 425.3 169.8 478.4C222.9 531.5 309 531.5 362.1 478.4L492.3 348.3C504.8 335.8 525.1 335.8 537.6 348.3C550.1 360.8 550.1 381.1 537.6 393.6L407.4 523.6C329.3 601.7 202.7 601.7 124.6 523.6C46.5 445.5 46.5 318.9 124.6 240.8L288.6 76.8z" />
+              </svg>
+            </button>
+          </div>
+          {/* SEND BUTTON */}
+          <button
+            onClick={sendMessage}
+            className="px-4 py-4 text-xs text-white bg-green-600 rounded-full bold-full"
+          >
+            <svg height={22} width={22} viewBox="0 0 640 640">
+              <path
+                fill="rgb(255, 255, 255)"
+                d="M568.4 37.7C578.2 34.2 589 36.7 596.4 44C603.8 51.3 606.2 62.2 602.7 72L424.7 568.9C419.7 582.8 406.6 592 391.9 592C377.7 592 364.9 583.4 359.6 570.3L295.4 412.3C290.9 401.3 292.9 388.7 300.6 379.7L395.1 267.3C400.2 261.2 399.8 252.3 394.2 246.7C388.6 241.1 379.6 240.7 373.6 245.8L261.2 340.1C252.1 347.7 239.6 349.7 228.6 345.3L70.1 280.8C57 275.5 48.4 262.7 48.4 248.5C48.4 233.8 57.6 220.7 71.5 215.7L568.4 37.7z"
+              />
+            </svg>
+          </button>
+        </div>
+        {/* POPUPS */}
+        {showReviewPopup && (
+          <div className="fixed inset-0 text-black flex items-center justify-center bg-black/60 z-50">
+            <div className="bg-white shadow-xl w-[90%] max-w-md rounded-xl p-6">
+              <h2 className="text-xl text-center mb-4">Rate Your Experience</h2>
 
-              <button
-                onClick={handleSubmitReview}
-                disabled={reviewLoading}
-                className="w-1/2 bg-purple-700 text-white py-2 rounded-lg disabled:opacity-50"
-              >
-                {reviewLoading ? "Submitting..." : "Submit"}
-              </button>
+              <div className="flex justify-center mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={
+                      star <= rating ? "text-yellow-400" : "text-gray-300"
+                    }
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+
+              <textarea
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder="Enter your feedback here..."
+                className="w-full border border-gray-300 placeholder:text-gray-400 placeholder:font-light rounded-2xl shadow-xl mb-3 p-2"
+              />
+
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    emitChatCompleted();
+                    setShowReviewPopup(false);
+                    router.push("/astrologer/chat");
+                  }}
+                  className="w-1/3 border py-2 border-gray-400 rounded-full"
+                >
+                  Skip
+                </button>
+
+                <button
+                  onClick={handleSubmitReview}
+                  disabled={reviewLoading}
+                  className="w-1/3 bg-purple-700 text-white py-2 rounded-full disabled:opacity-50"
+                >
+                  {reviewLoading ? "Submitting..." : "Submit"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <AlertLoading show={isLoading} title="Loading..." />
+        <AlertLoading show={isLoading} title="Loading..." />
+      </div>
     </div>
   );
 };

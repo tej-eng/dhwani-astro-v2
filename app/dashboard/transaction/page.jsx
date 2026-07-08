@@ -123,32 +123,16 @@ export default function UserWalletTransactions() {
     <div className="min-h-screen p-5 bg-gray-100">
 
       <div className="p-5 bg-white shadow-xl rounded-3xl">
-
-        {/* HEADER */}
         <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
-
-          <div>
-            <h2 className="text-3xl font-bold text-black">
+            <h2 className="text-2xl font-bold text-black">
               Wallet Transactions
             </h2>
-
             <p className="mt-1 text-sm text-gray-500">
               Manage user wallet history
-            </p>
-          </div>
-
-          <button
-            onClick={() => refetch()}
-            className="px-5 py-2 font-semibold text-white bg-purple-900 rounded-xl"
-          >
-            Refresh
-          </button>
+            </p>         
         </div>
-
-        {/* FILTERS */}
-        <div className="grid gap-4 mb-6 md:grid-cols-4">
-
-          {/* SEARCH */}
+   
+        <div className="grid gap-4 mb-6 md:grid-cols-4">          
           <input
             type="text"
             placeholder="Search astrologer, type..."
@@ -159,10 +143,11 @@ export default function UserWalletTransactions() {
                 search: e.target.value,
               })
             }
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
 
-          {/* TYPE DROPDOWN */}
+   
+   
           <select
             value={filters.type}
             onChange={(e) => {
@@ -173,7 +158,7 @@ export default function UserWalletTransactions() {
                 type: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           >
             <option value="">
               All Types
@@ -200,7 +185,7 @@ export default function UserWalletTransactions() {
                 fromDate: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
 
           {/* TO DATE */}
@@ -215,169 +200,106 @@ export default function UserWalletTransactions() {
                 toDate: e.target.value,
               });
             }}
-            className="px-4 py-3 text-black border outline-none rounded-2xl"
+            className="px-4 py-2 border border-gray-300 placeholder:text-gray-300 placeholder:text-xs rounded-full"
           />
         </div>
 
-        {/* TABLE */}
-        <div className="overflow-auto border rounded-3xl">
+   
+<div className="space-y-4 text-black">
+  {loading ? (
+    <div className="p-10 text-center">
+      Loading transactions...
+    </div>
+  ) : error ? (
+    <div className="p-5 text-center text-red-500 bg-white rounded-2xl">
+      Failed to load transactions
+    </div>
+  ) : filteredTransactions?.length === 0 ? (
+    <div className="p-10 text-center text-gray-500 bg-white rounded-2xl">
+      No transactions found
+    </div>
+  ) : (
+    filteredTransactions.map((item) => {
+      const isDebit = item?.type === "DEBIT";
 
-          <table className="w-full min-w-[1000px]">
+      return (
+        <div
+          key={item.id}
+          className="p-2 bg-purple-50 shadow rounded-2xl"
+        >
+          <div className="flex px-2 flex-col justify-between gap-4 md:flex-row">
+            {/* LEFT */}
+            <div>
+              <h2 className="text-xl font-semibold">
+                {item?.astrologerName || "N/A"}
+              </h2>
 
-            <thead className="text-white bg-purple-900">
+              <p className="mt-1 text-sm text-gray-500">
+                Session ID: {item?.sessionId?.slice(0, 8) || "-"}
+              </p>
 
-              <tr>
+              <div className="flex flex-wrap gap-3 mt-3">
+           
 
-                {/* ASTROLOGER FIRST */}
-                <th className="px-4 py-4 text-left">
-                  Astrologer
-                </th>
+                <span className="px-3 py-1 text-xs bg-violet-200 rounded-full">
+                  ₹  {item?.coins}
+                </span>
 
-                <th className="px-4 py-4 text-left">
-                  Amount
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Coins
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Type
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Session ID
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Description
-                </th>
-
-                <th className="px-4 py-4 text-left">
-                  Date
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-black"
-                  >
-                    Loading transactions...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-red-500"
-                  >
-                    Failed to load data
-                  </td>
-                </tr>
-              ) : filteredTransactions
-                  ?.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-10 text-center text-gray-500"
-                  >
-                    No transactions found
-                  </td>
-                </tr>
-              ) : (
-                filteredTransactions?.map(
-                  (item) => {
-                    const isDebit =
-                      item?.type === "DEBIT";
-
-                    return (
-                      <tr
-                        key={item?.id}
-                        className="border-b hover:bg-gray-50"
-                      >
-
-                        {/* ASTROLOGER */}
-                        <td className="px-4 py-4">
-
-                          <div>
-                            <p className="font-semibold text-black">
-                              {item?.astrologerName ||
-                                "N/A"}
-                            </p>
-
-                            <p className="text-xs text-gray-500">
-                              {item?.sessionId?.slice(
-                                0,
-                                18
-                              ) || "-"}
-                              ...
-                            </p>
-                          </div>
-                        </td>
-
-                        {/* AMOUNT */}
-                        <td className="px-4 py-4 font-semibold text-black">
-
-                          {item?.amount
-                            ? `₹ ${item?.amount}`
-                            : "-"}
-                        </td>
-
-                        {/* COINS */}
-                        <td className="px-4 py-4 font-bold text-black">
-
-                          {item?.coins}
-                        </td>
-
-                        {/* TYPE */}
-                        <td className="px-4 py-4">
-
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              isDebit
-                                ? "bg-red-100 text-red-600"
-                                : "bg-green-100 text-green-600"
-                            }`}
-                          >
-                            {item?.type}
-                          </span>
-                        </td>
-
-                        {/* SESSION */}
-                        <td className="px-4 py-4 text-sm text-black">
-
-                          {item?.sessionId ||
-                            "-"}
-                        </td>
-
-                        {/* DESCRIPTION */}
-                        <td className="max-w-xs px-4 py-4 text-black">
-
-                          <p className="line-clamp-2">
-                            {item?.description}
-                          </p>
-                        </td>
-
-                        {/* DATE */}
-                        <td className="px-4 py-4 text-sm text-black whitespace-nowrap">
-
-                          {formatDate(
-                            item?.createdAt
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  }
-                )
+                <span
+                  className={`px-3 py-1 text-xs rounded-full font-medium ${
+                    isDebit
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {item?.type}
+                </span>
+                       {item?.description && (
+                <p className=" text-sm text-gray-600 bg-purple-300 px-3 py-1 text-xs rounded-full">
+                  {item.description}
+                </p>
               )}
-            </tbody>
-          </table>
+              </div>
+
+       
+            </div>
+
+            {/* RIGHT */}
+            <div className="flex flex-col justify-between">
+              <div className="text-sm text-right text-gray-500">
+                <p>
+                  {new Date(
+                    Number(item.createdAt)
+                  ).toLocaleDateString("en-IN")}
+                </p>
+
+                <p>
+                  {new Date(
+                    Number(item.createdAt)
+                  ).toLocaleTimeString("en-IN")}
+                </p>
+              </div>
+
+              <div className="flex justify-end mt-4">
+                <span
+                  className={`px-4 py-2 rounded-full text-sm font-medium ${
+                    isDebit
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {isDebit
+                    ? "Debit Transaction"
+                    : "Credit Transaction"}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
+      );
+    })
+  )}
+</div>
 
         {/* PAGINATION */}
         <div className="flex items-center justify-between mt-6">

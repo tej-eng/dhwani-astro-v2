@@ -244,7 +244,7 @@ function ChatToast({
           document.body
         )}
 
-      {/* --- CHAT WINDOW --- */}
+     
       {openCode === 201 &&
         createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#00000053] backdrop-blur-sm pointer-events-auto">
@@ -259,6 +259,7 @@ function ChatToast({
                 astro_price={astrologerData?.data?.experts_price}
                 userIntakeId={astrologerData?.data?.intakeId}
               />
+              hello
             </div>
           </div>,
           document.body
