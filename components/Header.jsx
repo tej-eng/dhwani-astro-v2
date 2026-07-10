@@ -44,28 +44,44 @@ export default function Header({ openSignInModal }) {
 
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
-  const LogOut = async () => {
-    try {
-      const result = await logoutMutation();
+const LogOut = async () => {
+  const storedUser = localStorage.getItem("user");
 
-      if (result?.data?.logout) {
-        localStorage.removeItem("user");
-        setUser(null);
+  // Agar user hi nahi hai to seedha logout state clear
+  if (!storedUser) {
+    setUser(null);
+    router.replace("/");
+    return;
+  }
 
-        await client.clearStore();
-        await persistor.purge();
+  try {
+    const result = await logoutMutation();
 
-        toast.success("Logged out successfully");
-        router.refresh();
-        router.push("/");
-      } else {
-        toast.error("Logout failed");
-      }
-    } catch (err) {
-      console.error("Logout error:", err);
+    if (result?.data?.logout) {
+      toast.success("Logged out successfully");
+    } else {
       toast.error("Logout failed");
     }
-  };
+  } catch (err) {
+    // Agar cookie expire ho gayi hai to backend Unauthorized dega
+    if (
+      err?.message?.includes("Unauthorized") ||
+      err?.graphQLErrors?.[0]?.message === "Unauthorized"
+    ) {
+      toast.error("Session expired. Please login again.");
+    } else {
+      toast.error("Logout failed");
+    }
+  } finally {
+    localStorage.removeItem("user");
+    setUser(null);
+
+    await client.clearStore();
+    await persistor.purge();
+
+    router.replace("/");
+  }
+};
 
   // ==============================
   // CLICK OUTSIDE DROPDOWN

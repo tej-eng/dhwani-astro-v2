@@ -144,6 +144,7 @@ export default function PayOPT({
               },
         handler: async function (response) {
           if (type === "RECHARGE") {
+            route.push("/");
           }
           if (type === "SERVICE") {
             route.push("/");
