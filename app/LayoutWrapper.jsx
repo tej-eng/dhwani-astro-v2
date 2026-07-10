@@ -8,7 +8,7 @@ import { ChatToast } from "./common";
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
-  const isChatPage = pathname.startsWith("/chat-with-astrologer");
+  const isChatPage = pathname.startsWith("/chat-with-astrologer") ||   pathname.startsWith("/call");;
 
   return (
     <>

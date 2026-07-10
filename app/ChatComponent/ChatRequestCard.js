@@ -490,7 +490,7 @@ const ChatRequestCard = ({
 
       setTimeout(() => {
         route.push(`/call/${room_Id}`);
-      }, 300);
+      }, 100);
     };
 
     // =========================
