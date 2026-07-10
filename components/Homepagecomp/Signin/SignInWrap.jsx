@@ -12,7 +12,7 @@ export default function SignInModalWrapper({ children }) {
 
   const pathname = usePathname();
 
-  const isChatPage = pathname.startsWith("/chat-with-astrologer");
+  const isChatPage = pathname.startsWith("/chat-with-astrologer") || pathname.startsWith("/call");
 
   return (
     <>
