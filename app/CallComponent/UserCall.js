@@ -50,14 +50,9 @@ const UPLOAD_CALL_RECORDING = gql`
   }
 `;
 
-export default function CallPage( room_Id,
-  astro_Name,
+export default function CallPage(   
   astroImage,
-  chattime,
-  user_Id,
-  astroid,
-  astro_price,
-  userIntakeId,) {
+  ) {
   const dispatch = useDispatch();
   const { roomId } = useParams();
 
@@ -854,9 +849,7 @@ export default function CallPage( room_Id,
       .padStart(2, "0")}`;
   };
 
-  // =========================
-  // UI - No recording indicators shown
-  // =========================
+
 
   const astroData = JSON.parse(localStorage.getItem("activeRequest"));
   return (
@@ -865,11 +858,11 @@ export default function CallPage( room_Id,
       <div className="absolute w-[500px] h-[500px] bg-violet-500 opacity-20 blur-3xl rounded-full bottom-[-100px] right-[-100px]" />
       <div className="md:w-3/5 overflow-hidden w-full shadow-lg rounded-3xl  flex flex-col md:h-[95vh] h-[100vh]">
         <div className="flex flex-col w-full  rounded-3xl shadow-xl items-center justify-between py-10    h-full bg-gray-900 text-white">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center gap-3">
             <img
                src={
                 astroImage
-                  ? `https://www.dhwaniastro.com${astroImage}`
+                  ? `https://www.dhwaniastro.com${astroImage?.astroImage}`
                   : "/man.png"
               }
               alt={astroData?.astrologer?.name}
@@ -878,7 +871,7 @@ export default function CallPage( room_Id,
               className="rounded-full object-cover"
             />
 
-            <h2 className="text-xl">{astroData?.astrologer?.name}</h2>
+            <h2 className="text-xl">{astroImage?.astroName}</h2>
           </div>
           <div className="flex flex-col items-center ">
             <h2 className="text-2xl mb-4">📞 Call Status</h2>

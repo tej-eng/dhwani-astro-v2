@@ -58,6 +58,8 @@ export default function CallPage() {
   if (!activeRequest) {
     return null;
   }
+  console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx",activeRequest.astrologer.profilePic);
+  
 
   return (
     <div className="w-full h-[calc(100vh-120px)]">
