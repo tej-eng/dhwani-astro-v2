@@ -63,7 +63,7 @@ export default function CookieConsent() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex text-xs flex-wrap gap-3">
           <button
             onClick={handleAcceptAll}
             className="px-4 py-2 bg-yellow-500 text-white rounded-full"

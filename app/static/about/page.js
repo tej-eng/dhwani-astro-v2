@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { GET_ABOUT_PAGE } from "@/app/graphql/gqlQuery";
-import serverApollo from "@/utils/serverApollo";
 //export const revalidate = 604800; 
 
 export default async function AboutP() {
