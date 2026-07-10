@@ -64,13 +64,13 @@ const RePack = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 overflow-hidden gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1  gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {packData.map((pack) => (
             <div
               key={pack.id}
-              className="relative flex flex-col justify-between p-5 bg-white border border-gray-200 shadow-lg rounded-xl"
+              className="relative flex flex-col overflow-hidden justify-between p-4 bg-white border border-gray-200 shadow-lg rounded-xl"
             >
-              <span className="rotate-[-42deg] w-28 text-center absolute top-[17px] left-[-27px] bg-gradient-to-r from-yellow-400 to-orange-400 text-[0.6rem] text-white px-2 py-1 rounded-tr-lg rounded-bl-lg shadow">
+              <span className="rotate-[-42deg] w-28 text-center absolute top-[10px] left-[-26px] bg-gradient-to-r from-yellow-400 to-orange-400 text-[0.6rem] text-white px-2 py-1 rounded-tr-lg rounded-bl-lg shadow">
                 {t?.astrocard?.offer || "Special Offer"}
               </span>
 
@@ -83,7 +83,7 @@ const RePack = () => {
                   ₹ {pack.price}
                 </p>
 
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500">
             Talktime :  {pack.talktime} 
 
                 </p>
@@ -91,7 +91,7 @@ const RePack = () => {
 
               <CustomButton
                 aria-label={`Select Pack ${pack.name}`}
-                className="w-full px-4 py-2 mt-4 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                className="w-full px-4 py-2 mt-3 text-sm font-medium text-white rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 onClick={() => handleSelect(pack.id)}
               >
                 {t?.astrocard?.pack || "Select Pack"}
