@@ -205,7 +205,7 @@ export default function Header({ openSignInModal }) {
                   <button
                     onClick={LogOut}
                     disabled={logoutLoading}
-                    className=" px-8 py-2 w-fit justify-self-center text-left bg-red-500 text-center flex justify-center rounded-full  text-white hover:bg-red-400"
+                    className=" px-6 py-1 w-fit cursor-pointer justify-self-center text-sm hover:scale-104 bg-red-500 text-center flex justify-center rounded-full  text-white hover:bg-red-400"
                   >
                     {logoutLoading
                       ? "Signing Out..."
