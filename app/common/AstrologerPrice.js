@@ -22,8 +22,7 @@ function AstrologerPrice({ mode, astro }) {
 
   const currentPrice = pricing.price ?? 0;
 
-  const originalPrice =
-    pricing.originalPrice ||
+  const originalPrice =   
     pricing.offerPrice ||
     currentPrice;
 
@@ -33,11 +32,11 @@ function AstrologerPrice({ mode, astro }) {
         ₹{currentPrice}
       </span>
 
-      {originalPrice > currentPrice && (
+      
         <span className="text-sm font-semibold text-black line-through">
           ₹{originalPrice}/min
         </span>
-      )}
+     
     </>
   );
 }

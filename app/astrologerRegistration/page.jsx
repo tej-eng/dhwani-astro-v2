@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CREATE_APPLICATION } from "../graphql/gqlQuery";
-import { useMutation } from "@apollo/client/react";
+import { CREATE_APPLICATION, GET_ACTIVE_PROBLEMS, GET_ACTIVE_SKILLS } from "../graphql/gqlQuery";
+import { useMutation, useQuery } from "@apollo/client/react";
 
 export default function AstrologerRegistration() {
   const [preview, setPreview] = useState(null);
@@ -82,6 +82,14 @@ export default function AstrologerRegistration() {
       document.querySelector(`[name="${first}"]`)?.focus();
     }
   };
+  const { data: skillsData } = useQuery(GET_ACTIVE_SKILLS);
+
+const { data: problemsData } = useQuery(GET_ACTIVE_PROBLEMS);
+const skillOptions =
+  skillsData?.getActiveSkills?.map((x) => x.name) || [];
+
+const problemOptions =
+  problemsData?.getActiveProblems?.map((x) => x.name) || [];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -212,23 +220,23 @@ export default function AstrologerRegistration() {
             error={errors.languages}
           />
 
-          <MultiSelect
-            label="Handle Problems "
-            field="problems" required
-            selected={form.problems}
-            options={["Love", "Career", "Finance", "Marriage"]}
-            handleCheckbox={handleCheckbox}
-            error={errors.problems}
-          />
+        <MultiSelect
+  label="Handle Problems"
+  field="problems"
+  selected={form.problems}
+  options={problemOptions}
+  handleCheckbox={handleCheckbox}
+  error={errors.problems}
+/>
 
-          <MultiSelect
-            label="Skills"
-            field="skills" required
-            selected={form.skills}
-            options={["Vedic", "Tarot", "Numerology", "Vastu"]}
-            handleCheckbox={handleCheckbox}
-            error={errors.skills}
-          />
+    <MultiSelect
+  label="Skills"
+  field="skills"
+  selected={form.skills}
+  options={skillOptions}
+  handleCheckbox={handleCheckbox}
+  error={errors.skills}
+/>
 
 
 

@@ -668,3 +668,29 @@ export const UPDATE_USER_PROFILE = gql`
     }
   }
 `;
+export const GET_ACTIVE_SKILLS = gql`
+  query GetActiveSkills {
+    getActiveSkills {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_ACTIVE_PROBLEMS = gql`
+  query GetActiveProblems {
+    getActiveProblems {
+      id
+      name
+    }
+  }
+`;
+export const GET_ASTROLOGER_CATEGORIES = gql`
+query GetAstrologerCategories{
+  getAstrologerCategories{
+    id
+    name
+    type
+  }
+}
+`;

@@ -6,45 +6,51 @@ import AstrologerList from "../AstrologerList";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useAuth } from "@/app/context/authContext";
-import { GET_ASTROLOGERS_GUEST, GET_ASTROLOGERS_USER } from "@/app/graphql/gqlQuery";
+import {
+  GET_ASTROLOGERS_GUEST,
+  GET_ASTROLOGERS_USER,
+} from "@/app/graphql/gqlQuery";
 
 export default function Page() {
   const params = useParams();
   const mode = params?.mode;
 
+  const { isLoggedIn, authLoading } = useAuth();
 
-const { isLoggedIn, authLoading  } = useAuth();
+  const selectedQuery = isLoggedIn
+    ? GET_ASTROLOGERS_USER
+    : GET_ASTROLOGERS_GUEST;
 
-const selectedQuery = isLoggedIn
-  ? GET_ASTROLOGERS_USER
-  : GET_ASTROLOGERS_GUEST;
-
-
-const { data, loading, error, fetchMore } =
-  useQuery(selectedQuery, {
-    skip: authLoading,
-    variables: {
-      searchInput: {
-        limit: 12,
-        page: 1,
-        sortField: "RATING",
-        sortOrder: "DESC",
-        type: mode?.toUpperCase() || "CHAT",
-      },
+const {
+  data,
+  loading,
+  error,
+  fetchMore,
+  refetch,
+} = useQuery(selectedQuery, {
+  skip: authLoading,
+  variables: {
+    searchInput: {
+      limit: 12,
+      page: 1,
+      sortField: "RATING",
+      sortOrder: "DESC",
+      type: mode?.toUpperCase() || "CHAT",
     },
-    fetchPolicy: "network-only",
-  });
-
+  },
+  fetchPolicy: "network-only",
+});
+console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",{
+  loading,
+  error,
+  data,
+});
   if (loading || authLoading) {
     return <Astroskelton />;
   }
 
   if (error) {
-    return (
-      <p className="text-red-500">
-        Error: {error.message}
-      </p>
-    );
+    return <p className="text-red-500">Error: {error.message}</p>;
   }
 
   const astrologerData = isLoggedIn
@@ -55,6 +61,7 @@ const { data, loading, error, fetchMore } =
     <AstrologerList
       serverdata={astrologerData}
       fetchMore={fetchMore}
+      refetch={refetch}
       mode={mode}
     />
   );
