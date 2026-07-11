@@ -187,9 +187,9 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
     <section className="relative flex flex-col items-center w-full p-2 sm:p-5">
       <section className="chatastro-cards-main items-center flex-wrap gap-2 sm:gap-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 justify-around w-full lg:w-[95%]">
         {data?.slice(0, visibleCount).map((astro, index) => (
-          <div key={index} className="overflow-hidden cursor-pointer">
+          <div key={index} className="overflow-hidden ">
             <div className="relative w-full   bg-center bg-cover  shadow-lg h-75 md:h-51 sm:p-1 back-astro-image">
-              <div className="relative h-full p-2 overflow-hidden flex rounded-lg justify-center items-center text-white 	bg-linear-to-r from-purple-100 via-indigo-100 to-purple-100">
+              <div className="relative h-full p-2 overflow-hidden flex rounded-xl justify-center items-center text-white 	bg-linear-to-r from-purple-100 via-indigo-100 to-purple-100">
                 {!astro?.astro_tag ? (
                   <></>
                 ) : (
@@ -208,7 +208,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                           ? `https://www.dhwaniastro.com${astro.profilePic}`
                           : "/man.png"
                       }
-                      className="object-cover border-3 border-purple-200 rounded-full shadow-md w-22 h-22 sm:w-22 sm:h-22"
+                      className="object-cover cursor-pointer border-3 border-purple-200 rounded-full shadow-md w-22 h-22 sm:w-22 sm:h-22"
                       width={50}
                       height={50}
                       loading="lazy"
@@ -276,7 +276,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                     <div className="flex flex-col items-center md:gap-1.5 gap-1 astro-name-exp">
                       <h2
                         onClick={() => astrologerprofile(astro?.id)}
-                        className="text-[17px] font-semibold text-black sm:mt-1 sm:text-[18px]"
+                        className="text-[17px] font-semibold cursor-pointer text-black sm:mt-1 sm:text-[18px]"
                       >
                         {astro?.name}
                       </h2>
