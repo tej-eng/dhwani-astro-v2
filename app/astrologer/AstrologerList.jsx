@@ -53,18 +53,18 @@ export default function AstrologerList({
   const totalPages = serverdata?.totalPages || 1;
 
   const filteredAstrologers = useMemo(() => {
-const filtered = allAstrologers.filter(
-  (item) => item && typeof item === "object"
-);
+    const filtered = allAstrologers.filter(
+      (item) => item && typeof item === "object",
+    );
 
- const sortMap = {
-  expHigh: (a, b) => (b?.experience ?? 0) - (a?.experience ?? 0),
-  expLow: (a, b) => (a?.experience ?? 0) - (b?.experience ?? 0),
-  priceHigh: (a, b) => (b?.price ?? 0) - (a?.price ?? 0),
-  priceLow: (a, b) => (a?.price ?? 0) - (b?.price ?? 0),
-  ratingHigh: (a, b) => (b?.rating ?? 0) - (a?.rating ?? 0),
-  ratingLow: (a, b) => (a?.rating ?? 0) - (b?.rating ?? 0),
-};
+    const sortMap = {
+      expHigh: (a, b) => (b?.experience ?? 0) - (a?.experience ?? 0),
+      expLow: (a, b) => (a?.experience ?? 0) - (b?.experience ?? 0),
+      priceHigh: (a, b) => (b?.price ?? 0) - (a?.price ?? 0),
+      priceLow: (a, b) => (a?.price ?? 0) - (b?.price ?? 0),
+      ratingHigh: (a, b) => (b?.rating ?? 0) - (a?.rating ?? 0),
+      ratingLow: (a, b) => (a?.rating ?? 0) - (b?.rating ?? 0),
+    };
 
     sortMap[sortType]?.(filtered);
 
@@ -132,10 +132,10 @@ const filtered = allAstrologers.filter(
             return {
               [key]: {
                 ...fetchMoreResult[key],
-               data: [
-  ...(prev[key]?.data ?? []),
-  ...(fetchMoreResult[key]?.data ?? []),
-],
+                data: [
+                  ...(prev[key]?.data ?? []),
+                  ...(fetchMoreResult[key]?.data ?? []),
+                ],
               },
             };
           },
