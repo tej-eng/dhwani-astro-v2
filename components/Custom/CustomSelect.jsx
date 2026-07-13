@@ -1,61 +1,106 @@
-// import React from 'react';
-// const variantClasses = {
-//   half: 'w-[80%]  text-sm sm:text-sm px-4 py-2  border placeholder:text-gray-300 bg-white rounded-full focus:outline-none focus:ring-0 ',
-//   full: 'w-full text-sm sm:text-sm px-4 py-2  border placeholder:text-gray-300 bg-white rounded-full focus:outline-none focus:ring-0 ',
-// };
-
-// export default function CustomSelect({ ...props }) {
-//   const { name, value, onChange, options = [], required, error, className = "", variant } = props;
-//   return (
-//     <div className="mb-2 w-full">
-//       <select {...props}
-//         name={name}
-//         value={value}
-//         onChange={onChange}
-//         required={required}
-//         className={`${className} ${variantClasses[variant]} ${error ? 'border-red-500' : ''} `}
-//       >
-//         {options.map((opt, idx) => (
-//           <option
-//             key={idx}
-//             value={opt === "Day" ? "" : opt}
-//             style={opt === "Day" ? { color: "red" } : {}}
-//             disabled={opt === "Day"}
-//           >
-//             {opt}
-//           </option>
-//         ))}
-//       </select>
-//       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-//     </div>
-//   );
-// }
-
-
 "use client";
+
 import React, { forwardRef } from "react";
 
+const variantClasses = {
+  full: "w-full",
+  half: "w-full md:w-1/2",
+  third: "w-full md:w-1/3",
+};
+
 const CustomSelect = forwardRef(
-  ({label, options = [], error, ...props }, ref) => {
+  (
+    {
+      label,
+      options = [],
+      error,
+      variant = "full",
+      className = "",
+      placeholder = "Select",
+      ...props
+    },
+    ref
+  ) => {
+     console.log("nnnnnnnnnnnnnnnnnnnnnnn",props);
     return (
-      <div className="w-full space-y-1 flex flex-col">
-              {label && <label className="text-sm font-semibold">{label}</label>}
-        <select
-          ref={ref}
-          className={`w-full border rounded-lg px-3 py-2 outline-none 
-            ${error ? "border-red-500" : "border-gray-300"}`}
-          {...props}
-        >
-          <option value="">Select</option>
-          {options.map((opt, i) => (
-            <option key={i} value={opt}>
-              {opt}
+      <div className={`${variantClasses[variant]} flex flex-col gap-1`}>
+        {label && (
+          <label className="text-sm font-semibold text-gray-700">
+            {label}
+          </label>
+        )}
+
+        <div className="relative">
+          <select
+            ref={ref}
+            className={`
+              appearance-none
+              w-full
+              rounded-2xl
+              border
+              bg-white
+              px-4
+              py-3
+              pr-10
+              text-sm
+              text-gray-700
+              shadow-sm
+              transition-all
+              duration-200
+              cursor-pointer
+              outline-none
+
+              ${
+                error
+                  ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                  : "border-purple-200 hover:border-purple-400 focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+              }
+
+              ${className}
+            `}
+            {...props}
+          >
+            <option value="" disabled>
+              {placeholder}
             </option>
-          ))}
-        </select>
+
+            {options.map((opt, index) => {
+              const value =
+                typeof opt === "object" ? opt.value : opt;
+              const label =
+                typeof opt === "object" ? opt.label : opt;
+
+              return (
+                <option key={index} value={value}>
+                  {label}
+                </option>
+              );
+            })}
+          </select>
+
+          {/* Custom Arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-purple-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </div>
 
         {error && (
-          <p className="text-red-500 text-[10px]">{error}</p>
+          <p className="text-xs text-red-500 pl-1">
+            {error}
+          </p>
         )}
       </div>
     );
@@ -63,4 +108,5 @@ const CustomSelect = forwardRef(
 );
 
 CustomSelect.displayName = "CustomSelect";
+
 export default CustomSelect;

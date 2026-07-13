@@ -9,6 +9,7 @@ import useScrollZoom from "@/Hooks/scrollZoom";
 import { useState } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_CATEGORIES, GET_SERVICES } from "@/app/graphql/gqlQuery";
+
 export default function Dhservices() {
   const { messages: t } = useLanguage();
 
@@ -29,15 +30,16 @@ export default function Dhservices() {
   const categories = categoriesData?.getCategories || [];
 
   const nullCategoryServices =
-    servicesData?.getServices?.filter((service) => service.category === null) ||
-    [];
+    servicesData?.getServices?.filter(
+      (service) => service.category === null
+    ) || [];
 
   const cards = [
     ...categories.map((cat) => ({
       id: cat.id,
       name: cat.name,
       image: cat.image,
-        slug: cat.slug,
+      slug: cat.slug,
       href: `/dhwani-services/${cat.slug}`,
       type: "category",
     })),
@@ -49,11 +51,39 @@ export default function Dhservices() {
       href: service.slug,
       type: "service",
     })),
-  ].filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+  ].filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   useScrollZoom(".head-wrap");
+
   if (servicesLoading || categoriesLoading) {
-    return <p>Loading...</p>;
+    return (
+      <section className="relative p-2 sm:p-5 flex w-full flex-col items-center">
+        {/* Search Skeleton */}
+        <div className="w-full xl:w-[90%] mb-5">
+          <div className="h-12 w-full rounded-full bg-gray-200 animate-pulse" />
+        </div>
+
+        {/* Cards Skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 w-full xl:w-[90%]">
+          {[...Array(4)].map((_, index) => (
+            <div
+              key={index}
+              className="rounded-3xl overflow-hidden shadow bg-white"
+            >
+              <div className="h-35 sm:h-50 bg-gray-200 animate-pulse" />
+
+              <div className="p-3">
+                <div className="h-5 w-3/4 mx-auto rounded bg-gray-200 animate-pulse mb-4" />
+
+                <div className="h-9 w-[60%] mx-auto rounded-full bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
   }
 
   if (servicesError || categoriesError) {
@@ -63,7 +93,7 @@ export default function Dhservices() {
   return (
     <section
       aria-label="Healing Services List"
-      className=" relative p-2 sm:p-5 flex w-full flex-col items-center self-center "
+      className="relative p-2 sm:p-5 flex w-full flex-col items-center self-center"
     >
       <Searchtop
         searchValue={search}
@@ -75,11 +105,14 @@ export default function Dhservices() {
           <div
             key={`${item.type}-${item.id}`}
             className="element-item head-wrap cat-Service rounded-4xl overflow-hidden bg-[#892be226] shadow-xl text-center"
-            data-category="cat-Service"
           >
             <div className="block">
               <div className="relative w-full sm:h-50 h-35 overflow-hidden">
-                <Image src={`https://www.dhwaniastro.com${item.image}` || "/placeholder.webp"}
+                <Image
+                  src={
+                    `https://www.dhwaniastro.com${item.image}` ||
+                    "/placeholder.webp"
+                  }
                   alt={item.name}
                   width={300}
                   height={160}
@@ -98,10 +131,9 @@ export default function Dhservices() {
                   {item.name}
                 </h3>
 
-                <div className="mt-1 sm:mt-1 mb-1 flex flex-col lg:flex-row w-full items-center justify-around gap-2 sm:gap-3">
+                <div className="mt-1 mb-1 flex flex-col lg:flex-row w-full items-center justify-around gap-2 sm:gap-3">
                   <Link
-                     href={item.href}
-                    aria-label={`Explore ${item.name}`}
+                    href={item.href}
                     className="bg-[#8a2be2] w-[60%] text-white px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-base hover:bg-[#7325c0] transition"
                   >
                     {t?.healing?.exp || "Explore Now"}

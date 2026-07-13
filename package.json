@@ -52,6 +52,7 @@
     "react-lite-youtube-embed": "^2.5.6",
     "react-medium-image-zoom": "^5.3.0",
     "react-redux": "^9.2.0",
+    "react-select": "^5.10.2",
     "react-spinners": "^0.17.0",
     "react-time-picker": "^8.0.2",
     "redis": "^5.10.0",

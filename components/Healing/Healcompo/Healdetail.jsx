@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { PACKAGES } from "@/components/Homepagecomp/Consultations/Concompo/package";
 
-export default function Healdetail({ data, pkgId, setPkgId }) {
+export default function Healdetail({ data,sp }) {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -12,7 +12,7 @@ export default function Healdetail({ data, pkgId, setPkgId }) {
         <div className="flex flex-col gap-2">
             <h1 className="mb-0 text-xl font-bold text-purple-700 sm:text-3xl">{data?.name}</h1>
             <div className="flex items-center mt-0 space-x-2">
-                <span className="text-base font-semibold text-purple-600 sm:text-xl">Starting From: ₹ {data?.price}</span>
+                <span className="text-base font-semibold text-purple-600 sm:text-xl">  Starting From: ₹ {sp ?? 0}</span>
                 <span className="text-sm text-gray-500">(Per Session)</span>
             </div>
             <p className="mb-1 text-sm text-gray-600 sm:text-base">

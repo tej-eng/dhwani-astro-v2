@@ -51,7 +51,7 @@ export default function Pujasuggest({ pujaData }) {
 
                 <div className="mt-2 flex justify-center">
                   <CustomButton
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm px-4 py-2"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full text-sm px-4 py-2"
                     onClick={() => {
                       let url = null;
                       if (sug.title === "Kal Sarpa Dosha Shanti Pujan") {

@@ -13,7 +13,7 @@ export default async function Page({ searchParams }) {
 
 
   const formData = decodeKundliHash(hash);
-
+console.log("Decoded Form Data:", formData);
   if (!formData) {
     return <p className="text-center">Invalid or expired link</p>;
   }
