@@ -74,7 +74,7 @@ const SearchLocation = ({ placeholder, onSelect }) => {
         label={t?.kform?.place || "Birth Place"}
         value={searchTerm}
         placeholder={placeholder}
-        className="w-full text-black border rounded-full px-3 py-2 focus:ring-purple-100 focus:ring-1 focus:outline-0 border-gray-300"
+        className="w-full text-black  border rounded-2xl bg-white/90 py-3  px-3 focus:ring-purple-100 focus:ring-1 focus:outline-0 border-gray-300"
         required
         autofill="birthplace"
         onChange={handleSearch}

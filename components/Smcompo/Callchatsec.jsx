@@ -17,14 +17,14 @@ export default function Callchatsec() {
       </div>
       <div className="flex items-center justify-center gap-5">
         <Link href="/chat-with-astrologer" className="head-wrap">
-          <CustomButton aria-label="Chat With Astrologers" type="button" variant={"red"} className="" >
+          <CustomButton aria-label="Chat With Astrologers" type="button" variant={"red"} className=" flex items-center gap-4 rounded-full bg-green-500 px-4 py-2 hover:scale-104 " >
             <svg width="20px" height="20px" viewBox="0 0 16 16" version="1.1" >
               <path fill="#fff" d="M14 14.2c0 0 0 0 0 0 0-0.6 2-1.8 2-3.1 0-1.5-1.4-2.7-3.1-3.2 0.7-0.8 1.1-1.7 1.1-2.8 0-2.8-2.9-5.1-6.6-5.1-3.5 0-7.4 2.1-7.4 5.1 0 2.1 1.6 3.6 2.3 4.2-0.1 1.2-0.6 1.7-0.6 1.7l-1.2 1h1.5c1.6 0 2.9-0.5 3.7-1.1 0 0.1 0 0.1 0 0.2 0 2 2.2 3.6 5 3.6 0.2 0 0.4 0 0.6 0 0.4 0.5 1.7 1.4 3.4 1.4 0.1-0.1-0.7-0.5-0.7-1.9zM7.4 1c3.1 0 5.6 1.9 5.6 4.1s-2.6 4.1-5.8 4.1c-0.2 0-0.6 0-0.8 0h-0.3l-0.1 0.2c-0.3 0.4-1.5 1.2-3.1 1.5 0.1-0.4 0.1-1 0.1-1.8v-0.3c-1-0.8-2.1-2.2-2.1-3.6 0-2.2 3.2-4.2 6.5-4.2z"></path>
             </svg>
-            <span className="text-xs text-rose-600"> {t?.comfree?.btn1 || "Chat With Astrologers"}</span></CustomButton></Link>
+            <span className="text-md text-white"> {t?.comfree?.btn1 || "Chat With Astrologers"}</span></CustomButton></Link>
 
         <Link href="/talk-to-astrologer" className="head-wrap">
-          <CustomButton aria-label="Talk To Astrologers" type="button" variant={"red"} className="" >
+          <CustomButton aria-label="Talk To Astrologers" type="button" variant={"red"} className="flex items-center gap-4 rounded-full bg-rose-500 hover:scale-104 px-4 py-2 " >
 
             <svg width={20} height={20} viewBox="0 0 16 16" version="1.1" className="si-glyph si-glyph-call">
 
@@ -35,7 +35,7 @@ export default function Callchatsec() {
                 </path>
               </g>
             </svg>
-            <span className="text-xs text-rose-600"> {t?.comfree?.btn2 || "Talk To Astrologers"}</span></CustomButton>
+            <span className="text-md text-white"> {t?.comfree?.btn2 || "Talk To Astrologers"}</span></CustomButton>
         </Link>
       </div>
     </div>

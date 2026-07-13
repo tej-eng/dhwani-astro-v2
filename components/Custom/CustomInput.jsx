@@ -5,7 +5,7 @@ const CustomInput = forwardRef(
   ({ label, type = "text", error, ...props }, ref) => {
     return (
       <div className="w-full space-y-1 flex flex-col">
-        {label && <label className="text-sm font-semibold">{label}</label>}
+        {label && <label className="text-sm text-black font-semibold">{label}</label>}
 
         <input
           ref={ref} // ✅ MUST for RHF

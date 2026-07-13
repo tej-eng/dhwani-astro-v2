@@ -56,7 +56,7 @@ export default function CategoryServices({ categorySlug }) {
               key={heal.id}
               className="element-item head-wrap cat-Service rounded-4xl overflow-hidden bg-[#892be226] shadow-xl text-center"
             >
-              <div className="relative w-full overflow-hidden sm:h-50 h-35">
+              <div className="relative w-full overflow-hidden sm:h-30 h-25">
                 <Image
                   src={`https://dhwaniastro.com${heal.image}`}
                   alt="heal image"

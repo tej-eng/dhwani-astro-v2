@@ -19,19 +19,18 @@ const SwiperStyles = dynamic(
 );
 
 export default function Banner() {
-  const { data, loading } = useQuery(GET_BANNERS, {
-    variables: {
-      language: "en", 
-    },
-  });
+const { data } = useQuery(GET_BANNERS, {
+  variables: { language: "en" },
+  fetchPolicy: "cache-first",
+});
 
   const banners = data?.getBanners?.data || [];
 
-  if (loading) {
-    return (
-      <div className="w-full h-[230px] sm:h-[215px] lg:h-[450px] bg-gray-100 animate-pulse" />
-    );
-  }
+ if (!banners.length) {
+  return (
+    <div className="w-full h-[230px] sm:h-[215px] lg:h-[450px] bg-gray-100 animate-pulse" />
+  );
+}
 
   return (
     <div className="slider-banner-home w-full overflow-hidden">
@@ -52,19 +51,21 @@ export default function Banner() {
         autoHeight={false}
         className="mySwiper w-full"
       >
-        {banners.map((banner) => (
-          <SwiperSlide key={banner.id}>
-            <div className="relative w-full h-[230px] sm:h-[215px] lg:h-[450px]">
-              <Image
-            src={`https://dhwaniastro.com${banner.imageUrl}`}
-                alt={banner.title || "Banner"}
-                fill
-                priority
-                className="object-cover"
-              />
-            </div>
-          </SwiperSlide>
-        ))}
+     {banners.map((banner, index) => (
+  <SwiperSlide key={banner.id}>
+    <div className="relative w-full h-[230px] sm:h-[215px] lg:h-[450px]">
+      <Image
+        src={`https://dhwaniastro.com${banner.imageUrl}`}
+        alt={banner.title || "Banner"}
+        fill
+        priority={index === 0}
+        loading={index === 0 ? "eager" : "lazy"}
+        className="object-cover"
+        sizes="100vw"
+      />
+    </div>
+  </SwiperSlide>
+))}
       </Swiper>
     </div>
   );

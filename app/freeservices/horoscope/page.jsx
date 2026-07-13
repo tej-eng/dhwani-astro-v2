@@ -25,7 +25,6 @@ export const metadata = {
   },
 };
 
-
 export default async function HoroscopePage() {
   const horoscopezod = [
     { name: "Aries", img: "/ds-img/ARIESn.webp", indate: "Mar 21 - Apr 19" },
@@ -36,26 +35,36 @@ export default async function HoroscopePage() {
     { name: "Virgo", img: "/ds-img/virgon.webp", indate: "Aug 23 - Sep 22" },
     { name: "Libra", img: "/ds-img/LIBRAn.webp", indate: "Sep 23 - Oct 22" },
     { name: "Scorpio", img: "/ds-img/Scorpio.webp", indate: "Oct 23 - Nov 21" },
-    { name: "Sagittarius", img: "/ds-img/SAGITTARIUSn.webp", indate: "Nov 22 - Dec 21" },
-    { name: "Capricorn", img: "/ds-img/CAPRICORNn.webp", indate: "Dec 22 - Jan 19" },
-    { name: "Aquarius", img: "/ds-img/Aquariusn.webp", indate: "Jan 20 - Feb 18" },
+    {
+      name: "Sagittarius",
+      img: "/ds-img/SAGITTARIUSn.webp",
+      indate: "Nov 22 - Dec 21",
+    },
+    {
+      name: "Capricorn",
+      img: "/ds-img/CAPRICORNn.webp",
+      indate: "Dec 22 - Jan 19",
+    },
+    {
+      name: "Aquarius",
+      img: "/ds-img/Aquariusn.webp",
+      indate: "Jan 20 - Feb 18",
+    },
     { name: "Pisces", img: "/ds-img/PISCESn.webp", indate: "Feb 19 - Mar 20" },
   ];
 
   return (
     <>
-        <ZodiacProvider>
-      <div className="flex flex-col max-w-7xl gap-8 justify-center">
-
-
-        <HoroscopeClient horoscopezod={horoscopezod} />
-        <div id="zodiac">
-          <ZodiacServer />
+      <ZodiacProvider>
+        <div className="flex flex-col max-w-7xl gap-8 justify-center">
+          <HoroscopeClient horoscopezod={horoscopezod} />
+          <div id="zodiac">
+            <ZodiacServer />
+          </div>
+          <div>
+            <Freereport />
+          </div>
         </div>
-        <div>
-          <Freereport />
-        </div>
-      </div>
       </ZodiacProvider>
     </>
   );
