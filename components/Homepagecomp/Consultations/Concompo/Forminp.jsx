@@ -254,7 +254,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
     <>
       <div
         className={`flex text-black flex-col w-full border border-gray-100 bg-white max-w-5xl shadow-lg rounded-2xl px-4 py-5
-        ${pathname.startsWith("/inHealing") ? "mt-0 " : "mt-30"} `}
+        ${pathname.startsWith("/inHealing") ? "mt-0 " : "mt-0"} `}
       >
         {/* <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
@@ -290,7 +290,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 value={formDat.name}
                 onChange={handleChange}
                 bgredcolor="white"
-                className="w-[100%] md:w-[80%] "
+                className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2 "
               />
             </div>
 
@@ -303,7 +303,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 onChange={handleChange}
                 bgredcolor="white"
                 required
-                className="w-[100%] md:w-[80%] "
+                className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2 "
               />
             </div>
 
@@ -316,7 +316,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 onChange={handleChange}
                 bgredcolor="white"
                 required
-                className="w-[100%] md:w-[80%] "
+                className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2 "
               />
             </div>
 
@@ -329,7 +329,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 onChange={handleChange}
                 bgredcolor="white"
                 required
-                className="w-[100%] md:w-[80%] "
+                className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2  "
                 placeholder="Write City/Town, State, Country of Birth"
               />
             </div>
@@ -343,7 +343,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 onChange={handleChange}
                 bgredcolor="white"
                 required
-                className="w-[100%] md:w-[80%] "
+                className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2  "
                 placeholder="Enter your email address"
               />
             </div>
@@ -352,7 +352,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
-                <select className="border border-gray-600 h-auto  rounded-l-md p-1 text-base bg-white w-15 mb-1">
+                <select className="border border-gray-400 h-auto  rounded-l-lg p-1 text-base bg-white w-15 mb-1">
                   <option value="+91">IN</option>
                 </select>
                 <CustomInput
@@ -363,7 +363,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                   onChange={handleChange}
                   bgredcolor="white"
                   required
-                  className="w-[100%] md:w-[80%] rounded-l-md "
+                  className="w-[100%] md:w-[90%] border border-gray-300 rounded-full text-xs px-3 py-2 "
                   placeholder="123456789"
                 />
               </div>
@@ -411,7 +411,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
             </div>
           </div>
 
-          <CustomButton className="rounded-xl bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-2 text-center items-center justify-center" type="submit" disabled={bookingLoading }>
+          <CustomButton className="rounded-full bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-4 text-center items-center justify-center" type="submit" disabled={bookingLoading }>
             {bookingLoading ? "Processing..." : "Continue"}
           </CustomButton>
         </form>

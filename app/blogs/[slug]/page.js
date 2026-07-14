@@ -47,15 +47,15 @@ export default function BlogDetail() {
   }
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 py-10">
-      <div className="flex flex-col gap-6">
+    <section className="w-full max-w-6xl border border-gray-200 shadow-xl p-5 px-8 rounded-2xl mx-auto px-4 py-10">
+      <div className="flex flex-col gap-2">
         {/* Title */}
         <h1 className="text-2xl md:text-4xl font-bold text-black">
           {blog.title}
         </h1>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 text-sm text-gray-600">
+        <div className="flex items-center gap-3 text-xs text-gray-600">
           <span>{formatDate(blog.createdAt)}</span>
 
           <span>• Posted By DhwaniAstro</span>
@@ -91,7 +91,7 @@ export default function BlogDetail() {
 
         {/* Content */}
         <div
-          className="prose max-w-none prose-headings:text-black text-black prose-p:text-black"
+          className="prose max-w-none prose-headings:text-black text-black prose-p:text-black mt-8"
           dangerouslySetInnerHTML={{
             __html: blog.content || "",
           }}
