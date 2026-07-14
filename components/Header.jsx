@@ -109,18 +109,18 @@ const LogOut = async () => {
             width={160}
             height={40}
             alt="Logo"
-            className="w-28 sm:w-37"
+            className="w-25  sm:w-37"
             priority
           />
         </Link>
       </div>
 
-      <div className="items-center justify-end hidden w-1/3 gap-4 sm:flex sm:gap-2 sm:w-1/2">
+      <div className="items-center    justify-end sm:gap-4 flex gap-2 sm:gap-2 ">
         <LanguageSwitcher />
 
         <Link
           href="/blogs"
-          className="flex items-center gap-2 px-3 py-1 bg-[#f5f5a8] cursor-pointer text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
+          className="flex items-center text-[11px] px-2 py-0  sm:px-3 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
         >
           Blog
         </Link>
@@ -128,7 +128,7 @@ const LogOut = async () => {
         {!isLoggedIn && (
           <button
             onClick={openSignInModal}
-            className="px-3 py-1 cursor-pointer text-sm font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
+            className="px-3 py-1 cursor-pointer text-[11px] sm:text-sm sm:font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
           >
             {t?.header?.signIn || "Sign In"}
           </button>
@@ -142,8 +142,8 @@ const LogOut = async () => {
             <button className="flex items-center gap-2">
               <Image
                 src="/ds-img/user2.webp"
-                width={35}
-                height={35}
+                width={25}
+                height={25}
                 alt="User"
               />
 
@@ -151,68 +151,65 @@ const LogOut = async () => {
             </button>
 
             {isUserOpen && (
-              <div className="absolute -right-15 top-full p-2 bg-purple-800  w-55 rounded-2xl  shadow-2xl border border-gray-600 z-50 overflow-hidden">
-                <div className="flex items-center gap-3 px-3 py-2 shadow-2xl bg-purple-500 rounded-full ">
+              <div className="absolute -right-2 sm:-right-15 top-full p-2 bg-purple-800 w-40  sm:w-55 rounded-2xl  shadow-2xl border border-gray-600 z-50 overflow-hidden">
+                <div className="flex items-center gap-3 sm:px-3 sm:py-2 shadow-2xl bg-purple-500 rounded-full ">
                   <Image
                     src="/ds-img/user2.webp"
-                    width={45}
-                    height={45}
+                    width={25}
+                    height={25}
                     alt="User"
-                    className="rounded-full h-10 w-10"
+                    className="rounded-full sm:h-10 sm:w-10"
                   />
 
                   <div>
-                    <h3 className="font-semibold text-white">
+                    <h3 className="sm:font-semibold  text-white">
                       {user?.name || "User"}
                     </h3>
 
-                    <p className="text-sm text-gray-300">
-                      {user?.mobile || ""}
-                    </p>
                   </div>
                 </div>
 
                 {/* MENU */}
                 <div className="py-2 space-y-2">
-                  <div className="flex bg-violet-300 rounded-2xl px-2 py-2 flex-col gap-1">
+                  <div className="flex bg-violet-300 rounded-2xl sm:px-2 sm:py-2 flex-col sm:gap-1">
                     <Link
                       href="/dashboard/profile"
-                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       👤 Profile
                     </Link>
 
                     <Link
                       href="/dashboard/account"
-                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       🪪 Account
                     </Link>
 
                     <Link
                       href="/dashboard/chat-history"
-                      className="flex items-center  text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center  text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       💬 Chat History
                     </Link>
 
                     <Link
                       href="/dashboard/call-history"
-                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       📞 Call History
                     </Link>
 
                     <Link
                       href="/dashboard/transaction"
-                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       🛒 Transaction
                     </Link>
 
                     <Link
                       href="/dashboard/my-services"
-                      className="flex items-center text-sm font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       ✨ My Services
                     </Link>
@@ -221,7 +218,7 @@ const LogOut = async () => {
                   <button
                     onClick={LogOut}
                     disabled={logoutLoading}
-                    className=" px-6 py-1 w-fit cursor-pointer justify-self-center text-sm hover:scale-104 bg-red-500 text-center flex justify-center rounded-full  text-white hover:bg-red-400"
+                    className=" px-6 py-1 w-fit cursor-pointer justify-self-center text-xs sm:text-sm hover:scale-104 bg-red-500 text-center flex justify-center rounded-full  text-white hover:bg-red-400"
                   >
                     {logoutLoading
                       ? "Signing Out..."

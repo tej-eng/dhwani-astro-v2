@@ -113,7 +113,7 @@ export default function Testimon() {
           {testim.map((test, i) => (
             <SwiperSlide key={test.id} className="head-wrap">
               <Link href="#">
-                <div className="relative bg-white shadow-lg rounded-lg p-3 text-center">
+                <div className="relative bg-gradient-to-r from-indigo-100 via-purple-100 to-violet-200 bg-white shadow-lg rounded-lg p-3 text-center">
                   <div className="absolute left-1/2 -top-10 transform -translate-x-1/2">
                     <Image
                       src={getImageUrl(test.image)}
@@ -135,20 +135,20 @@ export default function Testimon() {
                       <div className="text-yellow-400">
                         {Array.from({ length: Number(test.rating || 0) }).map(
                           (_, index) => (
-                            <span key={index}>⭐</span>
+                            <span className="text-[10px] sm:text-md" key={index}>⭐</span>
                           ),
                         )}
                       </div>
 
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] text-gray-500">
                         ({test.rating}/5)
                       </span>
                     </div>
 
-                    <h3 className="text-xs sm:text-sm text-gray-500 mt-1">
+                    <h3 className="text-[10px] sm:text-sm text-gray-500 mt-1">
                       {test.address}
                     </h3>
-                    <p className="text-gray-600 mt-3 text-xs sm:text-sm">
+                    <p className="text-gray-600 p-s shadow-xl rounded-2xl overflow-y-auto h-15 mt-3 text-xs sm:text-sm">
                       {test.content}
                     </p>
                   </div>

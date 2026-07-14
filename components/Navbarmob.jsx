@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/app/context/LangContext";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { AuthContext } from "@/app/context/authContext";
 
 const GET_FREE_SERVICES = gql`
   query GetFreeServices {
@@ -25,6 +26,8 @@ const GET_FREE_SERVICES = gql`
   }
 `;
 export default function Navbarmob() {
+    const { user, setUser, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  
   useScrollZoom(".head-wrap");
   const { messages: t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -129,10 +132,10 @@ export default function Navbarmob() {
     <>
       <button
         aria-label="Open Menu"
-        className="sm:hidden fixed top-3 left-3 z-50 text-white"
+        className="sm:hidden fixed top-4 left-3 z-50 text-white"
         onClick={() => setIsOpen(true)}
       >
-        <svg width={18} height={18} viewBox="0 0 640 640">
+        <svg width={18} height={18} fill="#fff" viewBox="0 0 640 640">
           <path d="M64 160C64 142.3 78.3 128 96 128L480 128C497.7 128 512 142.3 512 160C512 177.7 497.7 192 480 192L96 192C78.3 192 64 177.7 64 160zM128 320C128 302.3 142.3 288 160 288L544 288C561.7 288 576 302.3 576 320C576 337.7 561.7 352 544 352L160 352C142.3 352 128 337.7 128 320zM512 480C512 497.7 497.7 512 480 512L96 512C78.3 512 64 497.7 64 480C64 462.3 78.3 448 96 448L480 448C497.7 448 512 462.3 512 480z" />
         </svg>
       </button>
@@ -141,7 +144,7 @@ export default function Navbarmob() {
         className={`sm:hidden fixed inset-0 z-51 bg-[#00000076] bg-opacity-50 transition-opacity duration-300 ease-in-out ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
       >
         <div
-          className={`fixed flex flex-col gap-5 top-0 left-0 p-6 h-full w-[60%] sm:w-[50%] md:w-[40%]  bg-[#f5f5a8] shadow-lg transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
+          className={`fixed flex flex-col gap-5 top-0 left-0 p-6 h-full w-[60%] sm:w-[50%] rounded-r-xl md:w-[40%]  bg-[#f5f5a8] shadow-lg transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-50 overflow-y-auto`}
         >
           <div className="flex items-start justify-between">
             <div className="flex gap-3">
@@ -152,7 +155,7 @@ export default function Navbarmob() {
                 priority
                 alt="user image"
               />
-              <span className="text-sm font-bold text-black">Hello User</span>
+              <span className="text-sm font-bold text-black">Hello {user?.name}</span>
             </div>
             <button
               aria-label="Close Menu"
@@ -160,8 +163,7 @@ export default function Navbarmob() {
               onClick={() => setIsOpen(false)}
             >
               <svg
-                width="800px"
-                height="800px"
+             width={18} height={18}
                 viewBox="0 0 15 15"
                 version="1.1"
                 id="cross"
@@ -214,8 +216,7 @@ export default function Navbarmob() {
                 <svg
                   className={`transition-transform ${isDhwaniOpen ? "rotate-180" : ""}`}
                   fill="#000000"
-                  width="800px"
-                  height="800px"
+               width={18} height={18}
                   viewBox="0 -6 524 524"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -265,8 +266,7 @@ export default function Navbarmob() {
                 <svg
                   className={`transition-transform ${isDhwaniOpen ? "rotate-180" : ""}`}
                   fill="#000000"
-                  width="800px"
-                  height="800px"
+                 width={18} height={18}
                   viewBox="0 -6 524 524"
                   xmlns="http://www.w3.org/2000/svg"
                 >

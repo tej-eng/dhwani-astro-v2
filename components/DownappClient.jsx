@@ -14,7 +14,7 @@ export default function DownappClient({ messages }) {
       <h1
         className="text-[#2f1254] head-wrap text-md sm:text-xl lg:text-2xl text-center font-semibold"
         dangerouslySetInnerHTML={{
-          __html: messages?.download?.heading || "Download Dhwani App",
+          __html: messages?.download?.heading || "• Download Dhwani App •",
         }}
       />
 
@@ -29,7 +29,7 @@ export default function DownappClient({ messages }) {
           </div>
 
           <div className="down-app-scan   rounded-lg p-1 md:p-5  flex flex-col gap-1 items-center justify-between">
-            <h1 dangerouslySetInnerHTML={{ __html: t?.download?.tagline || "about download" }} className="text-black head-wrap text-[20px] align-center"/> 
+            <h1 dangerouslySetInnerHTML={{ __html: t?.download?.tagline || "about download" }} className="text-black head-wrap text-[18px] align-center"/> 
 
             <div className="grid grid-cols-2 gap-10 z-10">
               <div className="flex flex-col items-center justify-center">

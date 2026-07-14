@@ -97,11 +97,11 @@ export default function PromisesCredentials() {
     <section className="relative py-8 bg-linear-to-b from-[#f6f0ff] to-[#ede4ff]">
       <div className="max-w-7xl mx-auto px-4">
 
-        <h2 className="text-center text-xl md:text-2xl font-semibold text-[#2a0e44] mb-8">
+        <h2 className="text-center text-[15px] md:text-2xl font-semibold text-[#2a0e44] mb-8">
           • Dhwani Astro Promises & Credentials At a Glance •
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-5">
           {PROMISES.map((item, index) => (
             <Card key={index} title={item.title} icon={item.icon} />
           ))}
@@ -122,14 +122,14 @@ export default function PromisesCredentials() {
           <div className="relative rounded-2xl px-10 py-8 flex flex-col items-center justify-center bg-white/80">
 
             <div className="flex items-center gap-3 mb-6">
-              <Image src="/ds-img/cred5.webp" alt="" width={50} height={50} />
-              <div className="text-purple-950 text-2xl font-serif font-semibold text-center">
+              <Image className="w-12 h-10 hidden" src="/ds-img/cred5.webp" alt="" width={50} height={50} />
+              <div className="text-purple-950 text-xs sm:text-2xl font-serif font-semibold text-center">
                 Lab Certified and Abhimantarit Products by Expert Astrologers
               </div>
-              <Image src="/ds-img/cred2.webp" alt="" width={50} height={50} />
+              <Image className="w-12 h-10 hidden" src="/ds-img/cred2.webp" alt="" width={50} height={50} />
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6 text-center">
+            <div className="grid grid-cols-2 gap-6 text-center">
               <Stat img="/ds-img/cred6.webp" value="800+" label="Astrologers" />
               <Stat img="/ds-img/cred8.webp" value="200K" label="Kundalis Served" />
               <Stat img="/ds-img/cred7.webp" value="50 Lakh" label="Customer Base" />
@@ -160,9 +160,9 @@ function Card({ icon, title }) {
 
       <div className="relative flex flex-col gap-2">
         <div className="flex justify-center">
-          <Image src={icon} alt={title} width={50} height={50} />
+          <Image className="w-12 h-10" src={icon} alt={title} width={50} height={50} />
         </div>
-        <p className="text-[#f3e6b8] font-medium text-[15px]">
+        <p className="text-[#f3e6b8] sm:font-medium text-xs sm:text-[15px]">
           {title}
         </p>
       </div>
@@ -178,14 +178,14 @@ function Stat({ img, value, label }) {
   return (
     <div
       ref={ref}
-      className="flex border-r border-purple-900 pr-3 items-center gap-2"
+      className="flex flex-col sm:flex-row sm:border-r border-purple-900 pr-3 items-center gap-2"
     >
-      <Image src={img} alt={label} width={50} height={50} />
+      <Image className="w-11 h-9" src={img} alt={label} width={50} height={50} />
       <div>
-        <p className="text-3xl font-bold font-serif text-purple-950">
+        <p className="sm:text-3xl font-bold font-serif text-purple-950">
           {formatStatValue(count, value)}
         </p>
-        <p className="text-xl font-semibold font-serif text-purple-950 mt-1">
+        <p className="sm:text-xl text-xs font-semibold font-serif text-purple-950 mt-1">
           {label}
         </p>
       </div>

@@ -42,12 +42,12 @@ export default function Remecalc() {
         <div className="grid grid-cols-1 items-start justify-center gap-4 sm:gap-5 lg:gap-8 w-full">
 
           <div className="heading-astro-remed relative flex flex-col w-full gap-2">
-            <h1 dangerouslySetInnerHTML={{ __html: t?.remedies?.heading || "About Heading" }} className="head-wrap relative text-[#2f1254] text-md sm:text-xl lg:text-2xl py-1 sm:py-0 lg:py-0 text-center font-semibold">
+            <h1 dangerouslySetInnerHTML={{ __html: t?.remedies?.heading || "About Heading" }} className="head-wrap relative text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
 
             </h1>
 
             <div className="flex  items-center gap-2 justify-start w-full">
-              <div className="relative py-3 grid w-full  items-center justify-center grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 z-10">
+              <div className="relative py-3 grid w-full  items-center justify-center grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 z-10">
                 {remedbox.map((rembx) => (
                   <Link href={{
                     pathname: rembx.link,
@@ -67,11 +67,11 @@ export default function Remecalc() {
           </div>
 
           <div className="heading-astro-remed relative flex flex-col w-full gap-2">
-            <h1 dangerouslySetInnerHTML={{ __html: t?.doshas?.heading || "About Dosha" }} className="head-wrap relative text-[#2f1254] text-md sm:text-xl lg:text-2xl py-1 sm:py-0 lg:py-0 text-center font-semibold">
+            <h1 dangerouslySetInnerHTML={{ __html: t?.doshas?.heading || "About Dosha" }} className="head-wrap relative text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
             </h1>
 
             <div className="flex  items-center gap-2 justify-start w-full">
-              <div className="relative py-3 grid w-full  items-center justify-center grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 z-10">
+              <div className="relative py-3 grid w-full  items-center justify-center grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 z-10">
                 {remdosha.map((remd) => (
                   <Link href={{
                     pathname: remd.link,
@@ -92,9 +92,9 @@ export default function Remecalc() {
         </div>
 
         <div className="astro-free-calculator w-full  flex flex-col gap-2 items-center justify-center">
-          <h1 dangerouslySetInnerHTML={{ __html: t?.calculator?.heading } || "About Calcculator"} className="relative head-wrap text-[#2f1254] text-md sm:text-xl lg:text-2xl py-1 sm:py-0 lg:py-0  text-center font-semibold">
+          <h1 dangerouslySetInnerHTML={{ __html: t?.calculator?.heading } || "About Calcculator"} className="relative head-wrap text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
           </h1>
-          <div className="relative py-3 grid  max-w-7xl w-full items-center justify-center grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 z-10">
+          <div className="relative py-3 grid  max-w-7xl w-full items-center justify-center grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 z-10">
             {calbox.map((calcu, index) => (
               <Link href={calcu.link ? { pathname: calcu.link, query: { slug: calcu.slug }, } : `/${calcu.slug}`}
                 key={index} className="calculator-card-top head-wrap hover:scale-105 sm:h-26 h-23  bg-linear-to-r from-orange-100 to-yellow-200 rounded-xl shadow-lg p-3 text-center flex flex-col items-center justify-center">

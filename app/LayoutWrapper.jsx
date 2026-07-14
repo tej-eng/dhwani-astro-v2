@@ -16,7 +16,7 @@ export default function LayoutWrapper({ children }) {
         className={
           isChatPage
             ? "w-screen h-screen"
-            : "flex justify-center w-full pt-12 lg:pt-37 md:pt-37"
+            : "flex justify-center w-full pt-11 lg:pt-37 md:pt-37"
         }
       >
         {children}

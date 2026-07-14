@@ -3,7 +3,34 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function BlogSidebar({ categories, recentBlogs }) {
+
+export default function BlogSidebar({ categories, recentBlogs, loading }) {
+    if (loading) {
+    return (
+      <section className="relative p-2 sm:p-5 flex w-full flex-col items-center">
+        <div className="w-full xl:w-[90%] mb-5">
+          <div className="h-12 w-full rounded-full bg-gray-200 animate-pulse" />
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 w-full xl:w-[90%]">
+          {[...Array(4)].map((_, index) => (
+            <div
+              key={index}
+              className="rounded-3xl overflow-hidden shadow bg-white"
+            >
+              <div className="h-35 sm:h-50 bg-gray-200 animate-pulse" />
+
+              <div className="p-3">
+                <div className="h-5 w-3/4 mx-auto rounded bg-gray-200 animate-pulse mb-4" />
+
+                <div className="h-9 w-[60%] mx-auto rounded-full bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
   return (
     <div className="space-y-10">
       {/* Categories */}
