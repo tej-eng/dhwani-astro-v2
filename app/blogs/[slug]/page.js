@@ -16,6 +16,7 @@ export default function BlogDetail() {
   const { data, loading, error } = useQuery(GET_BLOG_BY_SLUG, {
     variables: {
       slug,
+      fetchPolicy: "cache-first",
     },
     skip: !slug,
   });
@@ -82,7 +83,7 @@ export default function BlogDetail() {
               src={`https://www.dhwaniastro.com${blog.featuredImage}`}
               className="bl-im rounded-2xl"
               width={400}
-              height={250}
+              height={200}
               alt={blog.title}
               priority
             />

@@ -5,6 +5,7 @@ import { GET_BLOG_CATEGORIES, GET_BLOGS } from "../graphql/gqlQuery";
 
 import BlogSidebar from "./BlogSidebar";
 import { BlogProvider } from "../context/blogContext";
+import Callchatsec from "@/components/Smcompo/Callchatsec";
 
 export default function BlogLayout({ children }) {
   const { data: categoryData } = useQuery(GET_BLOG_CATEGORIES);
@@ -33,6 +34,7 @@ export default function BlogLayout({ children }) {
 
           <BlogSidebar categories={categories} recentBlogs={recentBlogs} />
         </div>
+        <Callchatsec/>
       </div>
     </BlogProvider>
     </div>
