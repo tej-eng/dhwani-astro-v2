@@ -46,7 +46,7 @@ export default function ProblembaseClient({ services }) {
         <div className="w-full max-w-7xl">
           {/* Heading */}
           <div className="head-wrap">
-            <h2 className="text-[#2f1254] text-center text-lg sm:text-2xl font-semibold mb-6">
+            <h2 className="text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
               {messages?.problem?.heading ||
                 "Get expert astrological guidance to overcome your problems & challenges"}
             </h2>

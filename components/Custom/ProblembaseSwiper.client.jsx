@@ -31,11 +31,11 @@ export default function ProblembaseSwiper({ categorySlug }) {
 
   return (
     <div className="slider-horo-home w-full">
-      <div className="absolute top-[50%] sm:left-[-45px] left-[5px] -translate-y-1/2 z-10">
+      <div className="absolute top-[50%] sm:left-[-45px] -left-[12px] -translate-y-1/2 z-10">
         <button className="swiper-button-prev-blg">‹</button>
       </div>
 
-      <div className="absolute top-[50%] sm:right-[-45px] right-[5px] -translate-y-1/2 z-10">
+      <div className="absolute top-[50%] sm:right-[-45px] -right-[12px] -translate-y-1/2 z-10">
         <button className="swiper-button-next-blg">›</button>
       </div>
 

@@ -121,16 +121,16 @@ export default function Blogsection() {
                         ? blog.featuredImage
                         : `https://www.dhwaniastro.com${blog.featuredImage}`
                     }
-                    className="bl-im rounded-2xl"
+                    className="w-full sm:h-55 h-25 rounded-2xl"
                     width={400}
-                    height={250}
+                    height={400}
                     alt={blog.title}
                   />
 
                   <div className="bl-con px-2 flex flex-col justify-between">
                     <h6 className="bl-h line-clamp-2">{blog.title}</h6>
 
-                    <div className="bldate gap-2 py-1 items-center justify-between">
+                    <div className="flex flex-col sm:flex-row w-full items-center justify-between sm:gap-2 sm:py-1">
                       <span className="bl-d-t flex items-center text-black">
                         <svg
                           fill="#000000"
@@ -153,18 +153,18 @@ export default function Blogsection() {
                       <CustomButton
                         aria-label="Read Blog"
                         variant="purple"
-                        className="text-xs w-fit px-5 rounded-full place-self-center"
+                        className="text-xs w-fit sm:px-5 px-4 py-1 rounded-full place-self-center"
                       >
                         Read Blog
                       </CustomButton>
                     </div>
                   </div>
 
-                  {blog.categories?.length > 0 && (
+                  {/* {blog.categories?.length > 0 && (
                     <div className="review_upper_image">
                       <span>{blog.categories[0]?.category?.name}</span>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </Link>
             </SwiperSlide>
@@ -174,7 +174,7 @@ export default function Blogsection() {
 
       <Link
         href={`/blogs`}
-        className="underline shadow-bottom-xl px-3 py-2 text-black"
+        className="underline shadow-bottom-xl font-extralight px-3 py-2  text-gray-600"
       >
         View More
       </Link>

@@ -17,9 +17,9 @@ export default function AboutDirectorClient({ messages }) {
           __html: t?.about?.heading || "",
         }}
       ></h1>
-      <div className="grid grid-cols-7 gap-4 items-center">
+      <div className="sm:grid sm:grid-cols-7 flex flex-col gap-4 items-center">
 
-        <div className="col-span-2 w-full  object-contain h-60 overflow-hidden rounded-xl ">
+        <div className="col-span-2 w-full  object-contain h-60 overflow-hidden ">
           <LiteYouTubeEmbed
             id="Z1xtQkosANM"
             title="Founder Video"
@@ -33,13 +33,13 @@ export default function AboutDirectorClient({ messages }) {
             {t?.about?.tagline}
           </h2>
 
-          <p className="text-black" dangerouslySetInnerHTML={{ __html: t?.about?.paragraph }} />
+          <p className="text-black text-sm" dangerouslySetInnerHTML={{ __html: t?.about?.paragraph }} />
 
           <div className="flex items-center gap-5 mt-4">
             <Image src="/ds-img/legacy.webp" width={56} height={60} alt="Legacy" />
             <div className="text-black">
-              <h4>{t?.about?.legacyTitle}</h4>
-              <p>{t?.about?.legacySubtitle}</p>
+              <h4 className="text-sm font-medium">{t?.about?.legacyTitle}</h4>
+              <p className="text-xs ">{t?.about?.legacySubtitle}</p>
             </div>
           </div>
         </div>

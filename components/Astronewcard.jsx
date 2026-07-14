@@ -132,13 +132,13 @@ const { socket,loading} = useContext(SocketContext);
   return (
     <section className="flex-col items-center self-center w-full sm:max-w-7xl">
       <div className="flex flex-col items-center justify-center rounded-full px-4 sm:py-4 py-0 sm:max-w-7xl">
-        <h1 dangerouslySetInnerHTML={{ __html: t?.consult?.heading || "Consult with our Top Premium Astrologers" }} className=" text-[#2f1254] text-md sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
+        <h1 dangerouslySetInnerHTML={{ __html: t?.consult?.heading || "Consult with our Top Premium Astrologers" }} className=" text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
         </h1>
         <div className="setup-wrap w-full">
           <div className="relative rounded-xl md:rounded-full z-10 grid items-start justify-center w-full grid-cols-4 gap-1 py-2 mt-3 shadow-lg user-sign-up sm:grid-cols-4 lg:grid-cols-4 sm:gap-6">
             <div className="flex flex-col items-center justify-center gap-2 p-1 text-center service-card-sign rounded-xl sm:p-3">
               <svg fill="#000000" width={30} height={30} viewBox="0 0 24 24" id="user" data-name="Flat Color" className="p-1.5 bg-purple-300 rounded-full"><path id="primary" d="M21,20a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2,6,6,0,0,1,6-6h6A6,6,0,0,1,21,20Zm-9-8A5,5,0,1,0,7,7,5,5,0,0,0,12,12Z"></path></svg>
-              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag1 || "Sign Up with Dhwani Astro" }} className="text-[10px] sm:text-xs text-[#2f1254] sm:font-semibold">
+              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag1 || "Sign Up with Dhwani Astro" }} className="text-[9px] sm:text-xs text-[#2f1254] sm:font-semibold">
               </p>
             </div>
 
@@ -146,19 +146,19 @@ const { socket,loading} = useContext(SocketContext);
               <svg width={30} height={30} viewBox="0 0 15 15" fill="none" className="p-1.5 bg-fuchsia-300 rounded-full">
                 <path d="M11 10.5H12.5V9M11 4.5H12.5V6M4 4.5H2.5V6M2.5 9V10.5H4M7.5 9.5C6.39543 9.5 5.5 8.60457 5.5 7.5C5.5 6.39543 6.39543 5.5 7.5 5.5C8.60457 5.5 9.5 6.39543 9.5 7.5C9.5 8.60457 8.60457 9.5 7.5 9.5ZM1.5 2.5H13.5C14.0523 2.5 14.5 2.94772 14.5 3.5V11.5C14.5 12.0523 14.0523 12.5 13.5 12.5H1.5C0.947716 12.5 0.5 12.0523 0.5 11.5V3.5C0.5 2.94772 0.947715 2.5 1.5 2.5Z" stroke="#000000" />
               </svg>
-              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag2 || "Put Money in Dhwani Astro Wallet" }} className="text-[10px] sm:text-xs text-[#2f1254] sm:font-semibold">
+              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag2 || "Put Money in Dhwani Astro Wallet" }} className="text-[9px] sm:text-xs text-[#2f1254] sm:font-semibold">
               </p>
             </div>
 
             <div className="flex text-black text flex-col items-center justify-center gap-2 p-1 text-center service-card-sign rounded-xl sm:p-3">
               <svg fill="#000000" width={30} height={30} viewBox="0 0 24 24" version="1.2" baseProfile="tiny" className="p-1.5 bg-purple-300 rounded-full"><path d="M12 14c1.381 0 2.631-.56 3.536-1.465.904-.904 1.464-2.154 1.464-3.535s-.56-2.631-1.464-3.535c-.905-.905-2.155-1.465-3.536-1.465s-2.631.56-3.536 1.465c-.904.904-1.464 2.154-1.464 3.535s.56 2.631 1.464 3.535c.905.905 2.155 1.465 3.536 1.465zM20 15c.69 0 1.315-.279 1.768-.731.453-.452.732-1.077.732-1.769 0-.69-.279-1.315-.732-1.768-.453-.453-1.078-.732-1.768-.732-.691 0-1.316.279-1.769.732-.452.453-.731 1.078-.731 1.768 0 .691.279 1.316.731 1.769s1.078.731 1.769.731zM20 15.59c-1.331 0-2.332.406-2.917.968-1.115-.917-2.878-1.558-5.083-1.558-2.266 0-3.995.648-5.092 1.564-.596-.565-1.608-.974-2.908-.974-2.188 0-3.5 1.09-3.5 2.182 0 .545 1.312 1.092 3.5 1.092.604 0 1.146-.051 1.623-.133l-.04.27c0 1 2.406 2 6.417 2 3.762 0 6.417-1 6.417-2l-.02-.255c.463.073.995.118 1.603.118 2.051 0 3.5-.547 3.5-1.092 0-1.092-1.373-2.182-3.5-2.182zM4 15c.69 0 1.315-.279 1.768-.732.453-.453.732-1.078.732-1.768 0-.689-.279-1.314-.732-1.768-.453-.452-1.078-.732-1.768-.732-.691 0-1.316.28-1.769.732-.452.454-.731 1.079-.731 1.768 0 .69.279 1.315.731 1.768.453.453 1.078.732 1.769.732z" /></svg>
-              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag3 || "Click on Call or Chat" }} className="text-[10px] sm:text-xs text-[#2f1254] sm:font-semibold">
+              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag3 || "Click on Call or Chat" }} className="text-[9px] sm:text-xs text-[#2f1254] sm:font-semibold">
               </p>
             </div>
 
             <div className="flex flex-col items-center justify-center gap-2 p-1 text-center service-card-sign rounded-xl sm:p-3">
               <svg width={30} height={30} viewBox="0 0 16 16" className="p-1.5 bg-violet-300 rounded-full" fill="#000000"><path fillRule="evenodd" clipRule="evenodd" d="M4.111 2.18a7 7 0 1 1 7.778 11.64A7 7 0 0 1 4.11 2.18zm.556 10.809a6 6 0 1 0 6.666-9.978 6 6 0 0 0-6.666 9.978zM6.5 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8 11a3 3 0 0 1-2.65-1.58l-.87.48a4 4 0 0 0 7.12-.16l-.9-.43A3 3 0 0 1 8 11z" /></svg>
-              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag4 || "Rate & Review after consultation" }} className="text-[10px] sm:text-xs text-[#2f1254] sm:font-semibold">
+              <p dangerouslySetInnerHTML={{ __html: t?.consult?.tag4 || "Rate & Review after consultation" }} className="text-[9px] sm:text-xs text-[#2f1254] sm:font-semibold">
               </p>
             </div>
           </div>

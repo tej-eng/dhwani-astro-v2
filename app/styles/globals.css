@@ -129,7 +129,10 @@ element.style {
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
-  border-radius: 20%;
+  border-radius: 0%;
+}
+.yt-lite button{
+  margin-left: 1rem;
 }
 
 @keyframes shine-slide {
@@ -814,7 +817,7 @@ body {
 
 .bl-d-t,
 .bl-d-c {
-  font-size: .65rem;
+  font-size: .60rem;
 }
 
 .bl-btn {

@@ -48,8 +48,8 @@ export default function AstrostoreSection() {
 
   return (
     <section className="products_service_new mt-2 sm:max-w-7xl mx-auto w-full p-4">
-      <h1 className="text-[#2f1254] text-md sm:text-xl lg:text-2xl text-center font-semibold mb-6">
-        About Dhwani Shop
+      <h1 className="text-[#2f1254] text-[15px] sm:text-xl lg:text-2xl  py-3 text-center font-semibold">
+        • About Dhwani Shop •
       </h1>
 
       <AstrostoreSlider items={astrostorepro} />
