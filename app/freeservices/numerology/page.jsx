@@ -208,8 +208,9 @@ const handleSubmit = (e) => {
                     onChange={(option) =>
                       updateField("day", option?.value || "")
                     }
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
+menuPortalTarget={
+  typeof document !== "undefined" ? document.body : undefined
+}                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
 
@@ -224,8 +225,9 @@ const handleSubmit = (e) => {
                     onChange={(option) =>
                       updateField("month", option?.value || "")
                     }
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
+menuPortalTarget={
+  typeof document !== "undefined" ? document.body : undefined
+}                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
 
@@ -238,8 +240,9 @@ const handleSubmit = (e) => {
                     onChange={(option) =>
                       updateField("year", option?.value || "")
                     }
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
+menuPortalTarget={
+  typeof document !== "undefined" ? document.body : undefined
+}                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
                 </div>
