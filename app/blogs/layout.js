@@ -19,7 +19,7 @@ export default function BlogLayout({ children }) {
   const recentBlogs = blogs.slice(0, 5);
 
   return (
-    <div className="px-10 shadow-xl  py-2">
+    <div className="sm:px-10 px-5 shadow-xl  py-2">
     <BlogProvider
       value={{
         blogs,
@@ -28,7 +28,7 @@ export default function BlogLayout({ children }) {
         blogsLoading
       }}
     >
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">{children}</div>
 

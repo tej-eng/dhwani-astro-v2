@@ -35,11 +35,11 @@ export default function BlogSidebar({ categories, recentBlogs, loading }) {
     <div className="space-y-10">
       {/* Categories */}
 
-      <div className="blog-cat-nw rounded-2xl md:block">
+      <div className="blog-cat-nw hidden sm:flex rounded-2xl md:block">
         <h6 className="text-xl font-semibold text-center  text-black">
           Category
         </h6>
-        <div className="bl-cat-main-nw grid grid-cols-3 lg:grid-cols-2 gap-3">
+        <div className="bl-cat-main-nw  grid grid-cols-3 lg:grid-cols-2 gap-3">
           {categories.map((category) => (
             <Link
               href={`/blogs/category/${category.slug}`}

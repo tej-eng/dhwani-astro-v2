@@ -7,8 +7,7 @@ import Searchtop from "@/components/Smcompo/Searchtop";
 import { useBlog } from "../context/blogContext";
 
 export default function Blogcomp() {
-const { blogs } = useBlog();
-
+ const { blogs, categories } = useBlog();
 
   const formatDate = (date) => {
     const timestamp = parseInt(date, 10);
@@ -49,18 +48,18 @@ const { blogs } = useBlog();
   }, []);
 
   return (
-    <section className=" relative p-0 sm:pt-4 pt-1 sm:p-5 w-[90%] sm:w-[95%] flex gap-1  flex-col items-center self-center ">
+    <section className=" relative p-0 sm:pt-4 pt-1 sm:p-5 w-[100%] sm:w-[95%] flex gap-1  flex-col items-center self-center ">
       <div className=" sm:hidden w-full mb-1 overflow-hidden">
-        {/* <div className="bl-cat-main-nw flex overflow-auto gap-1">
+        <div className="bl-cat-main-nw flex overflow-auto gap-1">
                     {categories.map((categories, index) => (
                         <Link href="#" key={index} className="text-decoration-none">
                             <div className="category-nw p-1 sm:w-25 w-21 md:w-30 flex flex-col  items-center justify-center">
-                                <div className="bl-cat-nw">{categories.smanme}</div>
+                                <div className="bl-cat-nw h-10 w-4">{categories.smanme}</div>
                                 <h6 className="text-[10px] md:font-semibold text-black text-center">{categories.name}</h6>
                             </div>
                         </Link>
                     ))}
-                </div> */}
+                </div>
       </div>
       <Searchtop />
 
