@@ -187,7 +187,7 @@ export default function PayOPT({
       />
 
       <h3 className="mb-4 text-base font-bold text-center sm:text-lg">
-        Payment Options
+        Payment Options 
       </h3>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">

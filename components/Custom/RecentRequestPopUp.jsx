@@ -205,7 +205,7 @@ export default function RecentRequestPopup({
                   </div>
                 </div>
 
-                {/* SHOW CURRENT MODE PRICING */}
+              
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-xs text-gray-500 uppercase">
                     {mode} Price
@@ -217,7 +217,7 @@ export default function RecentRequestPopup({
                       (item) =>
                         item?.type?.toUpperCase() === mode?.toUpperCase() &&
                         item?.isActive,
-                    )?.offerPrice ||
+                    )?.price ||
                       astrologer?.pricing?.find(
                         (item) =>
                           item?.type?.toUpperCase() === mode?.toUpperCase() &&
