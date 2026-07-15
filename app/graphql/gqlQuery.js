@@ -489,6 +489,7 @@ export const GET_TESTIMONIALS = gql`
         address
         rating
         content
+        createdAt
       }
     }
   }
@@ -598,6 +599,8 @@ export const GET_COUPONS = gql`
       maxDiscount
       minOrderAmount
       description
+      visibility
+      applicable
     }
   }
 `;

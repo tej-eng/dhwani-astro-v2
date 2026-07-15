@@ -199,7 +199,7 @@ const totalBeforeDiscount = amount + gstAmount;
           <div className="bg-white rounded-xl w-[400px] p-5">
 
             <h2 className="font-bold text-lg mb-4">
-              Available Coupons
+              Available Coupons 2
             </h2>
             <button onClick={() => closeCoup()}>X</button>
 

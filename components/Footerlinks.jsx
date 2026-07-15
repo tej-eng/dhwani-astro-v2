@@ -8,29 +8,26 @@ import { useLanguage } from "../app/context/LangContext";
 export default function Footerlinks() {
   const { messages: t } = useLanguage();
   const footlink = [
-    { id: 1, ulname: `${t.footer.horo1}`, link: "/horoscope" },
-    { id: 2, ulname: `${t.footer.horo2}`, link: "/horoscope#zodiac" },
-    { id: 3, ulname: `${t.footer.horo3}`, link: "/horoscope#zodiac" },
+    { id: 1, ulname: `${t.footer.horo1}`, link: "/freeservices/horoscope" },
+    { id: 2, ulname: `${t.footer.horo2}`, link: "/freeservices/horoscope#zodiac" },
+    { id: 3, ulname: `${t.footer.horo3}`, link: "/freeservices/horoscope#zodiac" },
 
   ];
   const implink = [
-    { id: 1, ulname: `${t.footer.li1}`, link: "/chat-with-astrologer" },
-    { id: 2, ulname: `${t.footer.li2}`, link: "/callAstro" },
+    { id: 1, ulname: `${t.footer.li1}`, link: "/astrologer/chat" },
+    { id: 2, ulname: `${t.footer.li2}`, link: "/astrologer/call" },
     { id: 3, ulname: `${t.footer.li3}`, link: "https://shop.dhwaniastro.com/" },
-    { id: 4, ulname: `${t.footer.li4}`, link: "/inKundli" },
-    { id: 5, ulname: `${t.footer.li5}`, link: "/numerohome" },
-    { id: 6, ulname: `${t.footer.li6}`, link: "/blogComp" },
+    { id: 4, ulname: `${t.footer.li4}`, link: "/freeservices/kundali" },
+    { id: 5, ulname: `${t.footer.li5}`, link: "/freeservices/numerology" },
+    { id: 6, ulname: `${t.footer.li6}`, link: "/blogs" },
     { id: 7, ulname: `${t.footer.li7}`, link: "/" },
-    { id: 8, ulname: `${t.footer.li8}`, link: "/panchang" },
+    { id: 8, ulname: `${t.footer.li8}`, link: "/freeservices/panchang" },
   ];
   const problink = [
-    { id: 1, ulname: `${t.footer.p1}`, link: "/problemLove" },
-    { id: 2, ulname: `${t.footer.p2}`, link: "/jobprob" },
-    { id: 3, ulname: `${t.footer.p3}`, link: "/moneyprob" },
-    { id: 4, ulname: `${t.footer.p4}`, link: "/health" },
-    { id: 5, ulname: `${t.footer.p5}`, link: "/pregnancy" },
-    { id: 6, ulname: `${t.footer.p6}`, link: "/education" },
-    { id: 7, ulname: `${t.footer.p7}`, link: "/marriage" },
+    { id: 1, ulname: `${t.footer.p1}`, link: "/dhwani-services/consultation/marriage" },
+    { id: 2, ulname: `${t.footer.p2}`, link: "/dhwani-services/consultation/education" },
+    { id: 3, ulname: `${t.footer.p3}`, link: "/dhwani-services/consultation/moneyandfame" },
+
   ];
 
   return (

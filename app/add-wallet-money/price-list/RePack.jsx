@@ -16,7 +16,6 @@ const GET_RECHARGE_PACKS = gql`
         price
 
         talktime
-
       }
       totalCount
     }
@@ -28,13 +27,13 @@ const RePack = () => {
   const router = useRouter();
 
   const { data, loading, error } = useQuery(GET_RECHARGE_PACKS, {
-  fetchPolicy: "network-only",
-});
+    fetchPolicy: "network-only",
+  });
 
   const packData = data?.getRechargePacks?.data || [];
 
   const handleSelect = (id) => {
-   router.push(`/add-wallet-money/cart/${id}`);
+    router.push(`/add-wallet-money/cart/${id}`);
   };
 
   if (loading) {
@@ -43,9 +42,7 @@ const RePack = () => {
 
   if (error) {
     return (
-      <div className="p-6 text-center text-red-500">
-        Error: {error.message}
-      </div>
+      <div className="p-6 text-center text-red-500">Error: {error.message}</div>
     );
   }
 
@@ -84,8 +81,7 @@ const RePack = () => {
                 </p>
 
                 <p className="mt-1 text-sm text-gray-500">
-            Talktime :  {pack.talktime} 
-
+                  Talktime : {pack.talktime}
                 </p>
               </div>
 

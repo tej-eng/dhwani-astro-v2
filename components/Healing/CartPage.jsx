@@ -135,7 +135,7 @@ export default function CartPage({ rechargedata }) {
                 <div className="flex w-2xl gap-3  flex-col border border-gray-300 rounded-2xl bg-white ">
                   <div className="grid grid-cols-3 w-full justify-between items-center rounded-lg p-2 bg-purple-200 px-3">
                     <span className="flex col-span-2 justify-end font-bold self-end mr-8 items-end">
-                      Available Coupons
+                      Available Coupons 1
                     </span>{" "}
                     <button
                       onClick={closeCoup}
