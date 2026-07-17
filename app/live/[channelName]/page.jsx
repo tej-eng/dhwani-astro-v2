@@ -166,49 +166,136 @@ export default function WatchLive() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="bg-gray-950 border-b border-gray-800 px-6 py-4 flex justify-between">
-        <h1 className="text-white text-2xl font-bold">
-          🔴 Live Session
-        </h1>
+  <div className="min-h-screen bg-gradient-to-b from-gray-950 to-black">
+    {/* Header */}
+    <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-black/80 backdrop-blur border-b border-gray-800">
+      <div className="flex items-center gap-3">
+        <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+          🔴 LIVE
+        </div>
 
-        <span className="bg-red-600 text-white px-4 py-2 rounded-full animate-pulse">
-          LIVE
-        </span>
+        <div>
+          <h2 className="text-white font-semibold text-lg">
+            Live Session
+          </h2>
+          <p className="text-gray-400 text-xs">
+            Watch astrologer live
+          </p>
+        </div>
       </div>
 
-      <div className="p-6">
-        {loading && (
-          <div className="h-[80vh] flex items-center justify-center">
-            <div className="text-white text-xl">
-              Connecting...
-            </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="h-[80vh] flex items-center justify-center">
-            <div className="bg-red-600 text-white p-4 rounded-lg">
-              {error}
-            </div>
-          </div>
-        )}
-
-        {!loading && !error && (
-          <>
-            {!hostJoined && (
-              <div className="mb-4 bg-yellow-500 text-black p-3 rounded-lg text-center">
-                Waiting for astrologer to start video...
-              </div>
-            )}
-
-            <div
-              id="remote-video"
-              className="w-full h-[80vh] bg-gray-900 rounded-xl overflow-hidden"
-            />
-          </>
-        )}
+      <div className="bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
+        👁 128
       </div>
     </div>
-  );
+
+    <div className="max-w-md mx-auto p-4">
+      {loading && (
+        <div className="h-[75vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white text-lg">
+              Connecting to live stream...
+            </p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="h-[75vh] flex items-center justify-center">
+          <div className="bg-red-600 text-white px-6 py-4 rounded-xl shadow-lg">
+            {error}
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {!hostJoined && (
+            <div className="mb-4 bg-yellow-500 text-black rounded-xl p-3 text-center font-medium shadow">
+              Waiting for astrologer to start live...
+            </div>
+          )}
+
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-800 bg-black">
+
+            {/* Agora Video */}
+            <div
+              id="remote-video"
+              className="w-full h-[75vh] bg-black"
+            />
+
+            {/* Top Overlay */}
+            <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4 bg-gradient-to-b from-black/70 to-transparent">
+
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-gray-700 flex items-center justify-center text-white text-lg">
+                  👳
+                </div>
+
+                <div>
+                  <h3 className="text-white font-semibold">
+                    Astrologer
+                  </h3>
+
+                  <p className="text-gray-300 text-xs">
+                    Live Consultation
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-red-600 px-3 py-1 rounded-full text-white text-sm font-medium animate-pulse">
+                LIVE
+              </div>
+            </div>
+
+            {/* Bottom Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-5">
+
+              <div className="flex justify-around">
+
+                <button className="flex flex-col items-center text-white hover:text-red-400 transition">
+                  <span className="text-2xl">❤️</span>
+                  <span className="text-xs mt-1">
+                    Like
+                  </span>
+                </button>
+
+                <button className="flex flex-col items-center text-white hover:text-blue-400 transition">
+                  <span className="text-2xl">💬</span>
+                  <span className="text-xs mt-1">
+                    Chat
+                  </span>
+                </button>
+
+                <button className="flex flex-col items-center text-white hover:text-yellow-400 transition">
+                  <span className="text-2xl">🎁</span>
+                  <span className="text-xs mt-1">
+                    Gift
+                  </span>
+                </button>
+
+                <button className="flex flex-col items-center text-green-400 hover:text-green-300 transition">
+                  <span className="text-2xl">📞</span>
+                  <span className="text-xs mt-1">
+                    Call
+                  </span>
+                </button>
+
+              </div>
+
+              <button
+                onClick={cleanup}
+                className="mt-5 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition"
+              >
+                Leave Live
+              </button>
+            </div>
+
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+);
 }
