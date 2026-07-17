@@ -5,9 +5,8 @@ import { useParams } from "next/navigation";
 import { useLazyQuery } from "@apollo/client/react";
 import { JOIN_LIVE_STREAM } from "@/app/graphql/gqlQuery";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import { useSocket } from "@/context/SocketContext";
-
-const { socket } = useSocket();
+import { useContext } from "react";
+import SocketContext from "../context/socketContext";
 
 const client = AgoraRTC.createClient({
   mode: "live",
@@ -26,6 +25,18 @@ export default function WatchLive() {
   const [joinLive] = useLazyQuery(JOIN_LIVE_STREAM);
   const [messages, setMessages] = useState([]);
 const [message, setMessage] = useState("");
+const { socket, connectSocket } = useContext(SocketContext);
+const chatRef = useRef(null);
+useEffect(() => {
+
+    if(chatRef.current){
+
+        chatRef.current.scrollTop =
+            chatRef.current.scrollHeight;
+
+    }
+
+}, [messages]);
 
   useEffect(() => {
     if (!channelName) return;
@@ -36,6 +47,12 @@ const [message, setMessage] = useState("");
       cleanup();
     };
   }, [channelName]);
+
+  useEffect(() => {
+    if (!socket) {
+        connectSocket();
+    }
+}, []);
 
   useEffect(() => {
   if (!socket) return;
@@ -54,6 +71,8 @@ const [message, setMessage] = useState("");
 }, [socket]);
 
 const sendMessage = () => {
+  if (!socket) return;
+
   if (!message.trim()) return;
 
   socket.emit("live_message", {
@@ -69,17 +88,23 @@ const sendMessage = () => {
 
   const cleanup = async () => {
     try {
-      console.log("Leaving channel...");
 
-      client.removeAllListeners();
+        if (socket) {
+            socket.emit("leave_live", {
+                channelName,
+            });
+        }
 
-      await client.leave();
+        client.removeAllListeners();
 
-      console.log("Channel left");
+        await client.leave();
+
     } catch (err) {
-      console.error(err);
+        console.error(err);
     }
-  };
+};
+
+  
 
   const subscribeToUser = async (user, mediaType) => {
     try {
@@ -297,7 +322,7 @@ const sendMessage = () => {
 
   {/* Live Chat */}
 
-  <div className="h-56 overflow-y-auto px-3 py-2 space-y-2">
+  <div className="h-56 overflow-y-auto px-3 py-2 space-y-2" ref={chatRef}>
 
     {messages.map((item, index) => (
       <div
