@@ -6,7 +6,7 @@ import { useLazyQuery } from "@apollo/client/react";
 import { JOIN_LIVE_STREAM } from "@/app/graphql/gqlQuery";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useContext } from "react";
-import SocketContext from "../context/socketContext";
+import SocketContext from "../../context/socketContext";
 
 const client = AgoraRTC.createClient({
   mode: "live",
