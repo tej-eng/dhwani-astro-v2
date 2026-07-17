@@ -5,6 +5,9 @@ import { useParams } from "next/navigation";
 import { useLazyQuery } from "@apollo/client/react";
 import { JOIN_LIVE_STREAM } from "@/app/graphql/gqlQuery";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { useSocket } from "@/context/SocketContext";
+
+const { socket } = useSocket();
 
 const client = AgoraRTC.createClient({
   mode: "live",
@@ -21,6 +24,8 @@ export default function WatchLive() {
   const [hostJoined, setHostJoined] = useState(false);
 
   const [joinLive] = useLazyQuery(JOIN_LIVE_STREAM);
+  const [messages, setMessages] = useState([]);
+const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (!channelName) return;
@@ -31,6 +36,36 @@ export default function WatchLive() {
       cleanup();
     };
   }, [channelName]);
+
+  useEffect(() => {
+  if (!socket) return;
+
+  const handleMessage = (data) => {
+    console.log("Live Chat:", data);
+
+    setMessages((prev) => [...prev, data]);
+  };
+
+  socket.on("live_message", handleMessage);
+
+  return () => {
+    socket.off("live_message", handleMessage);
+  };
+}, [socket]);
+
+const sendMessage = () => {
+  if (!message.trim()) return;
+
+  socket.emit("live_message", {
+    channelName,
+    message,
+    senderName: "User", // replace with logged in user name
+    createdAt: new Date().toISOString(),
+  });
+
+  setMessage("");
+};
+
 
   const cleanup = async () => {
     try {
@@ -135,6 +170,14 @@ export default function WatchLive() {
         live.token,
         live.uid
       );
+
+      if (socket) {
+  socket.emit("join_live", {
+    channelName: live.channelName,
+  });
+
+  console.log("Joined live room:", live.channelName);
+}
 
       console.log("Joined Agora Successfully");
 
@@ -250,47 +293,79 @@ export default function WatchLive() {
             </div>
 
             {/* Bottom Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-5">
+            <div className="absolute bottom-0 left-0 right-0">
 
-              <div className="flex justify-around">
+  {/* Live Chat */}
 
-                <button className="flex flex-col items-center text-white hover:text-red-400 transition">
-                  <span className="text-2xl">❤️</span>
-                  <span className="text-xs mt-1">
-                    Like
-                  </span>
-                </button>
+  <div className="h-56 overflow-y-auto px-3 py-2 space-y-2">
 
-                <button className="flex flex-col items-center text-white hover:text-blue-400 transition">
-                  <span className="text-2xl">💬</span>
-                  <span className="text-xs mt-1">
-                    Chat
-                  </span>
-                </button>
+    {messages.map((item, index) => (
+      <div
+        key={index}
+        className="bg-black/60 rounded-full px-3 py-2 inline-flex max-w-[90%]"
+      >
+        <span className="text-yellow-400 font-semibold mr-2">
+          {item.senderName}
+        </span>
 
-                <button className="flex flex-col items-center text-white hover:text-yellow-400 transition">
-                  <span className="text-2xl">🎁</span>
-                  <span className="text-xs mt-1">
-                    Gift
-                  </span>
-                </button>
+        <span className="text-white break-words">
+          {item.message}
+        </span>
+      </div>
+    ))}
 
-                <button className="flex flex-col items-center text-green-400 hover:text-green-300 transition">
-                  <span className="text-2xl">📞</span>
-                  <span className="text-xs mt-1">
-                    Call
-                  </span>
-                </button>
+  </div>
 
-              </div>
+  {/* Message Box */}
 
-              <button
-                onClick={cleanup}
-                className="mt-5 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition"
-              >
-                Leave Live
-              </button>
-            </div>
+  <div className="flex items-center gap-2 p-3 bg-black/80">
+
+    <input
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder="Write a message..."
+      className="flex-1 rounded-full bg-gray-900 text-white px-4 py-3 outline-none"
+    />
+
+    <button
+      onClick={sendMessage}
+      className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-full"
+    >
+      Send
+    </button>
+
+  </div>
+
+  {/* Actions */}
+
+  <div className="flex justify-around bg-black/80 py-3">
+
+    <button className="flex flex-col items-center text-white">
+      ❤️
+      <span className="text-xs">Like</span>
+    </button>
+
+    <button className="flex flex-col items-center text-white">
+      🎁
+      <span className="text-xs">Gift</span>
+    </button>
+
+    <button className="flex flex-col items-center text-green-400">
+      📞
+      <span className="text-xs">Call</span>
+    </button>
+
+    <button
+      onClick={cleanup}
+      className="flex flex-col items-center text-red-500"
+    >
+      ❌
+      <span className="text-xs">Leave</span>
+    </button>
+
+  </div>
+
+</div>
 
           </div>
         </>
