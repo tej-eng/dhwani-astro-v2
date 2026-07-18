@@ -50,60 +50,58 @@ export default function WatchLive() {
   }, [channelName]);
 
   // Socket message listener
- useEffect(() => {
-  chatClient.addEventHandler("LIVE_CHAT", {
-     onTextMessage: (msg) => {
-  setMessages((prev) => [
-    ...prev,
-    {
-      senderName: msg.from,
-      message: msg.msg || msg.ext?.msg || "",
-    },
-  ]);
-},
+  useEffect(() => {
+    chatClient.addEventHandler("LIVE_CHAT", {
+      onTextMessage: (msg) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            senderName: msg.from,
+            message: msg.msg || msg.ext?.msg || "",
+          },
+        ]);
+      },
     });
-}, []);
+  }, []);
 
- const sendMessage = async () => {
-  if (!message.trim()) return;
+  const sendMessage = async () => {
+    if (!message.trim()) return;
 
-  if (!liveInfo) return;
+    if (!liveInfo) return;
 
-  try {
-    const msg = AgoraChat.message.create({
-      chatType: "chatRoom",
-      type: "txt",
-      to: liveInfo.chatRoomId,
-      msg: message,
-    });
+    try {
+      const msg = AgoraChat.message.create({
+        chatType: "chatRoom",
+        type: "txt",
+        to: liveInfo.chatRoomId,
+        msg: message,
+      });
 
-    await chatClient.send(msg);
+      await chatClient.send(msg);
 
-    setMessage("");
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const cleanup = async () => {
-  try {
-
-    if (liveInfo?.chatRoomId) {
-     await chatClient.leaveChatRoom({
-  roomId: liveInfo.chatRoomId,
-});
+      setMessage("");
+    } catch (err) {
+      console.error(err);
     }
+  };
 
-    await chatClient.close();
+  const cleanup = async () => {
+    try {
+      if (liveInfo?.chatRoomId) {
+        await chatClient.leaveChatRoom({
+          roomId: liveInfo.chatRoomId,
+        });
+      }
 
-    client.removeAllListeners();
+      await chatClient.close();
 
-    await client.leave();
+      client.removeAllListeners();
 
-  } catch (err) {
-    console.error("Cleanup error:", err);
-  }
-};
+      await client.leave();
+    } catch (err) {
+      console.error("Cleanup error:", err);
+    }
+  };
 
   const subscribeToUser = async (user, mediaType) => {
     try {
@@ -173,15 +171,16 @@ const cleanup = async () => {
       await client.setClientRole("audience");
       console.log("Joining Agora...");
 
-      await client.join(live.appId, live.channelName, live.token, live.uid);
+      await client.join(live.appId, live.channelName, live.rtcToken, live.uid);
+
       await chatClient.open({
         user: live.chatUserId,
         accessToken: live.chatToken,
       });
 
-    await chatClient.joinChatRoom({
-  roomId: live.chatRoomId,
-});
+      await chatClient.joinChatRoom({
+        roomId: live.chatRoomId,
+      });
 
       console.log("Joined Agora Successfully");
       console.log("Remote Users:", client.remoteUsers);

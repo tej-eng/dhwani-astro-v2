@@ -436,18 +436,19 @@ export const GET_UPCOMING_LIVES = gql`
   }
 `;
 export const JOIN_LIVE_STREAM = gql`
-  query JoinLiveStream(
-    $channelName: String!
-  ) {
-    joinLive(
-      channelName: $channelName
-    ) {
-      token
-      uid
-      appId
-      channelName
-    }
+  query JoinLive($channelName: String!) {
+  joinLive(channelName: $channelName) {
+    rtcToken
+    uid
+    appId
+    channelName
+
+    chatUserId
+    chatToken
+    chatRoomId
+    chatAppKey
   }
+}
 `;
 
 export const START_LIVE = gql`
