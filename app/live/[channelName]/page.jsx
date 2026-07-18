@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useLazyQuery } from "@apollo/client/react";
 import { JOIN_LIVE_STREAM } from "@/app/graphql/gqlQuery";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import SocketContext from "../../context/socketContext";
+import AgoraChat from "agora-chat";
+
+const chatClient = new AgoraChat.connection({
+  appKey: process.env.NEXT_PUBLIC_AGORA_CHAT_APPKEY || "61200039703#200055699",
+});
 
 const client = AgoraRTC.createClient({
   mode: "live",
@@ -21,10 +25,10 @@ export default function WatchLive() {
   const [hostJoined, setHostJoined] = useState(false);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  
-  const { socket, connectSocket } = useContext(SocketContext);
+  const [liveInfo, setLiveInfo] = useState(null);
+
   const chatRef = useRef(null);
-  
+
   const [joinLive] = useLazyQuery(JOIN_LIVE_STREAM);
 
   // Scroll to bottom when new messages arrive
@@ -45,57 +49,61 @@ export default function WatchLive() {
     };
   }, [channelName]);
 
-  // Connect socket
-  useEffect(() => {
-    if (!socket) {
-      connectSocket();
-    }
-  }, []);
-
   // Socket message listener
-  useEffect(() => {
-    if (!socket) return;
+ useEffect(() => {
+  chatClient.addEventHandler("LIVE_CHAT", {
+     onTextMessage: (msg) => {
+  setMessages((prev) => [
+    ...prev,
+    {
+      senderName: msg.from,
+      message: msg.msg || msg.ext?.msg || "",
+    },
+  ]);
+},
+    });
+}, []);
 
-    const handleMessage = (data) => {
-      console.log("Live Chat:", data);
-      setMessages((prev) => [...prev, data]);
-    };
+ const sendMessage = async () => {
+  if (!message.trim()) return;
 
-    socket.on("live_message", handleMessage);
+  if (!liveInfo) return;
 
-    return () => {
-      socket.off("live_message", handleMessage);
-    };
-  }, [socket]);
-
-  const sendMessage = () => {
-    if (!socket) return;
-    if (!message.trim()) return;
-
-    socket.emit("live_message", {
-      channelName,
-      message,
-      senderName: "User", // replace with logged in user name
-      createdAt: new Date().toISOString(),
+  try {
+    const msg = AgoraChat.message.create({
+      chatType: "chatRoom",
+      type: "txt",
+      to: liveInfo.chatRoomId,
+      msg: message,
     });
 
+    await chatClient.send(msg);
+
     setMessage("");
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  const cleanup = async () => {
-    try {
-      if (socket) {
-        socket.emit("leave_live", {
-          channelName,
-        });
-      }
+const cleanup = async () => {
+  try {
 
-      client.removeAllListeners();
-      await client.leave();
-    } catch (err) {
-      console.error("Cleanup error:", err);
+    if (liveInfo?.chatRoomId) {
+     await chatClient.leaveChatRoom({
+  roomId: liveInfo.chatRoomId,
+});
     }
-  };
+
+    await chatClient.close();
+
+    client.removeAllListeners();
+
+    await client.leave();
+
+  } catch (err) {
+    console.error("Cleanup error:", err);
+  }
+};
 
   const subscribeToUser = async (user, mediaType) => {
     try {
@@ -142,9 +150,9 @@ export default function WatchLive() {
       if (!data?.joinLive) {
         throw new Error("Live stream unavailable");
       }
-
       const live = data.joinLive;
-      console.log("Live Data:", live);
+
+      setLiveInfo(live);
 
       // Register listeners BEFORE join
       client.on("user-published", async (user, mediaType) => {
@@ -165,19 +173,15 @@ export default function WatchLive() {
       await client.setClientRole("audience");
       console.log("Joining Agora...");
 
-      await client.join(
-        live.appId,
-        live.channelName,
-        live.token,
-        live.uid
-      );
+      await client.join(live.appId, live.channelName, live.token, live.uid);
+      await chatClient.open({
+        user: live.chatUserId,
+        accessToken: live.chatToken,
+      });
 
-      if (socket) {
-        socket.emit("join_live", {
-          channelName: live.channelName,
-        });
-        console.log("Joined live room:", live.channelName);
-      }
+    await chatClient.joinChatRoom({
+  roomId: live.chatRoomId,
+});
 
       console.log("Joined Agora Successfully");
       console.log("Remote Users:", client.remoteUsers);
@@ -332,8 +336,7 @@ export default function WatchLive() {
                     onClick={cleanup}
                     className="flex flex-col items-center text-red-500"
                   >
-                    ❌
-                    <span className="text-xs">Leave</span>
+                    ❌<span className="text-xs">Leave</span>
                   </button>
                 </div>
               </div>
