@@ -10,12 +10,16 @@ import Link from "next/link";
 import CustomButton from "@/components/Custom/CustomButton";
 import GiftPop from "@/components/Smcompo/GiftPop";
 import { useLanguage } from "@/app/context/LangContext";
-import { AlertLoading, SingleButton } from "@/app/common";
+import { AlertLoading, IntentRechage, SingleButton } from "@/app/common";
 
 import { useRouter } from "next/navigation";
-import { GET_ASTROLOGER_BY_ID } from "@/app/graphql/gqlQuery";
+import {
+  GET_ASTROLOGER_BY_ID,
+  GET_SIMILAR_ASTROLOGERS,
+} from "@/app/graphql/gqlQuery";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
+import RecentRequestPopup from "@/components/Custom/RecentRequestPopUp";
 export const FOLLOW_ASTROLOGER = gql`
   mutation FollowAstrologer($astrologerId: ID!) {
     followAstrologer(astrologerId: $astrologerId) {
@@ -53,6 +57,48 @@ export const GET_ASTROLOGER_FOLLOWERS_COUNT = gql`
 export default function ProfileAstro({ astrologerId }) {
   const router = useRouter();
   const id = astrologerId;
+  const [showRecentPopup, setShowRecentPopup] = useState(false);
+  const [selectedAstroData, setSelectedAstroData] = useState(null);
+  const [quick, setQuick] = useState(false);
+  const [astroId, setAstroId] = useState(null);
+  const getAstroStatus = (astro, mode = "chat") => {
+    const serviceActive =
+      mode === "chat" ? astro?.isChatActive : astro?.isCallActive;
+
+    if (!astro?.isOnline) {
+      return {
+        status: "Offline",
+        color: "bg-red-500",
+        canConnect: false,
+        disabled: true,
+      };
+    }
+
+    if (!serviceActive) {
+      return {
+        status: "Online",
+        color: "bg-green-500",
+        canConnect: false,
+        disabled: true,
+      };
+    }
+
+    if (astro?.isBusy) {
+      return {
+        status: "Busy",
+        color: "bg-yellow-500",
+        canConnect: true,
+        disabled: false,
+      };
+    }
+
+    return {
+      status: "Online",
+      color: "bg-green-500",
+      canConnect: true,
+      disabled: false,
+    };
+  };
 
   const {
     data: astrologerResponse,
@@ -63,25 +109,35 @@ export default function ProfileAstro({ astrologerId }) {
       id,
     },
     skip: !id,
-    fetchPolicy: "network-only",
+    fetchPolicy: "cache-first",
   });
+  const { data: similarData } = useQuery(GET_SIMILAR_ASTROLOGERS, {
+    variables: {
+      astrologerId: id,
+    },
+    skip: !id,
+  });
+
+  const similarAstrologers = similarData?.getSimilarAstrologers || [];
   console.log("Astrologer ID:", id);
   console.log("Skip Value:", !id);
-
-
- const {
-  data: followStatusData,
-  loading: followLoadingStatus,
-  error: followError,
-  refetch: refetchFollow,
-} = useQuery(IS_FOLLOWING, {
-  variables: {
-    astrologerId: id,
-  },
-  skip: !id,
-  fetchPolicy: "network-only",
-  notifyOnNetworkStatusChange: true,
-});
+  const [userData, setUserData] = useState({
+    user_status: 0,
+    balance_amount: 0,
+  });
+  const {
+    data: followStatusData,
+    loading: followLoadingStatus,
+    error: followError,
+    refetch: refetchFollow,
+  } = useQuery(IS_FOLLOWING, {
+    variables: {
+      astrologerId: id,
+    },
+    skip: !id,
+    fetchPolicy: "network-only",
+    notifyOnNetworkStatusChange: true,
+  });
 
   const {
     data: followersCountData,
@@ -97,21 +153,19 @@ export default function ProfileAstro({ astrologerId }) {
   });
   const followersCount =
     followersCountData?.getAstrologerFollowersCount?.totalFollowers || 0;
- 
-
 
   const astrologerdetail = astrologerResponse?.getAstrologerById;
   const { messages: t } = useLanguage();
-
+  const chatStatus = getAstroStatus(astrologerdetail, "chat");
+  const callStatus = getAstroStatus(astrologerdetail, "call");
+  const profileStatus = getAstroStatus(astrologerdetail, "chat");
   const [showGiftPopup, setShowGiftPopup] = useState(false);
 
   const [astrofollow, setAstroFollow] = useState(false);
 
- useEffect(() => {
-  setAstroFollow(
-    followStatusData?.isFollowing?.isFollowing ?? false
-  );
-}, [followStatusData]);
+  useEffect(() => {
+    setAstroFollow(followStatusData?.isFollowing?.isFollowing ?? false);
+  }, [followStatusData]);
 
   const [followAstrologer, { loading: followLoading }] =
     useMutation(FOLLOW_ASTROLOGER);
@@ -201,6 +255,53 @@ export default function ProfileAstro({ astrologerId }) {
   const chatPricing = astrologerdetail?.pricing?.find(
     (item) => item.type === "CHAT",
   );
+  const callPricing = astrologerdetail?.pricing?.find(
+    (item) => item.type === "CALL",
+  );
+  const openRecentPopup = ({ astroId, mode, astrologer }) => {
+    setSelectedAstroData({
+      astroId,
+      mode,
+      astrologer,
+    });
+
+    setShowRecentPopup(true);
+  };
+
+  const handleClick = ({ mode, price }) => {
+    if (!userData) {
+      toast.error("User data not loaded yet");
+      return;
+    }
+
+    const goToRequest = () => {
+      openRecentPopup({
+        astroId: id,
+        mode,
+        astrologer: astrologerdetail,
+      });
+    };
+
+    if (userData.user_status === 0) {
+      goToRequest();
+      return;
+    }
+
+    if (userData.user_status === 1 || userData.user_status === 2) {
+      const astro_price = (price || 0) * 5;
+
+      if (astro_price > userData.balance_amount) {
+        setQuick(true);
+        setAstroId(id);
+      } else {
+        goToRequest();
+      }
+
+      return;
+    }
+
+    goToRequest();
+  };
 
   return (
     <div className="w-full p-3 pt-5 md:pt-5">
@@ -269,9 +370,11 @@ export default function ProfileAstro({ astrologerId }) {
               </h2>
 
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 bg-green-600 rounded-full"></span>
-                <span className="text-base font-semibold text-green-600">
-                  Available
+                <span
+                  className={`w-3 h-3 rounded-full ${profileStatus.color}`}
+                />
+                <span className="font-semibold text-black">
+                  {profileStatus.status}
                 </span>
               </div>
 
@@ -289,38 +392,19 @@ export default function ProfileAstro({ astrologerId }) {
                 {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
 
-              <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
-                {/* <span className="font-semibold">Call/Chat Charges:</span> */}
+              {/* <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
                 <span className="font-bold charge-price flex items-center gap-2">
-                  {/* {astro?.disc_chat_charge ? (
-                    <>
-                      <span className="text-lg text-red-600 font-extrabold">
-                        ₹{astro.disc_chat_charge}
-                      </span>
-                      <span className="line-through text-gray-500 text-sm">
-                        ₹{astro.astro_chat_charges}/min
-                      </span>
-                    </>
-                   ) : (
-                    <span className="text-lg">
-                      ₹{astro.astro_chat_charges}/min
+                  <>
+                    <span className="text-lg text-red-600 font-extrabold">
+                      ₹{callPricing.price}
                     </span>
-                  )} */}
-                  {chatPricing?.offerPrice ? (
-                    <>
-                      <span className="text-lg text-red-600 font-extrabold">
-                        ₹{chatPricing.offerPrice}
-                      </span>
 
-                      <span className="line-through text-gray-500 text-sm">
-                        ₹{chatPricing.price}/min
-                      </span>
-                    </>
-                  ) : (
-                    <span>₹{chatPricing?.price}/min</span>
-                  )}
+                    <span className="line-through text-gray-500 text-sm">
+                      ₹{callPricing.offerPrice}/min
+                    </span>
+                  </>
                 </span>
-              </div>
+              </div> */}
             </div>
 
             <div className="sm:w-60 lg:w-120 w-full flex flex-col text-black">
@@ -344,14 +428,89 @@ export default function ProfileAstro({ astrologerId }) {
               </div>
 
               <div className="flex items-center justify-center gap-5 mt-6 text-sm sm:flex-col lg:flex-row md:text-base">
-                {/* <SingleButton
-                  astro_charge_chat={astrologerdetail?.astro_call_charges}
-                  astro_charge_call={astrologerdetail?.astro_chat_charges}
-                  disprice_chat={astrologerdetail?.disc_chat_charge}
-                  disprice_call={astrologerdetail?.disc_chat_charge}
-                  availability={astrologerdetail?.availability}
-                  astro_id={id}
-                /> */}
+                <button
+                  disabled={chatStatus.disabled}
+                  className={
+                    chatStatus.disabled
+                      ? "opacity-50 cursor-not-allowed w-50 bg-green-300  rounded-2xl"
+                      : " bg-green-500 cursor-pointer hover:scale:105  w-50 rounded-2xl py-1"
+                  }
+                  onClick={() => {
+                    if (!chatStatus.canConnect) {
+                      if (!astrologerdetail?.isOnline) {
+                        toast.error(
+                          "Astrologer selected by you is offline now so please choose another astrologer.",
+                        );
+                      } else {
+                        toast.error("Chat service is currently unavailable.");
+                      }
+                      return;
+                    }
+
+                    handleClick({
+                      mode: "chat",
+                      price: chatPricing?.price,
+                    });
+                  }}
+                >
+                  <div className="flex flex-col gap-1 items-center justify-center">
+                    {" "}
+                    <span className="text-white font-semibold">
+                      {" "}
+                      Start Chat
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg text-red-700 font-extrabold">
+                        ₹{chatPricing?.price}
+                      </span>
+
+                      <span className="line-through text-gray-200 text-sm">
+                        ₹{chatPricing?.offerPrice}/min
+                      </span>
+                    </div>
+                  </div>
+                </button>
+                <button
+                  disabled={callStatus.disabled}
+                  className={
+                    callStatus.disabled
+                      ? "opacity-50 cursor-not-allowed w-50 bg-green-300  rounded-2xl"
+                      : " bg-green-500 cursor-pointer hover:scale:105 w-50 rounded-2xl py-1"
+                  }
+                  onClick={() => {
+                    if (!callStatus.canConnect) {
+                      if (!astrologerdetail?.isOnline) {
+                        toast.error(
+                          "Astrologer selected by you is offline now so please choose another astrologer.",
+                        );
+                      } else {
+                        toast.error("Call service is currently unavailable.");
+                      }
+                      return;
+                    }
+
+                    handleClick({
+                      mode: "call",
+                      price: callPricing?.price,
+                    });
+                  }}
+                >
+                  <div className="flex flex-col gap- items-center justify-center">
+                    <span className="text-white font-semibold">
+                      {" "}
+                      Start Call
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg text-red-700 font-extrabold">
+                        ₹{callPricing?.price}
+                      </span>
+
+                      <span className="line-through text-gray-200 text-sm">
+                        ₹{callPricing?.offerPrice}/min
+                      </span>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
@@ -367,6 +526,9 @@ export default function ProfileAstro({ astrologerId }) {
                     astrologerdetail?.about || "No description available.",
                 }}
               />
+                <div className="text-sm font-medium text-gray-700">
+              👥 {followersCount} Followers
+            </div>
             </div>
           </div>
 
@@ -378,41 +540,52 @@ export default function ProfileAstro({ astrologerId }) {
                 </h5>
 
                 <div className="flex flex-wrap justify-center gap-4">
-                  {false > 0 ? (
-                    astrologerlist.map((astro, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-around gap-3 bg-[#ffffffe7] rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 p-3 w-[220px]"
-                      >
-                        <Image
-                          src={`/ds-img/${astro?.profile_image}`}
-                          alt="image"
-                          width={60}
-                          height={60}
-                          className="rounded-full object-cover"
-                          onClick={() =>
-                            router.push(`/astrologerprofile/${astro?.id}`)
-                          }
-                        />
+                  {similarAstrologers.length > 0 ? (
+                    similarAstrologers.map((astro) => {
+                      const chatPrice = astro.pricing?.find(
+                        (p) => p.type === "CHAT",
+                      );
 
-                        <div className="flex flex-col items-start">
-                          <Link href={`/astrologerprofile/${astro?.id}`}>
-                            <h5 className="font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                              {astro?.full_name || "Unknown"}
-                            </h5>
-                          </Link>
-                          <Link href={`/astrologerprofile/${astro?.id}`}>
-                            <span className="text-sm text-gray-500">
-                              ₹{astro.disc_chat_charge ?? 0}/min
+                      return (
+                        <div
+                          key={astro.id}
+                          onClick={() =>
+                            router.push(`/astrologerprofile/${astro.id}`)
+                          }
+                          className="flex items-center gap-3 bg-white rounded-xl shadow-md hover:shadow-lg cursor-pointer p-3 w-[240px]"
+                        >
+                          <Image
+                            src={
+                              astro.profilePic
+                                ? `https://www.dhwaniastro.com${astro.profilePic}`
+                                : "/man.png"
+                            }
+                            width={60}
+                            height={60}
+                            alt={astro.name}
+                            className="rounded-full object-cover w-15 h-15"
+                          />
+
+                          <div className="flex text-black flex-col flex-1">
+                            <h4 className="font-semibold">{astro.name}</h4>
+
+                            <p className="text-xs text-gray-500">
+                              {astro.skills?.join(", ")}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              {astro.languages?.join(", ")}
+                            </p>
+
+                            <span className="text-sm text-red-600 font-bold">
+                              ₹{chatPrice?.price}/min
                             </span>
-                          </Link>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
-                    <p className="text-gray-500">
-                      No similar consultants found.
-                    </p>
+                    <p>No similar consultants found.</p>
                   )}
                 </div>
               </div>
@@ -421,6 +594,18 @@ export default function ProfileAstro({ astrologerId }) {
               <h5 className="text-lg font-semibold text-gray-800 text-center mb-4">
                 Ratings & Reviews
               </h5>
+              <div className="flex items-center gap-4">
+              <span className="font-semibold text-black">
+                {astrologerdetail?.rating || 0}/5
+              </span>
+
+              <StarRating
+                className="text-yellow-500"
+                onRate={(val) => console.log("Rated:", val)}
+              />
+            </div>
+
+          
 
               {astrologerdetail?.recentReviews?.length > 0 ? (
                 <>
@@ -503,25 +688,12 @@ export default function ProfileAstro({ astrologerId }) {
                 <div className="text-gray-500">No reviews yet</div>
               )}
             </div>
-            <div className="flex items-center gap-4">
-              <span className="font-semibold text-black">
-                {astrologerdetail?.rating || 0}/5
-              </span>
-
-              <StarRating
-                className="text-yellow-500"
-                onRate={(val) => console.log("Rated:", val)}
-              />
-            </div>
-
-            <div className="text-sm font-medium text-gray-700">
-              👥 {followersCount} Followers
-            </div>
+            
           </div>
         </div>
       </div>
 
- {showConfirmModal && (
+      {showConfirmModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60">
           <div className="p-6 bg-white rounded-lg shadow-lg">
             <p className="text-sm text-center text-black">
@@ -552,6 +724,19 @@ export default function ProfileAstro({ astrologerId }) {
         astrologername={astrologerdetail?.displayName || astrologerdetail?.name}
         astro_id={astrologerdetail?.id}
         onClose={() => setShowGiftPopup(false)}
+      />
+      <IntentRechage
+        showrecharge={quick}
+        astro_id={astroId}
+        reqmode={selectedAstroData?.mode}
+      />
+
+      <RecentRequestPopup
+        show={showRecentPopup}
+        onClose={() => setShowRecentPopup(false)}
+        astroId={selectedAstroData?.astroId}
+        mode={selectedAstroData?.mode}
+        astrologer={selectedAstroData?.astrologer}
       />
 
       <AlertLoading

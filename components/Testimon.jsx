@@ -40,12 +40,12 @@ export default function Testimon() {
     return `https://dhwaniastro.com${image}`;
   };
   const formatDate = (timestamp) => {
-  return new Date(Number(timestamp)).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
+    return new Date(Number(timestamp)).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
   return (
     <section className="flex w-full flex-col items-center self-center sm:max-w-7xl pt-2  px-3">
       <div className="sm:py-3 py-1">
@@ -142,7 +142,12 @@ export default function Testimon() {
                       <div className="text-yellow-400">
                         {Array.from({ length: Number(test.rating || 0) }).map(
                           (_, index) => (
-                            <span className="text-[10px] sm:text-md" key={index}>⭐</span>
+                            <span
+                              className="text-[10px] sm:text-md"
+                              key={index}
+                            >
+                              ⭐
+                            </span>
                           ),
                         )}
                       </div>
@@ -155,14 +160,14 @@ export default function Testimon() {
                     <h3 className="text-[10px] sm:text-sm text-gray-500 mt-1">
                       {test.address}
                     </h3>
-                    <p className="text-gray-600 p-s shadow-xl rounded-2xl overflow-y-auto h-15 mt-3 text-xs sm:text-sm">
+                    <p className="text-gray-600 p-s text-start  overflow-y-auto h-15 mt-3 text-[11px] sm:text-sm">
                       {test.content}
                     </p>
                     <div className="flex justify-between items-center mt-2">
-  <span className="text-xs text-gray-500">
-    {formatDate(test.createdAt)}
-  </span>
-</div>
+                      <span className="text-[10px] font-semibold text-gray-500">
+                        {formatDate(test.createdAt)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>
