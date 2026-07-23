@@ -120,7 +120,7 @@ const LogOut = async () => {
 
         <Link
           href="/blogs"
-          className="flex items-center text-[11px] px-2 py-0  sm:px-3 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
+          className="flex items-center text-[10px] px-2 py-1  sm:px-3 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
         >
           Blog
         </Link>
@@ -128,7 +128,7 @@ const LogOut = async () => {
         {!isLoggedIn && (
           <button
             onClick={openSignInModal}
-            className="px-3 py-1 cursor-pointer text-[11px] sm:text-sm sm:font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
+            className="px-2 py-1 cursor-pointer text-[10px] sm:text-sm sm:font-medium rounded-full bg-[#b92c3a] text-[#FFD70a]"
           >
             {t?.header?.signIn || "Sign In"}
           </button>
@@ -142,8 +142,8 @@ const LogOut = async () => {
             <button className="flex items-center gap-2">
               <Image
                 src="/ds-img/user2.webp"
-                width={25}
-                height={25}
+                width={30}
+                height={30}
                 alt="User"
               />
 

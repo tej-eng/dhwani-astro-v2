@@ -102,37 +102,52 @@ export const CREATE_HEALING_ORDER = gql`
 // `;
 
 export const GET_ASTROLOGER_BY_ID = gql`
-  query GetAstrologerById($id: String!) {
-    getAstrologerById(id: $id) {
+query GetAstrologerById($id: String!) {
+  getAstrologerById(id: $id) {
+    id
+    name
+    displayName
+    profilePic
+    about
+    experience
+    rating
+
+    languages
+    skills
+    problems
+
+    isBusy
+    isOnline
+    isChatActive
+    isCallActive
+    isLiveActive
+
+    activeOffer {
       id
-      name
-      displayName
-      profilePic
-      about
-      experience
+      offerName
+      price
+      description
+    }
+
+    pricing {
+      type
+      price
+      originalPrice
+      offerPrice
+      commissionPercent
+      isActive
+    }
+
+    reviews {
+      id
       rating
-
-      languages
-      skills
-      problems
-
-      pricing {
-        id
-        type
-        price
-        offerPrice
-      }
-
-      reviews {
-        id
-        rating
-        comment
-        reply
-        userName
-        createdAt
-      }
+      comment
+      reply
+      userName
+      createdAt
     }
   }
+}
 `;
 export const GET_GIFTS = gql`
   query GetGifts {
@@ -302,7 +317,41 @@ export const GET_ASTROLOGERS_USER = gql`
     }
   }
 `;
+export const GET_SIMILAR_ASTROLOGERS = gql`
+  query GetSimilarAstrologers($astrologerId: ID!) {
+    getSimilarAstrologers(astrologerId: $astrologerId) {
+      id
+      profilePic
+      name
+      experience
+      rating
+      skills
+      languages
 
+      isBusy
+      isOnline
+      isChatActive
+      isCallActive
+      isLiveActive
+
+      activeOffer {
+        id
+        offerName
+        price
+        description
+      }
+
+      pricing {
+        type
+        price
+        originalPrice
+        offerPrice
+        commissionPercent
+        isActive
+      }
+    }
+  }
+`;
 export const GET_ASTROLOGERS_GUEST = gql`
   query GetAstrologers($searchInput: AstrologerSearchInput) {
     getAstrologerListBySearch(searchInput: $searchInput) {
