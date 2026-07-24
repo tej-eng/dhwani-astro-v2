@@ -636,7 +636,8 @@ export default function CallPage( room_Id,
     });
 
      activeSocket.on("call_ended_by_admin", () => {
-      console.log("call_ended_by_admin",roomId);
+      debugger;
+      console.log("call_ended_by_admin");
       // Stop recording before cleanup (hidden)
       if (isRecordingRef.current) {
         stopRecording();
