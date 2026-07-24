@@ -554,6 +554,7 @@ export default function CallPage( room_Id,
 
 
     activeSocket.on("answer", async ({ answer }) => {
+
       if (!pc.current) {
         console.warn("No peer connection available for answer");
         return;
@@ -623,6 +624,18 @@ export default function CallPage( room_Id,
 
 
     activeSocket.on("call_ended_by_astrologer", () => {
+      // Stop recording before cleanup (hidden)
+      if (isRecordingRef.current) {
+        stopRecording();
+      }
+
+      cleanup();
+      dispatch(removeActiveRequest(roomId));
+
+      router.push("/astrologer/call");
+    });
+
+     activeSocket.on("call_ended_by_admin", () => {
       // Stop recording before cleanup (hidden)
       if (isRecordingRef.current) {
         stopRecording();
