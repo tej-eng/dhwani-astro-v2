@@ -33,6 +33,32 @@ export default function PayOPT({
   packid,
   bookingId,
 }) {
+  const [geoInfo, setGeoInfo] = useState({
+    ip: "",
+    city: "",
+    state: "",
+    country: "",
+  });
+  useEffect(() => {
+    const getGeo = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        console.log("ghjghjgjhjg", data);
+
+        setGeoInfo({
+          ip: data.ip,
+          city: data.city,
+          state: data.region,
+          country: data.country_name,
+        });
+      } catch (err) {
+        console.error("Geo fetch failed", err);
+      }
+    };
+
+    getGeo();
+  }, []);
   const searchParams = useSearchParams();
 
   const payAmount = amount || 0;
@@ -137,6 +163,10 @@ export default function PayOPT({
                 originalAmount: order.originalAmount,
                 discount: order.discount,
                 finalAmount: order.finalAmount,
+                ipAddress: geoInfo.ip,
+                state: geoInfo.state,
+                city: geoInfo.city,
+                country: geoInfo.country,
               }
             : {
                 userId: user.id,
@@ -187,7 +217,7 @@ export default function PayOPT({
       />
 
       <h3 className="mb-4 text-base font-bold text-center sm:text-lg">
-        Payment Options 
+        Payment Options
       </h3>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
