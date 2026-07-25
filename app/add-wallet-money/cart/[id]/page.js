@@ -207,9 +207,9 @@ export default function CartPage() {
       </div>
       {showCouponModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-[400px] p-5">
+          <div className="bg-white rounded-xl w-100 p-5">
             <div className="flex bg-purple-200 rounded-2xl px-4 py-2 text-black items-center justify-between">
-              <h2 className="font-bold text-md ">Available Coupons 3</h2>
+              <h2 className="font-bold text-md ">Available Coupons R</h2>
               <button
                 className="cursor-pointer hover:scale-104"
                 onClick={() => closeCoup()}
