@@ -167,6 +167,7 @@ export default function PayOPT({
                 state: geoInfo.state,
                 city: geoInfo.city,
                 country: geoInfo.country,
+                platform:"WEB",
               }
             : {
                 userId: user.id,
