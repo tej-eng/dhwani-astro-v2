@@ -3,7 +3,7 @@
 export const revalidate = 3600;
 
 import { Suspense } from "react";
-import { fetchGenNakRep } from "@/app/api/astroapi.server";
+import { fetchGenNakRep } from "@/app/api/astroapi";
 import GeneralUI from "./GeneralUI";
 import { decodeKundliHash } from "@/utils/kundliHash";
 

@@ -5,7 +5,7 @@ export const revalidate = 3600;
 import {
   fetchGenAscRep,
   fetchGenNakRep,
-} from "@/app/api/astroapi.server";
+} from "@/app/api/astroapi";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
 import AscendantClient from "./AscendantClient";

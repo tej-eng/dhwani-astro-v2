@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import Image from "next/image";
-
 import { setdaUserForm } from "@/app/redux/services/daUserFormSlice";
-import { useGetBirthDetailsMutation } from "@/app/redux/services/astrologyAPI";
-
 import Kundlioth from "../Smcompo/Kundlioth";
 import Bestsell from "../Smcompo/Bestsell/Bestsell";
 import Sidebanner from "../Smcompo/Sidebanner";
@@ -23,6 +20,7 @@ import { useLanguage } from "@/app/context/LangContext";
 import { createKundliFromMain } from "../../app/actions/createKundliFromMain";
 import { useAuth } from "@/app/context/authContext";
 import Select from "react-select";
+import { fetchBirthDetails } from "@/app/api/astroapi";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -93,8 +91,8 @@ const selectStyles = {
     backgroundColor: state.isSelected
       ? "#9333ea"
       : state.isFocused
-      ? "#f3e8ff"
-      : "#fff",
+        ? "#f3e8ff"
+        : "#fff",
     color: state.isSelected ? "#fff" : "#111827",
     cursor: "pointer",
   }),
@@ -132,7 +130,7 @@ const Kundlimain = () => {
   const { isLoggedIn, setShowLogin } = useAuth();
   const { messages: t } = useLanguage();
   const dispatch = useDispatch();
-  const [getBirthDetails] = useGetBirthDetailsMutation();
+  const getBirthDetails = fetchBirthDetails;
 
   const [alert, setAlert] = useState(false);
   const [errors, setErrors] = useState({});

@@ -1,6 +1,6 @@
 import { decodeKundliHash } from "@/utils/kundliHash";
 import AscendantClient from "../../../freeservices/kundali/getKundaliPage/ascendant/AscendantClient";
-import {  fetchGenAscRep,   fetchGenNakRep,} from "@/app/api/astroapi.server";
+import {  fetchGenAscRep,   fetchGenNakRep,} from "@/app/api/astroapi";
 
 
 export default async function Page({ params, searchParams }) {

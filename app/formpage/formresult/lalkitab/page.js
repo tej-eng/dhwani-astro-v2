@@ -3,7 +3,7 @@ import {
   fetchLalDebt,
   fetchLalHouses,
   fetchLalPlanet,
-} from "@/app/api/astroapi.server";
+} from "@/app/api/astroapi";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
 import LalkitabClient from "../../../freeservices/kundali/getKundaliPage/lalkitab/LalkitabClient";

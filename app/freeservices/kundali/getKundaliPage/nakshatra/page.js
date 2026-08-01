@@ -6,7 +6,7 @@ import {
   fetchNakPrev,
   fetchNakToday,
   fetchNakTomorrow,
-} from "@/app/api/astroapi.server";
+} from "@/app/api/astroapi";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
 import NakshatraTabsClient from "./NakshatraTabsClient";

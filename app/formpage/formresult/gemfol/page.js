@@ -1,4 +1,4 @@
-import { fetchGemSuggestion } from "@/app/api/astroapi.server";
+import { fetchGemSuggestion } from "@/app/api/astroapi";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import Gemsuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/gem/Gemsuggest"
 

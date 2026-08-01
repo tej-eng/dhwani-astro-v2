@@ -1,20 +1,16 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import {
-  useGetBirthDetailsMutation,
-  useGetAstroDetailsMutation,
-  useGetBasicPanchangMutation,
-} from "@/app/redux/services/astrologyAPI";
 import { useAPIFetchMHook } from "@/Hooks/useAPIFetchMHook";
 import { useMemo } from "react";
+import { fetchAstroDetails, fetchBasicPanchang, fetchBirthDetails } from "@/app/api/astroapi";
 
 export default function Basic() {
   const formData = useSelector((state) => state.daUserForm);
 
-  const [getBirthDetails] = useGetBirthDetailsMutation();
-  const [getAstroDetails] = useGetAstroDetailsMutation();
-  const [getBasicPanchang] = useGetBasicPanchangMutation();
+  const getBirthDetails = fetchBirthDetails;
+  const getAstroDetails = fetchAstroDetails;
+  const getBasicPanchang = fetchBasicPanchang;
 
 
   const extraTriggersMap = useMemo(() => ({

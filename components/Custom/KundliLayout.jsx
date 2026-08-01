@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setdaUserForm } from "@/app/redux/services/daUserFormSlice";
-import { useGetBirthDetailsMutation } from "@/app/redux/services/astrologyAPI";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Kundlioth from "../Smcompo/Kundlioth";
+import { fetchBirthDetails } from "@/app/api/astroapi";
 
 // LAZY LOADED COMPONENTS
 const Callchatsec = dynamic(() => import("@/components/Smcompo/Callchatsec"), { ssr: false,});
@@ -17,13 +17,12 @@ const Bestsell = dynamic(() => import("@/components/Smcompo/Bestsell/Bestsell"),
 const Freereport = dynamic(() => import("@/components/Smcompo/Freereport"), {ssr: false,});
 const Recastro = dynamic(() => import("@/components/Smcompo/Recastro"), {ssr: false,});
 const Sidebanner = dynamic(() => import("@/components/Smcompo/Sidebanner"), {ssr: false,});
-const Ytvideo = dynamic(() => import("@/components/Smcompo/Ytvideo"), {ssr: false,});
 export default function KundliLayout({ children }) {
 
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const dispatch = useDispatch();
-    const [getBirthDetails] = useGetBirthDetailsMutation();
+    const getBirthDetails = fetchBirthDetails;
 
     const [isExternalAccess, setIsExternalAccess] = useState(false);
     const [paramsProcessed, setParamsProcessed] = useState(false);

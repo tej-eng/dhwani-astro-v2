@@ -4,7 +4,7 @@ import {
   fetchGemSuggestion,
   fetchPujaSuggestion,
   fetchRudraSuggestion,
-} from "@/app/api/astroapi.server";
+} from "@/app/api/astroapi";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
 import SuggestTabsClient from "./SuggestTabsClient";

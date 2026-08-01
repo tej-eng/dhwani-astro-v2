@@ -3,7 +3,7 @@
 export const revalidate = 3600;
 
 import { Suspense } from "react";
-import { fetchMyDay, fetchNumeroDay } from "@/app/api/astroapi.server";
+import { fetchMyDay, fetchNumeroDay } from "@/app/api/astroapi";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import MydayClient from "@/components/Kundli/Kundliinter/Myday/MydayClient";
 
