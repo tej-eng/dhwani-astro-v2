@@ -8,7 +8,7 @@ export const useAPIFetchMHook = (
   dependentTrigger = null,
   dependentCondition = true,
   dependentFilterId = "",
-  extraTriggersMap = {}
+  extraTriggersMap = {},
 ) => {
   const [mainData, setMainData] = useState(null);
   const [dependentData, setDependentData] = useState([]);
@@ -24,7 +24,7 @@ export const useAPIFetchMHook = (
       (k) =>
         payload[k] !== undefined &&
         payload[k] !== null &&
-        !isNaN(Number(payload[k]))
+        !isNaN(Number(payload[k])),
     );
   };
 
@@ -53,7 +53,26 @@ export const useAPIFetchMHook = (
   const mainTriggerRef = useRef(mainTrigger);
   const dependentTriggerRef = useRef(dependentTrigger);
   const extraTriggersRef = useRef(extraTriggersMap);
+  useEffect(() => {
+    mainTriggerRef.current = mainTrigger;
+  }, [mainTrigger]);
 
+  useEffect(() => {
+    dependentTriggerRef.current = dependentTrigger;
+  }, [dependentTrigger]);
+
+  useEffect(() => {
+    extraTriggersRef.current = extraTriggersMap;
+  }, [extraTriggersMap]);
+  const executeTrigger = async (trigger, payload) => {
+    const result = trigger(payload);
+
+    if (result && typeof result.unwrap === "function") {
+      return await result.unwrap(); // RTK Query
+    }
+
+    return await result; // Normal async function
+  };
   useEffect(() => {
     const fetchData = async () => {
       if (!isValidPayload(payload)) {
@@ -72,16 +91,19 @@ export const useAPIFetchMHook = (
 
         // 🔹 Main API call
         if (mainTriggerRef.current) {
-          res = await mainTriggerRef.current(payload).unwrap();
+          res = await executeTrigger(mainTriggerRef.current, payload);
           setMainData(res);
         }
 
         // 🔹 Dependent API call
         if (dependentTriggerRef.current && dependentCondition && res?.present) {
-          const depRes = await dependentTriggerRef.current(payload).unwrap();
+          const depRes = await executeTrigger(
+            dependentTriggerRef.current,
+            payload,
+          );
           const filtered =
             depRes?.suggestions?.filter(
-              (s) => s.puja_id === dependentFilterId
+              (s) => s.puja_id === dependentFilterId,
             ) || [];
           setDependentData(filtered);
         } else {
@@ -96,13 +118,16 @@ export const useAPIFetchMHook = (
           const results = await Promise.all(
             extraKeys.map(async (key) => {
               try {
-                const r = await extraTriggersRef.current[key](payload).unwrap();
+                const r = await executeTrigger(
+                  extraTriggersRef.current[key],
+                  payload,
+                );
                 return { key, data: r };
               } catch (err) {
-                // console.error(`❌ API Fetch Error for ${key}:`, err);
+                console.error(`❌ API Fetch Error for ${key}:`, err);
                 return { key, data: null };
               }
-            })
+            }),
           );
 
           results.forEach(({ key, data }) => {
@@ -114,7 +139,7 @@ export const useAPIFetchMHook = (
           setExtraData({});
         }
       } catch (err) {
-        // console.error("❌ API Fetch Error:", err);
+        console.error("❌ API Fetch Error:", err);
         setError("Failed to fetch data");
       } finally {
         setLoading(false);

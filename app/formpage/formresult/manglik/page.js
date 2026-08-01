@@ -1,6 +1,6 @@
 
 
-import { fetchManglik } from "@/app/api/astroapi.server";
+import { fetchManglik } from "@/app/api/astroapi";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import ManglikClient from "./ManglikClient";
 

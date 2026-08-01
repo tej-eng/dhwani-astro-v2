@@ -1,7 +1,7 @@
 
 
 import { decodeKundliHash } from "@/utils/kundliHash";
-import { fetchSadheSati, fetchSadheRemedies, fetchSadheDetails, } from "@/app/api/astroapi.server";
+import { fetchSadheSati, fetchSadheRemedies, fetchSadheDetails, } from "@/app/api/astroapi";
 import Sadhesati from "../../../../components/Kundli/Kundliinter/Sadhesati/Sadhesati"
 
 export default async function Page({ params, searchParams }) {

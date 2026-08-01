@@ -1,0 +1,174 @@
+const BASE_URL = "https://json.astrologyapi.com/v1/";
+const CACHE_TTL = 60 * 60 * 1000;
+
+const responseCache = new Map();
+const pendingRequests = new Map();
+const USER_ID = process.env.NEXT_PUBLIC_ASTROLOGY_USER_ID || "618742";
+const API_KEY =
+  process.env.NEXT_PUBLIC_ASTROLOGY_API_KEY ||
+  "7c20599eb23be276e8c8ace8bef880c2";
+
+function getHeaders() {
+  return {
+    Authorization:
+      "Basic " + Buffer.from(`${USER_ID}:${API_KEY}`).toString("base64"),
+    "Content-Type": "application/json",
+  };
+}
+function createCacheKey(endpoint, body) {
+  return endpoint + ":" + JSON.stringify(body);
+}
+async function post(endpoint, body) {
+  const sanitizedBody = {
+    day: Number(body.day),
+    month: Number(body.month),
+    year: Number(body.year),
+    hour: Number(body.hour),
+    min: Number(body.min),
+    lat: Number(body.lat),
+    lon: Number(body.lon),
+    tzone: Number(body.tzone),
+  };
+
+  const cacheKey = createCacheKey(endpoint, sanitizedBody);
+
+  const cached = responseCache.get(cacheKey);
+
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    return cached.data;
+  }
+
+  if (pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey);
+  }
+
+  const request = fetch(`${BASE_URL}${endpoint}`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify(sanitizedBody),
+  })
+    .then(async (res) => {
+      const data = await res.json();
+
+      if (!res.ok || data?.error) {
+        throw new Error(data?.message || "API Failed");
+      }
+
+      responseCache.set(cacheKey, {
+        data,
+        time: Date.now(),
+      });
+
+      pendingRequests.delete(cacheKey);
+
+      return data;
+    })
+    .catch((err) => {
+      pendingRequests.delete(cacheKey);
+      throw err;
+    });
+
+  pendingRequests.set(cacheKey, request);
+
+  return request;
+}
+
+// moon biorythm
+export const fetchMoonBio = (body) => post("moon_biorhythm", body);
+
+// My Day Prediction
+export async function fetchMyDay(body) {
+  return post("daily_nakshatra_prediction", body);
+}
+
+export async function fetchNumeroDay(body) {
+  return post("numero_prediction/daily", body);
+}
+
+// Nakshatra Prediction
+export const fetchNakPrev = (body) => post("daily_nakshatra_prediction/previous", body);
+
+export const fetchNakToday = (body) => post("daily_nakshatra_prediction", body);
+
+export const fetchNakTomorrow = (body) => post("daily_nakshatra_prediction/next", body);
+
+// kundali apis
+
+// Kundli Doshas
+export const fetchManglik = (body) => post("manglik", body);
+
+export const fetchKalSharp = (body) => post("kalsarpa_details", body);
+
+export const fetchPitraDosha = (body) => post("pitra_dosha_report", body);
+
+// Sadhesati APIs
+export const fetchSadheSati = (body) => post("sadhesati_current_status", body);
+
+export const fetchSadheRemedies = (body) => post("sadhesati_remedies", body);
+
+export const fetchSadheDetails = (body) => post("sadhesati_life_details", body);
+
+// Lalkiatab api
+export const fetchLalKitab = (body) => post("lalkitab_horoscope", body);
+
+export const fetchLalDebt = (body) => post("lalkitab_debts", body);
+
+export const fetchLalHouses = (body) => post("lalkitab_houses", body);
+
+export const fetchLalPlanet = (body) => post("lalkitab_planets", body);
+
+// Puja gemstone rudraksha suggestions
+export const fetchGemSuggestion = (body) => post("basic_gem_suggestion", body);
+
+export const fetchPujaSuggestion = (body) => post("puja_suggestion", body);
+
+export const fetchRudraSuggestion = (body) => post("rudraksha_suggestion", body);
+
+// Ascendant report
+export const fetchGenAscRep = (body) => post("general_ascendant_report", body);
+
+export const fetchGenNakRep = (body) => post("general_nakshatra_report", body);
+
+// Char Yogni dasha
+export const fetchCharDasha = (body) => post("major_chardasha", body);
+
+export const fetchCurrentCharDasha = (body) => post("current_chardasha", body);
+
+export const fetchYoginiDasha = (body) => post("major_yogini_dasha", body);
+
+export const fetchCurrentYoginiDasha = (body) => post("current_yogini_dasha", body);
+
+// Numerology Kundli
+export const fetchNumeroPred = (body) => post("numero_prediction/daily", body);
+
+export const fetchNumeroDet = (body) => post("numero_table", body);
+
+export const fetchNumeroRepo = (body) => post("numero_report", body);
+
+export const fetchNumeroFav = (body) => post("numero_fav_time", body);
+
+export const fetchNumeroPlace = (body) => post("numero_place_vastu", body);
+
+export const fetchNumeroFast = (body) => post("numero_fasts_report", body);
+
+export const fetchNumeroLord = (body) => post("numero_fav_lord", body);
+
+export const fetchNumeroMantra = (body) => post("numero_fav_mantra", body);
+
+// KP APIs
+export const fetchKPPlanets = (body) => post("kp_planets", body);
+
+export const fetchKPHouses = (body) => post("kp_house_significator", body);
+
+export const fetchKPPlanetSignificators = (body) => post("kp_planet_significator", body);
+
+// basic birth planets API
+
+export const fetchBasicPanchang = (body) => post("basic_panchang", body);
+
+export const fetchAstroDetails = (body) => post("astro_details", body);
+
+export const fetchBirthDetails = (body) => post("birth_details", body);
+export const fetchPlanetPositions = (body) => post("planets", body);
+
+export const fetchVimAll = (body) => post("major_vdasha", body);

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -6,8 +6,18 @@ import { useZodiac } from "@/app/context/ZodiacContext";
 import { SkeletonText } from "./SkeletonText";
 
 const defaultCategories = [
-  { id: 0, name: "Personal Life", icon: "/ds-img/user2.png", key: "personal_life" },
-  { id: 1, name: "Professional Life", icon: "/ds-img/handshake.png", key: "profession" },
+  {
+    id: 0,
+    name: "Personal Life",
+    icon: "/ds-img/user2.png",
+    key: "personal_life",
+  },
+  {
+    id: 1,
+    name: "Professional Life",
+    icon: "/ds-img/handshake.png",
+    key: "profession",
+  },
   { id: 2, name: "Health", icon: "/ds-img/healthcare.png", key: "health" },
   { id: 3, name: "Travel", icon: "/ds-img/airplane.png", key: "travel" },
   { id: 4, name: "Luck", icon: "/ds-img/fingers.png", key: "luck" },
@@ -30,7 +40,7 @@ export default function HoroscopeList({ usePredictionHook }) {
 
     getPrediction({
       zodiacName: zodiac,
-      body: { timezone: 5.5 }
+      body: { timezone: 5.5 },
     })
       .unwrap()
       .then((res) => {
@@ -38,9 +48,9 @@ export default function HoroscopeList({ usePredictionHook }) {
           throw new Error("Invalid API response");
         }
 
-        const updated = defaultCategories.map(cat => ({
+        const updated = defaultCategories.map((cat) => ({
           ...cat,
-          content: res.prediction[cat.key] || "No content -- not available."
+          content: res.prediction[cat.key] || "No content -- not available.",
         }));
 
         setCategories(updated);
@@ -48,14 +58,13 @@ export default function HoroscopeList({ usePredictionHook }) {
       .catch(() => {
         setIsError(true);
         setCategories(
-          defaultCategories.map(cat => ({
+          defaultCategories.map((cat) => ({
             ...cat,
-            content: "No content -- API error."
-          }))
+            content: "No content -- API error.",
+          })),
         );
       })
       .finally(() => setIsLoading(false));
-
   }, [zodiac]);
 
   return (
@@ -65,7 +74,6 @@ export default function HoroscopeList({ usePredictionHook }) {
           key={category.id}
           className="rounded-2xl border-2 border-violet-200 p-4"
         >
-          {/* Heading */}
           <div className="flex items-center gap-3 mb-2">
             <Image
               src={category.icon}
@@ -78,7 +86,6 @@ export default function HoroscopeList({ usePredictionHook }) {
             </h3>
           </div>
 
-          {/* Content */}
           {isLoading ? (
             <SkeletonText />
           ) : isError ? (

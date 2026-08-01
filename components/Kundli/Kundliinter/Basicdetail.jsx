@@ -6,10 +6,10 @@ import Planets from "./Planets";
 import Divcharts from "./Divcharts";
 
 const btabs = [
-    { id: "basic", label: "Basic", component: <Basic /> },
-    { id: "planets", label: "Planets", component: <Planets /> },
-    { id: "divcharts", label: "Divisional Charts", component: <Divcharts /> }
-]
+  { id: "basic", label: "Basic" },
+  { id: "planets", label: "Planets" },
+  { id: "divcharts", label: "Divisional Charts" },
+];
 
 export default function Basicdetail() {
     const [basicTab, setBasicTab] = useState("basic");
@@ -30,9 +30,19 @@ export default function Basicdetail() {
                 </ul>
             </div>
 
-            <div className="basic-down py-5">
-                {btabs.find((btab) => btab.id === basicTab)?.component}
-            </div>
+           <div className="basic-down py-5">
+    <div className={basicTab === "basic" ? "block" : "hidden"}>
+        <Basic />
+    </div>
+
+    <div className={basicTab === "planets" ? "block" : "hidden"}>
+        <Planets />
+    </div>
+
+    <div className={basicTab === "divcharts" ? "block" : "hidden"}>
+        <Divcharts />
+    </div>
+</div>
 
 
         </section>

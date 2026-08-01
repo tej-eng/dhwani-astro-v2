@@ -1,35 +1,35 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import {
-  useGetPlanetsMutation,
-  useGetVimAllMutation,
-} from "@/app/redux/services/astrologyAPI";
+
 import { useAPIFetchMHook } from "@/Hooks/useAPIFetchMHook";
 import { useMemo } from "react";
+import { fetchPlanetPositions, fetchVimAll } from "@/app/api/astroapi";
 
 export default function Planets() {
   const formData = useSelector((state) => state.daUserForm);
 
-  const [getPlanets] = useGetPlanetsMutation();
-  const [getVimAll] = useGetVimAllMutation();
 
 
-  const extraTriggersMap = useMemo(() => ({
-    vim: getVimAll,
-  }), [getVimAll]);
-
-
-  const {
-    mainData: planetsData,
-    extraData = {},
-    loading,
-    error,
-  } = useAPIFetchMHook(getPlanets, formData, null, false, "", extraTriggersMap);
+const {
+  mainData: planetsData,
+  extraData = {},
+  loading,
+  error,
+} = useAPIFetchMHook(
+  fetchPlanetPositions,
+  formData,
+  null,
+  false,
+  "",
+  {
+    vim: fetchVimAll,
+  }
+);
 
   const vimData = extraData?.vim;
 
-  const isFormEmpty = (
+  const isFormEmpty =
     !formData?.day ||
     !formData?.month ||
     !formData?.year ||
@@ -37,11 +37,12 @@ export default function Planets() {
     !formData?.min ||
     !formData?.lat ||
     !formData?.lon ||
-    !formData?.tzone
-  );
+    !formData?.tzone;
 
   if (isFormEmpty) {
-    return <p className="text-center text-gray-400">Waiting for user data...</p>;
+    return (
+      <p className="text-center text-gray-400">Waiting for user data...</p>
+    );
   }
 
   if (loading) {
@@ -56,7 +57,8 @@ export default function Planets() {
   }
 
   if (error) return <Message text={`Error: ${error}`} color="red" />;
-  if (!planetsData || !vimData) return <Message text="No data received." color="red" />;
+  if (!planetsData || !vimData)
+    return <Message text="No data received." color="red" />;
 
   const roundUp = (num, decimalPlaces) => {
     if (typeof num !== "number") return "—";
@@ -67,9 +69,8 @@ export default function Planets() {
   return (
     <div className="basic-kundli-charts flex flex-col gap-4 items-center px-4 pb-10">
       <h2 className="text-lg md:text-xl font-bold text-purple-700">
-        Planet Positions
+        Planet Positions dfghnj
       </h2>
-
 
       <div className="basic-det w-full flex flex-col border rounded-lg shadow-lg p-2 border-purple-100">
         <div className="overflow-x-auto w-88 md:w-full text-black text-xs md:text-sm">
@@ -86,7 +87,9 @@ export default function Planets() {
                 "Awastha",
                 "House",
               ].map((head, i) => (
-                <h5 key={i} className="text-sm font-semibold">{head}</h5>
+                <h5 key={i} className="text-sm font-semibold">
+                  {head}
+                </h5>
               ))}
             </div>
 
@@ -111,11 +114,15 @@ export default function Planets() {
 
         {/* Vimshottari Dasha */}
         <div className="vimh-det mt-6 w-full">
-          <h5 className="p-5 text-center text-2xl text-black">Vimshottari Dasha</h5>
+          <h5 className="p-5 text-center text-2xl text-black">
+            Vimshottari Dasha
+          </h5>
           <div className="basic-box flex flex-col gap-3 text-black">
             <div className="pl-ul grid grid-cols-4 bg-purple-400 rounded-lg px-5 py-2">
               {["Planet", "Start Date", "End Date", "Next"].map((head, i) => (
-                <h5 key={i} className="md:text-sm text-xs font-semibold">{head}</h5>
+                <h5 key={i} className="md:text-sm text-xs font-semibold">
+                  {head}
+                </h5>
               ))}
             </div>
 

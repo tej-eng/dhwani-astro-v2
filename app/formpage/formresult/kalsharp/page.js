@@ -1,6 +1,6 @@
 // app/formpage/formresult/kalsharp/page.js
 
-import { fetchKalSharp, fetchPujaSuggestion } from "@/app/api/astroapi.server";
+import { fetchKalSharp, fetchPujaSuggestion } from "@/app/api/astroapi";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import KalsharpClient from "./KalsharpClient";
 
