@@ -11,7 +11,7 @@ export default function Kuninter() {
   useScrollZoom(".head-wrap");
   const router = useRouter();
   const formData = useSelector((state) => state.daUserForm, shallowEqual) || {};
-  // console.log("uuuuuuuuuuuuuuuuuuuuuuu", formData);
+
 
   const kundlicards = [
     {
@@ -26,12 +26,7 @@ export default function Kuninter() {
       named: "Get to know about your nature",
       href: "/freeservices/kundali/getKundaliPage/general",
     },
-    // {
-    //   name: "Western Horoscope",
-    //   img: "/ds-img/ology.webp",
-    //   named: "Positions of celestial bodies ",
-    //   href: "/freeservices/kundali/getKundaliPage/westernPage",
-    // },
+
     {
       name: "Dosha in Kundli",
       img: "/ds-img/k3.png",

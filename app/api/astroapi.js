@@ -1,8 +1,5 @@
 const BASE_URL = "https://json.astrologyapi.com/v1/";
-const CACHE_TTL = 60 * 60 * 1000;
 
-const responseCache = new Map();
-const pendingRequests = new Map();
 const USER_ID = process.env.NEXT_PUBLIC_ASTROLOGY_USER_ID || "618742";
 const API_KEY =
   process.env.NEXT_PUBLIC_ASTROLOGY_API_KEY ||
@@ -15,9 +12,7 @@ function getHeaders() {
     "Content-Type": "application/json",
   };
 }
-function createCacheKey(endpoint, body) {
-  return endpoint + ":" + JSON.stringify(body);
-}
+
 async function post(endpoint, body) {
   const sanitizedBody = {
     day: Number(body.day),
@@ -30,48 +25,28 @@ async function post(endpoint, body) {
     tzone: Number(body.tzone),
   };
 
-  const cacheKey = createCacheKey(endpoint, sanitizedBody);
-
-  const cached = responseCache.get(cacheKey);
-
-  if (cached && Date.now() - cached.time < CACHE_TTL) {
-    return cached.data;
-  }
-
-  if (pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey);
-  }
-
-  const request = fetch(`${BASE_URL}${endpoint}`, {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(sanitizedBody),
-  })
-    .then(async (res) => {
-      const data = await res.json();
 
-      if (!res.ok || data?.error) {
-        throw new Error(data?.message || "API Failed");
-      }
+    cache: "force-cache",
+    next: {
+      revalidate: 60 * 60,
+      tags: [`astro-${endpoint}`],
+    },
+  });
 
-      responseCache.set(cacheKey, {
-        data,
-        time: Date.now(),
-      });
+  const data = await res.json();
 
-      pendingRequests.delete(cacheKey);
+  if (!res.ok || data?.error) {
+    console.error("SERVER API FAILED:", endpoint, data);
+    return null;
+  }
 
-      return data;
-    })
-    .catch((err) => {
-      pendingRequests.delete(cacheKey);
-      throw err;
-    });
-
-  pendingRequests.set(cacheKey, request);
-
-  return request;
+  return data;
 }
+
 
 // moon biorythm
 export const fetchMoonBio = (body) => post("moon_biorhythm", body);
