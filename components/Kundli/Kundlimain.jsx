@@ -221,7 +221,11 @@ const Kundlimain = () => {
 
       dispatch(setdaUserForm(payload));
 
-      await getBirthDetails(payload).unwrap();
+    const birthDetails = await getBirthDetails(payload);
+
+if (!birthDetails) {
+  throw new Error("Failed to fetch birth details");
+}
 
       const fd = new FormData();
       Object.entries(payload).forEach(([key, value]) => fd.append(key, value));

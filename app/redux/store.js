@@ -2,8 +2,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; 
-import createSagaMiddleware from "redux-saga";
-import rootSaga from "./saga";
+
 import { astrologyApi } from "./services/astrologyAPI";
 
 import authSlice from "./reducer/auth/authSlice";
@@ -127,7 +126,7 @@ const rootReducer = combineReducers({
 
 
 
-const sagaMiddleware = createSagaMiddleware();
+
 
 export const store = configureStore({
   reducer: rootReducer,
@@ -135,9 +134,9 @@ export const store = configureStore({
     getDefaultMiddleware({
       thunk: true, 
       serializableCheck: false,
-    }).concat(sagaMiddleware, astrologyApi.middleware),
+    }).concat(astrologyApi.middleware)
 });
 
-sagaMiddleware.run(rootSaga);
+
 
 export const persistor = persistStore(store);
