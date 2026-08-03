@@ -5,10 +5,13 @@ export default function Sadhesati(props) {
 
   const { satiData, remeData, detailsData } = props;
 
-  if (!satiData) {
-    console.error("CLIENT ❌ satiData missing", props);
-    return <p className="text-red-500 text-center">Failed to load Sadhesati data.</p>;
-  }
+if (!satiData) {
+  return (
+    <p className="text-red-500 text-center">
+      Failed to load Sadhesati data.
+    </p>
+  );
+}
   return (
     <div className="px-4 py-6 max-w-7xl mx-auto">
       <h5 className="text-xl md:text-2xl text-black font-semibold text-center mb-4">

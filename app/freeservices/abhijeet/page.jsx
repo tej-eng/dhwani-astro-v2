@@ -4,10 +4,11 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import dayjs from "dayjs";
-import { fetchAdvPanchang } from "../../api/astroFetch";
+import { fetchAdvPanchang, SEO_ENDPOINTS } from "../../api/seoEndpoints";
 
 
 import usePanchHook from "../../../Hooks/usePanchHook";
+import { astrologySeo } from "@/app/api/astrologySeo";
 
 export default function AbhijitPage({ initialPanchang = null, inputParams = null }) {
   const {
@@ -41,8 +42,13 @@ export default function AbhijitPage({ initialPanchang = null, inputParams = null
   const getAbhijitData = useCallback(async (params) => {
     setLoading(true);
     try {
-      const res = await fetchAdvPanchang(params);
-      const normalized = res?.data?.abhijit_muhurta || res?.abhijit_muhurta || null;
+     const res = await astrologySeo(
+    SEO_ENDPOINTS.ADV_PANCHANG,
+    params
+);
+      const normalized =
+    res?.abhijit_muhurta ??
+    res?.data?.abhijit_muhurta;
       setAbhijitData(normalized);
     } catch (err) {
       console.error("Client fetch error:", err);

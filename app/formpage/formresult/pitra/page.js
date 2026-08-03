@@ -1,6 +1,6 @@
 // app/formpage/formresult/pitradosha/page.js
 
-import { fetchPitraDosha } from "@/app/api/astroapi";
+import { fetchPitraDosha } from "@/app/api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import PitradoshaClient from "./PitradoshaClient";
 

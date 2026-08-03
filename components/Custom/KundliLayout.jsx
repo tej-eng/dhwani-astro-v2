@@ -7,7 +7,7 @@ import { setdaUserForm } from "@/app/redux/services/daUserFormSlice";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Kundlioth from "../Smcompo/Kundlioth";
-import { fetchBirthDetails } from "@/app/api/astroapi";
+import { useGetBirthDetailsMutation } from "@/app/redux/services/astrologyAPI";
 
 // LAZY LOADED COMPONENTS
 const Callchatsec = dynamic(() => import("@/components/Smcompo/Callchatsec"), { ssr: false,});
@@ -22,7 +22,8 @@ export default function KundliLayout({ children }) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const dispatch = useDispatch();
-    const getBirthDetails = fetchBirthDetails;
+   const [getBirthDetails, { isLoading: birthLoading }] =
+     useGetBirthDetailsMutation();
 
     const [isExternalAccess, setIsExternalAccess] = useState(false);
     const [paramsProcessed, setParamsProcessed] = useState(false);

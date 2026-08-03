@@ -1,8 +1,8 @@
 
 
 import { decodeKundliHash } from "@/utils/kundliHash";
-import { fetchSadheSati, fetchSadheRemedies, fetchSadheDetails, } from "@/app/api/astroapi";
-import Sadhesati from "../../../../components/Kundli/Kundliinter/Sadhesati/Sadhesati"
+import { fetchSadheSati, fetchSadheRemedies, fetchSadheDetails, } from "@/app/api/astrologySeo";
+import Sadhesati from "../../../freeservices/kundali/getKundaliPage/sadhesati/Sadhesati"
 
 export default async function Page({ params, searchParams }) {
   const { slug } = params;

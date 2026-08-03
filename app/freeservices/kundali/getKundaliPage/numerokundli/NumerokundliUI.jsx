@@ -20,8 +20,8 @@ export default function NumerokundliUI({ data }) {
     fav,
     place,
     fast,
-    lord,
-    mantra,
+    lord,repo,
+    mantra, 
   } = data;
 
 
@@ -41,14 +41,14 @@ export default function NumerokundliUI({ data }) {
   ];
 
   const favItems = [
-    { label: "Favorite Day", value: fav?.fav_day },
-    { label: "Favorite Mantra", value: fav?.fav_mantra },
-    { label: "Favorite Stone", value: fav?.fav_stone },
-    { label: "Favorite Substance", value: fav?.fav_substone },
+    { label: "Favorite Day", value: daily?.fav_day },
+    { label: "Favorite Mantra", value: daily?.fav_mantra },
+    { label: "Favorite Stone", value: daily?.fav_stone },
+    { label: "Favorite Substance", value: daily?.fav_substone },
   ];
 
   const descriptionBlocks = [
-    place,
+    place,   repo,
     fast,
     lord,
     mantra,
@@ -64,11 +64,11 @@ export default function NumerokundliUI({ data }) {
       </h5>
 
       <section className="basic-details-main w-full flex items-center justify-start flex-col gap-6">
-        <div className="head-wrap flex flex-col gap-10">
+        <div className=" flex flex-col gap-10">
 
           <div className="p-5 rounded-lg bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg text-black border border-orange-300">
             <h3 className="text-lg text-center font-bold text-black mb-2">
-              Today's Prediction : {daily?.prediction_date}
+              Today's Prediction : {daily?.prediction_date|| "Prediction not available"}
             </h3>
             <p className="text-sm mb-2 leading-relaxed">
               {daily?.prediction}
@@ -97,10 +97,10 @@ export default function NumerokundliUI({ data }) {
                 key={i}
                 className="flex flex-col items-center justify-center p-4 shadow-lg rounded-lg gap-2 bg-linear-to-r from-[#c54e5a8a] to-[#7042ac8c]"
               >
-                <span className="md:text-xl text-center font-semibold">
+                <span className="md:text-md text-center font-semibold">
                   {value ?? "-"}
                 </span>
-                <span className="bg-white font-semibold rounded-full px-2 md:px-4 py-1 text-xs md:text-[13px]">
+                <span className="bg-white  rounded-full px-2 md:px-4 py-1 text-xs ">
                   {label}
                 </span>
               </div>

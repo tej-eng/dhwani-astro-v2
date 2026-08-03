@@ -1,4 +1,4 @@
-import { fetchRudraSuggestion } from "@/app/api/astroapi";
+import { fetchRudraSuggestion } from "@/app/api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import Rudrasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/rudra/Rudrasuggest";
 

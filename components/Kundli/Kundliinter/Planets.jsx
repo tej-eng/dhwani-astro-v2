@@ -2,32 +2,10 @@
 
 import { useSelector } from "react-redux";
 
-import { useAPIFetchMHook } from "@/Hooks/useAPIFetchMHook";
-import { useMemo } from "react";
-import { fetchPlanetPositions, fetchVimAll } from "@/app/api/astroapi";
+import { useGetPlanetPositionsQuery, useGetVimAllQuery } from "@/app/redux/services/astrologyAPI";
 
 export default function Planets() {
   const formData = useSelector((state) => state.daUserForm);
-
-
-
-const {
-  mainData: planetsData,
-  extraData = {},
-  loading,
-  error,
-} = useAPIFetchMHook(
-  fetchPlanetPositions,
-  formData,
-  null,
-  false,
-  "",
-  {
-    vim: fetchVimAll,
-  }
-);
-
-  const vimData = extraData?.vim;
 
   const isFormEmpty =
     !formData?.day ||
@@ -39,13 +17,31 @@ const {
     !formData?.lon ||
     !formData?.tzone;
 
+const {
+  data: planetsData,
+  isLoading: planetsLoading,
+  error: planetsError,
+} = useGetPlanetPositionsQuery(formData, {
+  skip: isFormEmpty,
+});
+
+const {
+  data: vimData,
+  isLoading: vimLoading,
+  error: vimError,
+} = useGetVimAllQuery(formData, {
+  skip: isFormEmpty,
+});
+
+
+
   if (isFormEmpty) {
     return (
       <p className="text-center text-gray-400">Waiting for user data...</p>
     );
   }
 
-  if (loading) {
+ if (planetsLoading || vimLoading) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-32">
         <span className="loader-all"></span>
@@ -56,7 +52,14 @@ const {
     );
   }
 
-  if (error) return <Message text={`Error: ${error}`} color="red" />;
+if (planetsError || vimError) {
+  return (
+    <Message
+      text="Failed to load planetary data."
+      color="red"
+    />
+  );
+}
   if (!planetsData || !vimData)
     return <Message text="No data received." color="red" />;
 
@@ -69,7 +72,7 @@ const {
   return (
     <div className="basic-kundli-charts flex flex-col gap-4 items-center px-4 pb-10">
       <h2 className="text-lg md:text-xl font-bold text-purple-700">
-        Planet Positions dfghnj
+        Planet Positions
       </h2>
 
       <div className="basic-det w-full flex flex-col border rounded-lg shadow-lg p-2 border-purple-100">

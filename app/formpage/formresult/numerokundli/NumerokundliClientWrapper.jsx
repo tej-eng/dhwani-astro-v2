@@ -12,7 +12,7 @@ import {
   fetchNumeroFast,
   fetchNumeroLord,
   fetchNumeroMantra,
-} from "../../../api/astroapi";
+} from "../../../api/astrologySeo";
 
 import NumerokundliUI from "./NumerokundliUI";
 

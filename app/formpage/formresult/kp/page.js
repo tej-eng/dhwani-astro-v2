@@ -2,7 +2,7 @@ import {
   fetchKPPlanets,
   fetchKPHouses,
   fetchKPPlanetSignificators,
-} from "@/app/api/astroapi";
+} from "@/app/api/astrologySeo";
 
 import { decodeKundliHash } from "@/utils/kundliHash";
 import KpClient from "./KpClient";

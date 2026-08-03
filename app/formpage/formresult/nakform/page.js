@@ -1,6 +1,6 @@
 
 
-import { fetchMyDay } from "@/app/api/astroapi";
+import { fetchMyDay } from "@/app/api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import NakshatraClient from "./NakshatraClient";
 

@@ -1,14 +1,48 @@
 "use client";
 
 import React from "react";
+import { useGetLalKitabDebtsQuery, useGetLalKitabhousesQuery, useGetLalKitabPlanetsQuery, useGetLalKitabQuery } from "@/app/redux/services/astrologyAPI";
 
-export default function LalkitabClient({
-  kitabData,
-  debtData,
-  houseData,
-  planetData,
-}) {
-  if (!kitabData || !debtData || !houseData || !planetData) {
+export default function LalkitabClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: kitabData,
+    isLoading: kitabLoading,
+    error: kitabError,
+  } = useGetLalKitabQuery(formData, { skip });
+
+  const {
+    data: debtData,
+    isLoading: debtLoading,
+    error: debtError,
+  } = useGetLalKitabDebtsQuery(formData, { skip });
+
+  const {
+    data: houseData,
+    isLoading: houseLoading,
+    error: houseError,
+  } = useGetLalKitabhousesQuery(formData, { skip });
+
+  const {
+    data: planetData,
+    isLoading: planetLoading,
+    error: planetError,
+  } = useGetLalKitabPlanetsQuery(formData, { skip });
+
+  const loading =
+    kitabLoading ||
+    debtLoading ||
+    houseLoading ||
+    planetLoading;
+
+  const error =
+    kitabError ||
+    debtError ||
+    houseError ||
+    planetError;
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-32">
         <span className="loader-all" />
@@ -16,6 +50,26 @@ export default function LalkitabClient({
     );
   }
 
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Lal Kitab reports.
+      </p>
+    );
+  }
+
+  if (
+    !kitabData ||
+    !debtData ||
+    !houseData ||
+    !planetData
+  ) {
+    return (
+      <p className="text-center text-red-500">
+        No Lal Kitab data found.
+      </p>
+    );
+  }
   return (
     <div className="px-4 pb-10 flex flex-col gap-6 items-center">
       <h5 className="text-xl md:text-2xl font-semibold text-black">

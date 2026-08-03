@@ -1,34 +1,11 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import { useAPIFetchMHook } from "@/Hooks/useAPIFetchMHook";
-import { useMemo } from "react";
-import { fetchAstroDetails, fetchBasicPanchang, fetchBirthDetails } from "@/app/api/astroapi";
+import { useGetAstroDetailsQuery, useGetBasicPanchangQuery, useGetBirthDetailsMutation } from "@/app/redux/services/astrologyAPI";
+import { useEffect } from "react";
 
 export default function Basic() {
   const formData = useSelector((state) => state.daUserForm);
-
-  const getBirthDetails = fetchBirthDetails;
-  const getAstroDetails = fetchAstroDetails;
-  const getBasicPanchang = fetchBasicPanchang;
-
-
-  const extraTriggersMap = useMemo(() => ({
-    astro: getAstroDetails,
-    panchang: getBasicPanchang,
-  }), [getAstroDetails, getBasicPanchang]);
-
-  const {
-    mainData: birthData,
-    extraData = {},
-    loading,
-    error,
-  } = useAPIFetchMHook(getBirthDetails, formData, null, false, "", extraTriggersMap);
-
-
-  const astroData = extraData?.astro;
-  const bpData = extraData?.panchang;
-
   const isFormEmpty = (
     !formData?.day ||
     !formData?.month ||
@@ -39,12 +16,41 @@ export default function Basic() {
     !formData?.lon ||
     !formData?.tzone
   );
+const [
+  getBirthDetails,
+  {
+    data: birthData,
+    isLoading: birthLoading,
+    error: birthError,
+  },
+] = useGetBirthDetailsMutation();
+const {
+  data: astroData,
+  isLoading: astroLoading,
+  error: astroError,
+} = useGetAstroDetailsQuery(formData, {
+  skip: isFormEmpty,
+});
+
+const {
+  data: bpData,
+  isLoading: bpLoading,
+  error: bpError,
+} = useGetBasicPanchangQuery(formData, {
+  skip: isFormEmpty,
+});
+
+useEffect(() => {
+  if (!isFormEmpty) {
+    getBirthDetails(formData);
+  }
+}, [formData]);
 
   if (isFormEmpty) {
     return <p className="text-center text-gray-400">Waiting for user data...</p>;
   }
 
-  if (loading) {
+  if (birthLoading || astroLoading || bpLoading) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-32">
         <span className="loader-all"></span>
@@ -53,7 +59,14 @@ export default function Basic() {
     );
   }
 
-  if (error) return <Message text={`Error: ${error}`} color="red" />;
+if (birthError || astroError || bpError) {
+  return (
+    <Message
+      text="Failed to load reports."
+      color="red"
+    />
+  );
+}
 
   if (!birthData || !astroData || !bpData) {
     return <Message text="No data received." color="red" />;
