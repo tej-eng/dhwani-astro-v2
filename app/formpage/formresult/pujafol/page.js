@@ -1,4 +1,4 @@
-import { fetchPujaSuggestion } from "@/app/api/astroapi";
+import { fetchPujaSuggestion } from "@/app/api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import Pujasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/puja/Pujasuggest";
 

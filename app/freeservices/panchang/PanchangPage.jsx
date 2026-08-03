@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { fetchAdvPanchang } from "@/app/api/astroFetch";
 import ChaughadiyaPage from "../chaughadiya/ChaughadiyaPage";
+import { SEO_ENDPOINTS } from "@/app/api/seoEndpoints";
+import { astrologySeo } from "@/app/api/astrologySeo";
 
 const HoraPage = dynamic(() => import("./HoraPage"), { ssr: false });
 
@@ -114,7 +115,12 @@ export default function PanchangPage({ initialPanchang, initialChaughadiya, init
     async (params) => {
       setLoading(true);
       try {
-        const res = await fetchAdvPanchang(params);
+     const res = await astrologySeo(
+    SEO_ENDPOINTS.ADV_PANCHANG,
+    params
+);
+
+
         setPanchangData(res?.data || res);
       } catch (e) {
         console.error("Fetch error:", e);

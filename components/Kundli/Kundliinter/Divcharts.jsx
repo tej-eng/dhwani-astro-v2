@@ -1,7 +1,7 @@
 "use client";
 import { useSelector } from "react-redux";
-import { useGetChartKundliMutation } from "@/app/redux/services/astrologyAPI";
 import { useState, useEffect } from "react";
+import { useGetChartKundliMutation } from "@/app/redux/services/astrologyAPI";
 
 function colorizeKundliSvg(svg) {
   const colorMap = {
@@ -41,8 +41,8 @@ function beautifyKundliSvg(svg) {
 
 export default function Charts() {
   const formData = useSelector((state) => state.daUserForm);
-  const [getChartKundli] = useGetChartKundliMutation();
-
+const [getChartKundli] =
+    useGetChartKundliMutation();
   const [chartSvgs, setChartSvgs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

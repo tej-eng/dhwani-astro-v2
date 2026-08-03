@@ -1,18 +1,53 @@
 "use client";
 
-import useScrollZoom from "@/Hooks/scrollZoom";
 
-export default function MydayClient({ daily, numero }) {
-  useScrollZoom(".head-wrap");
+import { useGetNumeroDailyQuery } from "@/app/redux/services/astrologyAPI";
 
-  if (!daily && !numero) {
+export default function MydayClient({ formData }) {
+  const skip = !formData;
+
+  // const {
+  //   data: daily,
+  //   isLoading: dailyLoading,
+  //   error: dailyError,
+  // } = useGetMyDayQuery(formData, {
+  //   skip,
+  // });
+
+  const {
+    data: numero,
+    isLoading: numeroLoading,
+    error: numeroError,
+  } = useGetNumeroDailyQuery(formData, {
+    skip,
+  });
+
+  if ( numeroLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all"></span>
+        <span className="ml-3 text-purple-600 font-medium">
+          Loading daily predictions...
+        </span>
+      </div>
+    );
+  }
+
+  if (numeroError) {
     return (
       <p className="text-center text-red-500">
-        Failed to fetch My Day predictions.
+        Failed to load daily predictions.
       </p>
     );
   }
 
+  if ( !numero) {
+    return (
+      <p className="text-center text-gray-400">
+        No data available.
+      </p>
+    );
+  }
   return (
     <div className="basic-kundli-charts flex flex-col md:col-span-4 text-[#000]">
       <h5 className="text-sm md:text-xl place-self-center font-semibold">
@@ -40,7 +75,7 @@ export default function MydayClient({ daily, numero }) {
                 </span>
               </div>
 
-              {daily?.birth_moon_sign && (
+              {/* {daily?.birth_moon_sign && (
                 <div className="text-sm text-gray-700 mt-4 font-medium">
                   <div className="flex flex-col justify-center md:flex-row gap-5 text-sm font-semibold">
                     <span className="bg-purple-300 px-5 flex w-[30%] justify-between items-center text-base py-2 rounded-full text-black">
@@ -55,11 +90,11 @@ export default function MydayClient({ daily, numero }) {
                     </span>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           )}
 
-          {daily?.prediction &&
+          {/* {daily?.prediction &&
             Object.entries(daily.prediction).map(([key, value]) => (
               <div
                 key={key}
@@ -70,7 +105,7 @@ export default function MydayClient({ daily, numero }) {
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{value}</p>
               </div>
-            ))}
+            ))} */}
         </div>
       </section>
     </div>

@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { useGetDailyNakshatraQuery, useGetNextNakshatraQuery, useGetPrevNakshatraQuery } from "@/app/redux/services/astrologyAPI";
+
+
 
 const NakprevClient = dynamic(() => import("./previous/NakprevClient"), {
   loading: () => <p className="text-center">Loading previous...</p>,
@@ -22,12 +25,67 @@ const TABS = [
 ];
 
 export default function NakshatraTabsClient({
-  prev,
-  today,
-  tomorrow,
+  formData,
   defaultTab = "naktoday",
 }) {
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  const skip = !formData;
+
+  const {
+    data: prev,
+    isLoading: prevLoading,
+    error: prevError,
+  } = useGetPrevNakshatraQuery(formData, { skip });
+
+  const {
+    data: today,
+    isLoading: todayLoading,
+    error: todayError,
+  } = useGetDailyNakshatraQuery(formData, { skip });
+
+  const {
+    data: tomorrow,
+    isLoading: tomorrowLoading,
+    error: tomorrowError,
+  } = useGetNextNakshatraQuery(formData, { skip });
+
+  const loading =
+    prevLoading ||
+    todayLoading ||
+    tomorrowLoading;
+
+  const error =
+    prevError ||
+    todayError ||
+    tomorrowError;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all"></span>
+        <span className="ml-3 text-purple-600 font-medium">
+          Loading Nakshatra Predictions...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Nakshatra predictions.
+      </p>
+    );
+  }
+
+  if (!prev || !today || !tomorrow) {
+    return (
+      <p className="text-center text-gray-500">
+        No Nakshatra prediction available.
+      </p>
+    );
+  }
 
   return (
     <>
@@ -50,9 +108,17 @@ export default function NakshatraTabsClient({
       </div>
 
       <div className="py-5">
-        {activeTab === "nakprev" && <NakprevClient prev={prev} />}
-        {activeTab === "naktoday" && <NaktodayClient today={today} />}
-        {activeTab === "naktomm" && <NaktommClient tomorrow={tomorrow} />}
+        {activeTab === "nakprev" && (
+          <NakprevClient prev={prev} />
+        )}
+
+        {activeTab === "naktoday" && (
+          <NaktodayClient today={today} />
+        )}
+
+        {activeTab === "naktomm" && (
+          <NaktommClient tomorrow={tomorrow} />
+        )}
       </div>
     </>
   );

@@ -20,7 +20,7 @@ import { useLanguage } from "@/app/context/LangContext";
 import { createKundliFromMain } from "../../app/actions/createKundliFromMain";
 import { useAuth } from "@/app/context/authContext";
 import Select from "react-select";
-import { fetchBirthDetails } from "@/app/api/astroapi";
+import { useGetBirthDetailsMutation } from "@/app/redux/services/astrologyAPI";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -130,8 +130,8 @@ const Kundlimain = () => {
   const { isLoggedIn, setShowLogin } = useAuth();
   const { messages: t } = useLanguage();
   const dispatch = useDispatch();
-  const getBirthDetails = fetchBirthDetails;
-
+  const [getBirthDetails, { isLoading: birthLoading }] =
+    useGetBirthDetailsMutation();
   const [alert, setAlert] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -190,6 +190,18 @@ const Kundlimain = () => {
       setAlert(false);
       return;
     }
+    const payload = {
+      name: formData.name,
+      day: Number(formData.day),
+      month: Number(formData.month),
+      year: Number(formData.year),
+      hour: Number(formData.hour),
+      min: Number(formData.min),
+      lat: formData.lat,
+      lon: formData.lon,
+      tzone: formData.tzone,
+      birthplace: formData.birthplace,
+    };
     if (!isLoggedIn) {
       setPendingRoute({
         type: "kundli",
@@ -199,33 +211,13 @@ const Kundlimain = () => {
       return;
     }
     try {
-      const day = Number(formData.day);
-      const month = Number(formData.month);
-      const year = Number(formData.year);
-
-      const hour = Number(formData.hour);
-      const min = Number(formData.min);
-
-      const payload = {
-        name: formData.name,
-        day,
-        month,
-        year,
-        hour,
-        min,
-        lat: formData.lat,
-        lon: formData.lon,
-        tzone: formData.tzone,
-        birthplace: formData.birthplace,
-      };
-
       dispatch(setdaUserForm(payload));
 
-    const birthDetails = await getBirthDetails(payload);
+      const birthDetails = await getBirthDetails(payload).unwrap();
 
-if (!birthDetails) {
-  throw new Error("Failed to fetch birth details");
-}
+      if (!birthDetails) {
+        throw new Error("Failed to fetch birth details");
+      }
 
       const fd = new FormData();
       Object.entries(payload).forEach(([key, value]) => fd.append(key, value));

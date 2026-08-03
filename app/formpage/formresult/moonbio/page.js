@@ -1,6 +1,6 @@
 // app/formpage/formresult/moonbio/page.js
 
-import { fetchMoonBio } from "../../../api/astroapi";
+import { fetchMoonBio } from "../../../api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import MoonBioClient from "./MoonBioClient";
 

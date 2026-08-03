@@ -1,5 +1,6 @@
 import ChaughadiyaPage from "./ChaughadiyaPage";
-import { fetchAdvPanchang, fetchChaughadiya } from "../../api/astroFetch";
+import { fetchAdvPanchang, fetchChaughadiya, SEO_ENDPOINTS } from "../../api/seoEndpoints";
+import { astrologySeo } from "@/app/api/astrologySeo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,8 +23,18 @@ export default async function Chaughadiya() {
     min: now.getMinutes(),
   };
 
-  const panchang = await fetchAdvPanchang(params);
-  const chaughadiya = await fetchChaughadiya(params);
+const [panchang, chaughadiya] =
+    await Promise.all([
+        astrologySeo(
+            SEO_ENDPOINTS.ADV_PANCHANG,
+            params
+        ),
+
+        astrologySeo(
+            SEO_ENDPOINTS.CHAUGHADIYA,
+            params
+        ),
+    ]);
 
   return (
     <ChaughadiyaPage

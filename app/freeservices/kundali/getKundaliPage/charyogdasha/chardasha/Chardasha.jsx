@@ -46,46 +46,59 @@ export default function Chardasha({ charData, charcData }) {
       </div>
 
 
-      <div className="w-full bg-purple-100 rounded-xl shadow p-4 text-black">
-        <h5 className="text-xl font-semibold text-center mb-3">
-          <span className="text-red-500">Current Char Dasha</span> Report
-        </h5>
+  <div className="w-full bg-purple-100 rounded-xl shadow p-4 text-black">
+  <h5 className="text-xl font-semibold text-center mb-3">
+    <span className="text-red-500">Current Char Dasha</span> Report
+  </h5>
 
-        <div className="grid md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <h3 className="font-semibold text-lg">
-              Major: {charcData?.sign_name}
-            </h3>
-            <p>Duration: {charcData?.duration}</p>
-            <p>
-              {charcData?.start_date} →{" "}
-              {charcData?.end_date}
-            </p>
-          </div>
+  <div className="grid md:grid-cols-3 gap-4 text-sm">
 
-          {/* <div>
-            <h3 className="font-semibold text-lg">
-              Sub: {currentData.sub_dasha?.sign_name}
-            </h3>
-            <p>Duration: {currentData.sub_dasha?.duration}</p>
-            <p>
-              {currentData.sub_dasha?.start_date} →{" "}
-              {currentData.sub_dasha?.end_date}
-            </p>
-          </div> */}
+    <div>
+      <h3 className="font-semibold text-lg">
+        Major: {charcData?.major_dasha?.sign_name}
+      </h3>
 
-          {/* <div>
-            <h3 className="font-semibold text-lg">
-              Sub-Sub: {currentData.sub_sub_dasha?.sign_name}
-            </h3>
-            <p>Duration: {currentData.sub_sub_dasha?.duration}</p>
-            <p>
-              {currentData.sub_sub_dasha?.start_date} →{" "}
-              {currentData.sub_sub_dasha?.end_date}
-            </p>
-          </div> */}
-        </div>
-      </div>
+      <p>Duration: {charcData?.major_dasha?.duration}</p>
+
+      <p>
+        {charcData?.major_dasha?.start_date} →
+        {" "}
+        {charcData?.major_dasha?.end_date}
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        Sub: {charcData?.sub_dasha?.sign_name}
+      </h3>
+
+      <p>Duration: {charcData?.sub_dasha?.duration}</p>
+
+      <p>
+        {charcData?.sub_dasha?.start_date} →
+        {" "}
+        {charcData?.sub_dasha?.end_date}
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold text-lg">
+        Sub-Sub: {charcData?.sub_sub_dasha?.sign_name}
+      </h3>
+
+      <p>
+        Duration: {charcData?.sub_sub_dasha?.duration ?? "-"}
+      </p>
+
+      <p>
+        {charcData?.sub_sub_dasha?.start_date} →
+        {" "}
+        {charcData?.sub_sub_dasha?.end_date}
+      </p>
+    </div>
+
+  </div>
+</div>
     </section>
   );
 }

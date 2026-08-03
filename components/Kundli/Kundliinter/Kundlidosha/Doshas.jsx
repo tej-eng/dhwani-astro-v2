@@ -13,6 +13,7 @@ const DOSHAS = [
 ];
 
 export default function Doshas({
+    hash,
     manglikData,
     kalSharpData,
     pitraDoshaData,
@@ -47,7 +48,7 @@ export default function Doshas({
     );
 
 const goToRem = () => {
-  router.push(`/inKundli/getKundlipage/suggestion?hash=${searchParams.hash}`);
+  router.push(`/inKundli/getKundlipage/suggestion?hash=${hash}`);
 };
 
 

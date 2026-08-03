@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchChaughadiya } from "../../api/astroFetch";
+import { fetchChaughadiya, SEO_ENDPOINTS } from "../../api/seoEndpoints";
 
 import usePanchHook from "../../../Hooks/usePanchHook";
 import AbhijitPage from "../abhijeet/page";
+import { astrologySeo } from "@/app/api/astrologySeo";
 
 export default function ChaughadiyaPage({
   initialPanchang = null,
@@ -36,8 +37,13 @@ export default function ChaughadiyaPage({
   const getChaughadiyaData = useCallback(async (params) => {
     setLoading(true);
     try {
-      const res = await fetchChaughadiya(params);
-      setChaughadiyaData(res?.data || res);
+     const res = await astrologySeo(
+    SEO_ENDPOINTS.CHAUGHADIYA,
+    params
+);
+
+setChaughadiyaData(res?.data || res);
+     
     } catch (err) {
       console.error("❌ Error fetching Chaughadiya:", err);
     } finally {

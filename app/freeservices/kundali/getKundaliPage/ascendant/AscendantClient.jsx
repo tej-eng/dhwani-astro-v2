@@ -1,11 +1,50 @@
 "use client";
 
+import { useGetGeneralAscendantQuery, useGetGeneralNakshatraQuery } from "@/app/redux/services/astrologyAPI";
 import useScrollZoom from "@/Hooks/scrollZoom";
 
-export default function AscendantClient({ ascData, nakData }) {
+
+export default function AscendantClient({ formData }) {
   useScrollZoom(".head-wrap");
 
-  if (!ascData || !nakData) { 
+  const skip = !formData;
+
+  const {
+    data: ascData,
+    isLoading: ascLoading,
+    error: ascError,
+  } = useGetGeneralAscendantQuery(formData, {
+    skip,
+  });
+
+  const {
+    data: nakData,
+    isLoading: nakLoading,
+    error: nakError,
+  } = useGetGeneralNakshatraQuery(formData, {
+    skip,
+  });
+
+  const loading = ascLoading || nakLoading;
+  const error = ascError || nakError;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <span className="loader-all" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load report data.
+      </p>
+    );
+  }
+
+  if (!ascData || !nakData) {
     return (
       <p className="text-center text-red-500">
         Failed to load report data.
@@ -16,34 +55,45 @@ export default function AscendantClient({ ascData, nakData }) {
   return (
     <section className="w-full px-4 py-3 text-black">
       <h5 className="text-sm mb-3 text-center md:text-xl font-semibold head-wrap">
-        <span className="text-red-500">General Ascendant: </span> Report
+        <span className="text-red-500">
+          General Ascendant:
+        </span>{" "}
+        Report
       </h5>
 
       <div className="bg-purple-100 rounded-2xl px-5 py-3 shadow-lg mb-5">
         <h5 className="text-center md:text-xl font-semibold">
-          <span className="text-red-500">General Ascendant</span>
+          <span className="text-red-500">
+            General Ascendant
+          </span>
         </h5>
 
         <div className="mt-3 space-y-2">
           <div className="flex gap-2">
             <strong>Ascendant:</strong>
-            <span>{ascData.asc_report?.ascendant}</span>
+            <span>{ascData?.asc_report?.ascendant}</span>
           </div>
-          <p>{ascData.asc_report?.report}</p>     
+
+          <p>{ascData?.asc_report?.report}</p>
         </div>
       </div>
 
-
       <div className="bg-purple-100 rounded-2xl px-5 py-3 shadow-lg">
         <h5 className="text-center md:text-xl font-semibold mb-3">
-          <span className="text-red-500">General Nakshatra</span> Report
+          <span className="text-red-500">
+            General Nakshatra
+          </span>{" "}
+          Report
         </h5>
 
         {["physical", "character", "education", "family", "health"].map(
           (key) => (
             <div key={key} className="mb-4">
-              <h3 className="font-semibold capitalize">{key}:</h3>
-              {nakData[key]?.map((item, idx) => (
+              <h3 className="font-semibold capitalize">
+                {key}:
+              </h3>
+
+              {nakData?.[key]?.map((item, idx) => (
                 <p key={idx}>{item}</p>
               ))}
             </div>

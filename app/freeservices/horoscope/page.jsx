@@ -1,31 +1,13 @@
-import HoroscopeClient from "@/components/navbarcomp/Horoscope/Horoscope";
-import ZodiacServer from "@/app/zodiac/ZodiacServer";
-import Freereport from "@/components/Smcompo/Freereport";
-import { ZodiacProvider } from "../../context/ZodiacContext";
+import { astrologySeo } from "@/app/api/astrologySeo";
+import { SEO_ENDPOINTS } from "@/app/api/seoEndpoints";
+import HoroscopePage from './horoscopePage';
 
 export const metadata = {
   title: "Daily Horoscope | Free Zodiac Predictions",
   description:
-    "Read your free daily horoscope based on Vedic Astrology. Discover insights about love, career, and life through your zodiac sign.",
-  keywords:
-    "horoscope, zodiac signs, astrology, daily horoscope, vedic astrology, sun sign, moon sign",
-  openGraph: {
-    title: "Free Daily Horoscope | Vedic Astrology Predictions",
-    description:
-      "Explore personalized daily horoscope insights for all zodiac signs.",
-    url: "https://yourwebsite.com/horoscope",
-    images: [
-      {
-        url: "https://yourwebsite.com/ds-img/horoscope-banner.jpg",
-        width: 800,
-        height: 600,
-        alt: "Horoscope Signs",
-      },
-    ],
-  },
+    "Read your free daily horoscope based on Vedic Astrology.",
 };
 
-export default async function HoroscopePage() {
   const horoscopezod = [
     { name: "Aries", img: "/ds-img/ARIESn.webp", indate: "Mar 21 - Apr 19" },
     { name: "Taurus", img: "/ds-img/Taurusn.webp", indate: "Apr 20 - May 20" },
@@ -53,19 +35,26 @@ export default async function HoroscopePage() {
     { name: "Pisces", img: "/ds-img/PISCESn.webp", indate: "Feb 19 - Mar 20" },
   ];
 
+export default async function Page() {
+  const zodiac = "Aries";
+
+  const body = {
+    timezone: 5.5,
+  };
+
+  const [today, tomorrow, yesterday] = await Promise.all([
+    astrologySeo(`${SEO_ENDPOINTS.HOROSCOPE_TODAY}/aries`, body),
+    astrologySeo(`${SEO_ENDPOINTS.HOROSCOPE_NEXT}/aries`, body),
+    astrologySeo(`${SEO_ENDPOINTS.HOROSCOPE_PREVIOUS}/aries`, body),
+  ]);
+
   return (
-    <>
-      <ZodiacProvider>
-        <div className="flex flex-col max-w-7xl gap-8 justify-center">
-          <HoroscopeClient horoscopezod={horoscopezod} />
-          <div id="zodiac">
-            <ZodiacServer />
-          </div>
-          <div>
-            <Freereport />
-          </div>
-        </div>
-      </ZodiacProvider>
-    </>
+    <HoroscopePage
+      horoscopezod={horoscopezod}
+      zodiac={zodiac}
+      today={today}
+      tomorrow={tomorrow}
+      yesterday={yesterday}
+    />
   );
 }

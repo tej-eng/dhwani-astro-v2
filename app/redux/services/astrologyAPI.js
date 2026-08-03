@@ -26,7 +26,6 @@ const ASTRO_ENDPOINTS = {
   ASTRO_DETAILS: "astro_details",
   MOON_BIORHYTHM: "moon_biorhythm",
 
-
   // Numerology
   NUMERO_DAILY: "numero_prediction/daily",
   NUMERO_TABLE: "numero_table",
@@ -139,9 +138,13 @@ export const astrologyApi = createApi({
 
   endpoints: (builder) => ({
     // birth details apis
-    getBirthDetails: builder.query(
-      createPostQuery(ASTRO_ENDPOINTS.BIRTH_DETAILS, "Birth"),
-    ),
+    getBirthDetails: builder.mutation({
+      query: (body) => ({
+        url: "birth_details",
+        method: "POST",
+        body,
+      }),
+    }),
     getPlanetPositions: builder.query(
       createPostQuery(ASTRO_ENDPOINTS.PLANETS, "Planet"),
     ),
@@ -258,19 +261,19 @@ export const astrologyApi = createApi({
       createPostQuery(ASTRO_ENDPOINTS.CURRENT_YOGINI_DASHA, "CharDasha"),
     ),
     // kundali match apis  -------------------------------
-    getMatchAsktP: builder.query(
+    getMatchAsktP: builder.mutation(
       createRawPostQuery(ASTRO_ENDPOINTS.MATCH_POINTS, "Match"),
     ),
-    getMatchObst: builder.query(
+    getMatchObst: builder.mutation(
       createRawPostQuery(ASTRO_ENDPOINTS.MATCH_OBSTRUCTION, "Match"),
     ),
-    getMatchAstro: builder.query(
+    getMatchAstro: builder.mutation(
       createRawPostQuery(ASTRO_ENDPOINTS.MATCH_ASTRO, "Match"),
     ),
-    getMatchManglik: builder.query(
+    getMatchManglik: builder.mutation(
       createRawPostQuery(ASTRO_ENDPOINTS.MATCH_MANGLIK, "Match"),
     ),
-    getMatchMrepo: builder.query(
+    getMatchMrepo: builder.mutation(
       createRawPostQuery(ASTRO_ENDPOINTS.MATCH_REPORT, "Match"),
     ),
     // kundali match apis end  -------------------------------
@@ -317,27 +320,23 @@ export const astrologyApi = createApi({
       providesTags: ["Horoscope"],
     }),
     // ------------------------------------------------------------------------------------------------------------
-    getChartKundli: builder.query({
+    getChartKundli: builder.mutation({
       query: ({ chartType, body }) => {
         const finalType = chartType === "chalit" ? ":chalit" : chartType;
 
         return {
           url: `horo_chart_image/${encodeURIComponent(finalType)}`,
-
           method: "POST",
-
           body,
         };
       },
-
-      providesTags: ["Planet"],
     }),
   }),
 });
 
 export const {
   // Birth
-  useGetBirthDetailsQuery,
+  useGetBirthDetailsMutation,
   useGetPlanetPositionsQuery,
   useGetVimAllQuery,
   useGetBasicPanchangQuery,
@@ -385,11 +384,11 @@ export const {
   useGetYoginiDashaQuery,
   useGetCurrentYoginiDashaQuery,
   // Match
-  useGetMatchAsktPQuery,
-  useGetMatchObstQuery,
-  useGetMatchAstroQuery,
-  useGetMatchManglikQuery,
-  useGetMatchMrepoQuery,
+  useGetMatchAsktPMutation,
+  useGetMatchObstMutation,
+  useGetMatchAstroMutation,
+  useGetMatchManglikMutation,
+  useGetMatchMrepoMutation,
   // Panchang
   useGetAdvPanchangQuery,
   useGetChaugadiyaQuery,
@@ -400,5 +399,5 @@ export const {
   useGetSunSignPredPrevQuery,
   useGetSunSignPredMonthQuery,
   // Charts
-  useGetChartKundliQuery,
+  useGetChartKundliMutation,
 } = astrologyApi;

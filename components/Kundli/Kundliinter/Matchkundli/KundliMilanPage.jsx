@@ -5,11 +5,12 @@ import Image from 'next/image';
 import UserDetFD from '@/components/Smcompo/UserDetFD';
 import Personal from '@/components/Smcompo/Personal';
 import {
-    useGetMatchAsktPMutation,
-    useGetMatchObstMutation,
-    useGetMatchAstroMutation, useGetMatchManglikMutation,
-    useGetMatchMrepoMutation
-} from '@/app/redux/services/astrologyAPI';
+  useGetMatchAsktPMutation,
+  useGetMatchObstMutation,
+  useGetMatchAstroMutation,
+  useGetMatchManglikMutation,
+  useGetMatchMrepoMutation,
+} from "@/app/redux/services/astrologyAPI";
 import Callchatsec from '@/components/Smcompo/Callchatsec';
 
 const KundliMilanPage = () => {
@@ -39,11 +40,20 @@ const KundliMilanPage = () => {
     const [matchReport, setMatchReport] = useState(null);
     const [formError, setFormError] = useState("");
 
-    const [triggerMatch, { isLoading, isError, error }] = useGetMatchAsktPMutation();
-    const [triggerMatchObs] = useGetMatchObstMutation();
-    const [triggerMatchAstro] = useGetMatchAstroMutation();
-    const [triggerManglik] = useGetMatchManglikMutation();
-    const [triggerMatchReport] = useGetMatchMrepoMutation();
+    const [triggerMatch, { isLoading, isError, error }] =
+  useGetMatchAsktPMutation();
+
+const [triggerMatchObs] =
+  useGetMatchObstMutation();
+
+const [triggerMatchAstro] =
+  useGetMatchAstroMutation();
+
+const [triggerManglik] =
+  useGetMatchManglikMutation();
+
+const [triggerMatchReport] =
+  useGetMatchMrepoMutation();
 
     const handleBoyChange = e => setBoyData({ ...boyData, [e.target.name]: e.target.value });
     const handleGirlChange = e => setGirlData({ ...girlData, [e.target.name]: e.target.value });

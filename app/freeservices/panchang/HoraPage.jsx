@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import dayjs from "dayjs";
 import usePanchHook from "@/Hooks/usePanchHook";
-import { fetchHoraMuhurat } from "@/app/api/astroFetch";
+import {  SEO_ENDPOINTS } from "@/app/api/seoEndpoints";
+import { astrologySeo } from "@/app/api/astrologySeo";
 
 
 
@@ -36,8 +37,13 @@ export default function HoraPage({ initialHora = null }) {
   const getHoraData = useCallback(async (params) => {
     setLoading(true);
     try {
-      const res = await fetchHoraMuhurat(params);
-      setHoraData(res?.data || res);
+      const res = await astrologySeo(
+    SEO_ENDPOINTS.HORA,
+    params
+);
+
+setHoraData(res?.data || res);
+    
     } catch (err) {
       console.error("❌ Error fetching Hora:", err);
     } finally {
