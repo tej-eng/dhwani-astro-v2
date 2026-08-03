@@ -2,7 +2,6 @@
 
 
 import { useGetKPHousesQuery, useGetKPPlanetsQuery } from "@/app/redux/services/astrologyAPI";
-import KpUI from "./KpUI"; // ya jo bhi tumhara existing UI component hai
 
 export default function KpClient({ formData }) {
   const skip = !formData;
