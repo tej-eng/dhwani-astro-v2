@@ -14,7 +14,7 @@ export const SEO_ENDPOINTS = {
   HOROSCOPE_PREVIOUS: "sun_sign_prediction/daily/previous",
 
   HOROSCOPE_MONTH: "horoscope_prediction/monthly",
-  GENERAL_NAKSHATRA: "general_nakshatra_report",
+ 
   MANGLIK: "manglik",
   KALSHARP: "kalsarpa_details",
   PITRA_DOSHA: "pitra_dosha_report",

@@ -1,12 +1,9 @@
+import { decodeKundliHash } from "@/utils/kundliHash";
+import GeneralClient from "./GeneralClient";
+
 export const revalidate = 3600;
 
-import { Suspense } from "react";
-import GeneralUI from "./GeneralUI";
-import { decodeKundliHash } from "@/utils/kundliHash";
-import { astrologySeo } from "@/app/api/astrologySeo";
-import { SEO_ENDPOINTS } from "@/app/api/seoEndpoints";
-
-export default async function Page({ searchParams }) {
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
 
   if (!hash) {
@@ -27,37 +24,5 @@ export default async function Page({ searchParams }) {
     );
   }
 
-  let gendata = null;
-
-  try {
-    gendata = await astrologySeo(
-      SEO_ENDPOINTS.GENERAL_NAKSHATRA,
-      formData
-    );
-  } catch (err) {
-    console.error(err);
-  }
-
-  if (!gendata || typeof gendata !== "object") {
-    return (
-      <p className="text-center text-red-500">
-        Failed to fetch General Prediction data...
-      </p>
-    );
-  }
-
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center flex-col gap-4 items-center h-32">
-          <span className="loader-all"></span>
-          <span className="ml-3 text-purple-600 font-medium">
-            Loading Reports...
-          </span>
-        </div>
-      }
-    >
-      <GeneralUI gendata={gendata} />
-    </Suspense>
-  );
+  return <GeneralClient formData={formData} />;
 }
