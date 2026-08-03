@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import dayjs from "dayjs";
-import { fetchAdvPanchang, SEO_ENDPOINTS } from "../../api/seoEndpoints";
+import { SEO_ENDPOINTS } from "../../api/seoEndpoints";
 
 
 import usePanchHook from "../../../Hooks/usePanchHook";

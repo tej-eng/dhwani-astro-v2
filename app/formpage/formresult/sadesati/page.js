@@ -1,18 +1,12 @@
-
-
+import SadeSatiClient from "@/app/freeservices/kundali/getKundaliPage/sadhesati/SadeSatiClient";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import { fetchSadheSati, fetchSadheRemedies, fetchSadheDetails, } from "@/app/api/astrologySeo";
-import Sadhesati from "../../../freeservices/kundali/getKundaliPage/sadhesati/Sadhesati"
 
-export default async function Page({ params, searchParams }) {
-  const { slug } = params;
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
 
-
   if (!hash) {
-    return <p className="text-center">Missing sadesati data</p>;
+    return <p className="text-center">Missing Sadesati data</p>;
   }
-
 
   const formData = decodeKundliHash(hash);
 
@@ -20,27 +14,5 @@ export default async function Page({ params, searchParams }) {
     return <p className="text-center">Invalid or expired link</p>;
   }
 
-
-  const satiData = await fetchSadheSati(formData);
-  const remediesData = await fetchSadheRemedies(formData);
-  const detailsData = await fetchSadheDetails(formData);
-
-
-
-  if (!satiData || !remediesData || !detailsData) {
-    return (
-      <p className="text-center text-red-500">
-        Failed to load sadesati data.
-      </p>
-    );
-  }
-
-
-  return (
-    <Sadhesati
-      satiData={satiData}
-      remeData={remediesData}
-      detailsData={detailsData}
-    />
-  );
+  return <SadeSatiClient formData={formData} />;
 }

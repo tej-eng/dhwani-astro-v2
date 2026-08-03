@@ -1,5 +1,5 @@
 import ChaughadiyaPage from "./ChaughadiyaPage";
-import { fetchAdvPanchang, fetchChaughadiya, SEO_ENDPOINTS } from "../../api/seoEndpoints";
+import { SEO_ENDPOINTS } from "../../api/seoEndpoints";
 import { astrologySeo } from "@/app/api/astrologySeo";
 
 export const dynamic = "force-dynamic";

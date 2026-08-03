@@ -1,16 +1,12 @@
-// app/formpage/formresult/pitradosha/page.js
-
-import { fetchPitraDosha } from "@/app/api/astrologySeo";
 import { decodeKundliHash } from "@/utils/kundliHash";
 import PitradoshaClient from "./PitradoshaClient";
 
-export default async function Page({ searchParams }) {
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
 
   if (!hash) {
     return <p className="text-center">Missing Kundli data</p>;
   }
-
 
   const formData = decodeKundliHash(hash);
 
@@ -18,17 +14,5 @@ export default async function Page({ searchParams }) {
     return <p className="text-center">Invalid or expired link</p>;
   }
 
-
-  const pitraData = await fetchPitraDosha(formData);
-
-  if (!pitraData) {
-    return (
-      <p className="text-center text-red-500">
-        Failed to load Pitra Dosha report.
-      </p>
-    );
-  }
-
-  
-  return <PitradoshaClient pitraData={pitraData} />;
+  return <PitradoshaClient formData={formData} />;
 }

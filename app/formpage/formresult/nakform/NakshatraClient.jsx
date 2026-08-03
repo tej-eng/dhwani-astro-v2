@@ -1,11 +1,36 @@
 "use client";
 
-import useScrollZoom from "@/Hooks/scrollZoom";
+import { useGetDailyPredQuery } from "@/app/redux/services/astrologyAPI";
 
-export default function NakshatraClient({ daily }) {
-  useScrollZoom(".head-wrap");
+export default function NakshatraClient({ formData }) {
+  const skip = !formData;
 
-  if (!daily || !daily.prediction) {
+  const {
+    data: daily,
+    isLoading,
+    error,
+  } = useGetDailyPredQuery(formData, { skip });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Nakshatra Prediction...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Nakshatra prediction.
+      </p>
+    );
+  }
+
+  if (!daily?.prediction) {
     return (
       <p className="text-center text-red-500">
         No Nakshatra prediction available.

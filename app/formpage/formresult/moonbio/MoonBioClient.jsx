@@ -1,18 +1,43 @@
 "use client";
 
-import useScrollZoom from "@/Hooks/scrollZoom";
+import { useGetMoonBioQuery } from "@/app/redux/services/astrologyAPI";
 
-export default function MoonBioClient({ daily }) {
-  useScrollZoom(".head-wrap");
 
-  if (!daily) {
+export default function MoonBioClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: daily,
+    isLoading,
+    error,
+  } = useGetMoonBioQuery(formData, { skip });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Moon Biorhythm...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <p className="text-center text-red-500">
-        No Moon Bio data available.
+        Failed to load Moon Biorhythm data.
       </p>
     );
   }
 
+  if (!daily) {
+    return (
+      <p className="text-center text-red-500">
+        No Moon Biorhythm data available.
+      </p>
+    );
+  }
   const {
     birth_pakshi,
     considered_date,

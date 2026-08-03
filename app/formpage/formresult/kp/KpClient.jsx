@@ -1,19 +1,58 @@
 "use client";
 
-function roundUp(num, decimalPlaces) {
-  const factor = Math.pow(10, decimalPlaces);
-  return Math.ceil(num * factor) / factor;
-}
 
-export default function KpClient({ kp, houseData, planetSigData }) {
-  if (!kp?.length || !houseData?.length || !planetSigData?.length) {
+import { useGetKPHousesQuery, useGetKPPlanetsQuery } from "@/app/redux/services/astrologyAPI";
+import KpUI from "./KpUI"; // ya jo bhi tumhara existing UI component hai
+
+export default function KpClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: kp,
+    isLoading: planetsLoading,
+    error: planetsError,
+  } = useGetKPPlanetsQuery(formData, { skip });
+
+  const {
+    data: houseData,
+    isLoading: housesLoading,
+    error: housesError,
+  } = useGetKPHousesQuery(formData, { skip });
+
+  const loading =
+    planetsLoading ||
+    housesLoading ;
+
+  const error =
+    planetsError ||
+    housesError ;
+
+  if (loading) {
     return (
-      <div className="text-center text-red-500">
-        KP Card data not available.
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all"></span>
+        <span className="text-purple-600 font-medium">
+          Loading KP Report...
+        </span>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load KP report.
+      </p>
+    );
+  }
+
+  if (!kp || !houseData ) {
+    return (
+      <p className="text-center text-red-500">
+        No KP report available.
+      </p>
+    );
+  }
   return (
     <section className="kundli-inter-page w-full flex justify-center">
       <div className="max-w-6xl w-full flex flex-col gap-6">

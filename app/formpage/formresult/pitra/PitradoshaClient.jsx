@@ -1,10 +1,40 @@
 "use client";
 
-export default function PitradoshaClient({ pitraData }) {
+import { useGetPitraDoshaQuery } from "@/app/redux/services/astrologyAPI";
+
+
+export default function PitradoshaClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: pitraData,
+    isLoading,
+    error,
+  } = useGetPitraDoshaQuery(formData, { skip });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Pitra Dosha Report...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Pitra Dosha report.
+      </p>
+    );
+  }
+
   if (!pitraData) {
     return (
       <p className="text-center text-red-500">
-        No Pitra Dosha data available.
+        No Pitra Dosha report available.
       </p>
     );
   }

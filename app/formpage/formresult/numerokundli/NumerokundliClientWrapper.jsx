@@ -1,71 +1,89 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 
-import {
-  fetchNumeroPred,
-  fetchNumeroDet,
-  fetchNumeroRepo,
-  fetchNumeroFav,
-  fetchNumeroPlace,
-  fetchNumeroFast,
-  fetchNumeroLord,
-  fetchNumeroMantra,
-} from "../../../api/astrologySeo";
-
+import { useGetNumeroDailyQuery, useGetNumeroDetQuery, useGetNumeroFastQuery, useGetNumeroFavQuery, useGetNumeroLordQuery, useGetNumeroMantraQuery, useGetNumeroPlaceQuery, useGetNumeroReportQuery } from "@/app/redux/services/astrologyAPI";
 import NumerokundliUI from "./NumerokundliUI";
 
-export default function NumerokundliClientWrapper({ hash }) {
-  const formData = useSelector((state) => state.daUserForm);
-  const [data, setData] = useState(null);
+export default function NumerokundliClientWrapper({ formData }) {
+  const skip = !formData;
 
-  useEffect(() => {
-    if (!hash || !formData?.day) return;
+  const {
+    data: main,
+    isLoading: loadingMain,
+    error: errorMain,
+  } = useGetNumeroDailyQuery(formData, { skip });
 
-    Promise.all([
-      fetchNumeroPred(formData),
-      fetchNumeroDet(formData),
-      fetchNumeroRepo(formData),
-      fetchNumeroFav(formData),
-      fetchNumeroPlace(formData),
-      fetchNumeroFast(formData),
-      fetchNumeroLord(formData),
-      fetchNumeroMantra(formData),
-    ]).then(
-      ([
-        pred,
-        det,
-        repo,
-        fav,
-        place,
-        fast,
-        lord,
-        mantra,
-      ]) => {
-        setData({
-          main: pred,
-          det,
-          repo,
-          fav,
-          place,
-          fast,
-          lord,
-          mantra,
-        });
-      }
+  const {
+    data: det,
+    isLoading: loadingDet,
+    error: errorDet,
+  } = useGetNumeroDetQuery(formData, { skip });
+
+  const {
+    data: repo,
+    isLoading: loadingRepo,
+    error: errorRepo,
+  } = useGetNumeroReportQuery(formData, { skip });
+
+  const {
+    data: fav,
+    isLoading: loadingFav,
+    error: errorFav,
+  } = useGetNumeroFavQuery(formData, { skip });
+
+  const {
+    data: place,
+    isLoading: loadingPlace,
+    error: errorPlace,
+  } = useGetNumeroPlaceQuery(formData, { skip });
+
+  const {
+    data: fast,
+    isLoading: loadingFast,
+    error: errorFast,
+  } = useGetNumeroFastQuery(formData, { skip });
+
+  const {
+    data: lord,
+    isLoading: loadingLord,
+    error: errorLord,
+  } = useGetNumeroLordQuery(formData, { skip });
+
+  const {
+    data: mantra,
+    isLoading: loadingMantra,
+    error: errorMantra,
+  } = useGetNumeroMantraQuery(formData, { skip });
+
+  const loading =
+    loadingMain ||
+    loadingDet ||
+    loadingRepo ||
+    loadingFav ||
+    loadingPlace ||
+    loadingFast ||
+    loadingLord ||
+    loadingMantra;
+
+  const error =
+    errorMain ||
+    errorDet ||
+    errorRepo ||
+    errorFav ||
+    errorPlace ||
+    errorFast ||
+    errorLord ||
+    errorMantra;
+
+  if (!formData) {
+    return (
+      <p className="text-center text-gray-400">
+        Missing Kundli data
+      </p>
     );
-  }, [hash, formData]);
-
-  if (!hash) {
-    return <p className="text-center text-gray-400">Missing Kundli data</p>;
   }
 
-  if (!formData?.day) {
-    return <p className="text-center text-gray-400">Kundli session expired</p>;
-  }
-
-  if (!data) {
+  if (loading) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-32">
         <span className="loader-all"></span>
@@ -76,5 +94,26 @@ export default function NumerokundliClientWrapper({ hash }) {
     );
   }
 
-  return <NumerokundliUI data={data} />;
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Numerology data.
+      </p>
+    );
+  }
+
+  return (
+    <NumerokundliUI
+      data={{
+        main,
+        det,
+        repo,
+        fav,
+        place,
+        fast,
+        lord,
+        mantra,
+      }}
+    />
+  );
 }

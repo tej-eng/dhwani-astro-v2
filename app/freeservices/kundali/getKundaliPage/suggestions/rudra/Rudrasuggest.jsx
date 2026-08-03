@@ -1,9 +1,31 @@
 "use client";
 
-import Image from "next/image";
+import { useGetRudrakshaSuggestionQuery } from "@/app/redux/services/astrologyAPI";
 
-export default function Rudrasuggest({ rudraData }) {
-  if (!rudraData) {
+
+export default function RudrasuggestClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: rudraData,
+    isLoading,
+    error,
+  } = useGetRudrakshaSuggestionQuery(formData, {
+    skip,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Rudraksha Suggestions...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <p className="text-center text-red-500">
         Failed to load Rudraksha suggestions.
@@ -11,6 +33,13 @@ export default function Rudrasuggest({ rudraData }) {
     );
   }
 
+  if (!rudraData) {
+    return (
+      <p className="text-center text-red-500">
+        No Rudraksha suggestions available.
+      </p>
+    );
+  }
   return (
     <section className="basic-details-main w-full flex flex-col gap-5">
       <div className="flex flex-col gap-5 text-black border border-purple-200 rounded-lg shadow-lg md:px-5 px-2 py-3 bg-purple-100">

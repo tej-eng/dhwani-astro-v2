@@ -1,9 +1,7 @@
-import { fetchPujaSuggestion } from "@/app/api/astrologySeo";
+import PujasuggestClient from "@/app/freeservices/kundali/getKundaliPage/suggestions/puja/Pujasuggest";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import Pujasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/puja/Pujasuggest";
 
-export default async function Page({ params, searchParams }) {
-  const { slug } = params;
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
 
   if (!hash) {
@@ -16,16 +14,5 @@ export default async function Page({ params, searchParams }) {
     return <p className="text-center">Invalid or expired link</p>;
   }
 
-  const pujaData = await fetchPujaSuggestion(formData);
-
-  if (!pujaData) {
-    return (
-      <p className="text-center text-red-500">
-        Failed to load puja suggestions.
-      </p>
-    );
-  }
-
-
-  return <Pujasuggest pujaData={pujaData} />;
+  return <PujasuggestClient formData={formData} />;
 }

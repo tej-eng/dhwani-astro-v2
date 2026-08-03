@@ -1,12 +1,41 @@
 "use client";
 
-import CustomButton from "@/components/Custom/CustomButton";
+import { useGetPujaSuggestionQuery } from "@/app/redux/services/astrologyAPI";
 
-export default function Pujasuggest({ pujaData }) {
+export default function PujasuggestClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: pujaData,
+    isLoading,
+    error,
+  } = useGetPujaSuggestionQuery(formData, {
+    skip,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Puja Suggestions...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Puja suggestions.
+      </p>
+    );
+  }
+
   if (!pujaData) {
     return (
       <p className="text-center text-red-500">
-        Failed to load Puja Suggestions.
+        No Puja suggestions available.
       </p>
     );
   }
