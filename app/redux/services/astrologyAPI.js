@@ -15,6 +15,8 @@ const sanitizeBody = (body = {}) => ({
   lon: Number(body.lon),
   tzone: Number(body.tzone),
 });
+console.log("hello");
+
 const ASTRO_ENDPOINTS = {
   // Birth
   BIRTH_DETAILS: "birth_details",
@@ -23,6 +25,7 @@ const ASTRO_ENDPOINTS = {
   BASIC_PANCHANG: "basic_panchang",
   ASTRO_DETAILS: "astro_details",
   MOON_BIORHYTHM: "moon_biorhythm",
+
 
   // Numerology
   NUMERO_DAILY: "numero_prediction/daily",
