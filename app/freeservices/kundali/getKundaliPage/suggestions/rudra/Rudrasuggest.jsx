@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetRudrakshaSuggestionQuery } from "@/app/redux/services/astrologyAPI";
+import Image from "next/image";
 
 
 export default function RudrasuggestClient({ formData }) {

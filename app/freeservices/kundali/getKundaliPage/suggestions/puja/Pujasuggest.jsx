@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetPujaSuggestionQuery } from "@/app/redux/services/astrologyAPI";
+import CustomButton from "@/components/Custom/CustomButton";
 
 export default function PujasuggestClient({ formData }) {
   const skip = !formData;
