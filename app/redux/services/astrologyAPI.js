@@ -41,7 +41,6 @@ const ASTRO_ENDPOINTS = {
   NAKSHATRA_TODAY: "daily_nakshatra_prediction",
   NAKSHATRA_PREVIOUS: "daily_nakshatra_prediction/previous",
   NAKSHATRA_NEXT: "daily_nakshatra_prediction/next",
-
   // General
   GENERAL_NAKSHATRA: "general_nakshatra_report",
   GENERAL_ASCENDANT: "general_ascendant_report",

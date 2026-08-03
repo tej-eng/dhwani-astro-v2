@@ -1,9 +1,7 @@
 "use client";
 
 export default function GeneralUI({ gendata }) {
-  const report = gendata?.output || gendata?.data || gendata;
-
-  if (!report || typeof report !== "object") {
+  if (!gendata || typeof gendata !== "object") {
     return (
       <p className="text-center text-red-500">
         Failed to load General Prediction data...
@@ -12,8 +10,7 @@ export default function GeneralUI({ gendata }) {
   }
 
   const capitalize = (str) =>
-    str.charAt(0).toUpperCase() +
-    str.slice(1).replace(/_/g, " ");
+    str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, " ");
 
   return (
     <div className="basic-kundli-charts col-span-4 flex flex-col gap-2 items-center">
@@ -27,29 +24,29 @@ export default function GeneralUI({ gendata }) {
         </h5>
 
         <div className="basic-box flex flex-col gap-5">
-          {Object.entries(report).map(([key, value]) => (
+          {Object.entries(gendata).map(([key, paras], index) => (
             <div
-              key={key}
+              key={index}
               className="basic-card flex bg-purple-50 flex-col items-center gap-2 border shadow-lg px-4 py-4 rounded-lg"
             >
               <h5 className="text-black text-sm md:text-base font-semibold bg-purple-200 px-6 py-2 rounded-full capitalize">
                 {capitalize(key)}
               </h5>
 
-              {Array.isArray(value) ? (
-                value.map((item, idx) => (
-                  <p
-                    key={idx}
-                    className="text-black md:text-sm text-xs text-justify"
-                  >
-                    {item}
+              {Array.isArray(paras)
+                ? paras.map((para, idx) => (
+                    <p
+                      key={idx}
+                      className="text-black md:text-sm text-xs text-justify"
+                    >
+                      {para}
+                    </p>
+                  ))
+                : (
+                  <p className="text-black md:text-sm text-xs text-justify">
+                    {paras}
                   </p>
-                ))
-              ) : (
-                <p className="text-black md:text-sm text-xs text-justify">
-                  {value}
-                </p>
-              )}
+                )}
             </div>
           ))}
         </div>
