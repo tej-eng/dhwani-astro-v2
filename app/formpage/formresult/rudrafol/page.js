@@ -1,15 +1,12 @@
-import { fetchRudraSuggestion } from "@/app/api/astrologySeo";
+import RudrasuggestClient from "@/app/freeservices/kundali/getKundaliPage/suggestions/rudra/Rudrasuggest";
 import { decodeKundliHash } from "@/utils/kundliHash";
-import Rudrasuggest from "../../../freeservices/kundali/getKundaliPage/suggestions/rudra/Rudrasuggest";
 
-export default async function Page({ params, searchParams }) {
-  const { slug } = params;
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
 
   if (!hash) {
     return <p className="text-center">Missing Kundli data</p>;
   }
-
 
   const formData = decodeKundliHash(hash);
 
@@ -17,17 +14,5 @@ export default async function Page({ params, searchParams }) {
     return <p className="text-center">Invalid or expired link</p>;
   }
 
-
-  const rudraData = await fetchRudraSuggestion(formData);
-
-  if (!rudraData) {
-    return (
-      <p className="text-center text-red-500">
-        Failed to load Rudraksha suggestions.
-      </p>
-    );
-  }
-
-
-  return <Rudrasuggest rudraData={rudraData} />;
+  return <RudrasuggestClient formData={formData} />;
 }

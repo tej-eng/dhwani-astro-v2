@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { fetchChaughadiya, SEO_ENDPOINTS } from "../../api/seoEndpoints";
+import {SEO_ENDPOINTS } from "../../api/seoEndpoints";
 
 import usePanchHook from "../../../Hooks/usePanchHook";
 import AbhijitPage from "../abhijeet/page";

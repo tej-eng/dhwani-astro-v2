@@ -1,14 +1,57 @@
 "use client";
 
-export default function KalsharpClient({ kalData, kalSarpaPuja }) {
-  if (!kalData) {
+import { useGetKalsharpQuery, useGetPujaSuggestionQuery } from "@/app/redux/services/astrologyAPI";
+
+
+export default function KalsharpClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: kalData,
+    isLoading: kalLoading,
+    error: kalError,
+  } = useGetKalsharpQuery(formData, { skip });
+
+  const {
+    data: pujaData,
+    isLoading: pujaLoading,
+    error: pujaError,
+  } = useGetPujaSuggestionQuery(formData, { skip });
+
+  const loading = kalLoading || pujaLoading;
+  const error = kalError || pujaError;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all"></span>
+        <span className="text-purple-600 font-medium">
+          Loading Kalsharp Report...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <p className="text-center text-red-500">
-        No Kalsharp Dosha data available.
+        Failed to load Kalsharp Dosha.
       </p>
     );
   }
 
+  if (!kalData) {
+    return (
+      <p className="text-center text-red-500">
+        No Kalsharp data available.
+      </p>
+    );
+  }
+
+  const kalSarpaPuja =
+    pujaData?.suggestions?.find(
+      (s) => s.puja_id === "KAL_SARPA"
+    ) || null;
   return (
     <div className="basic-kundli-charts col-span-4 flex flex-col gap-2 items-center">
       <div className="flex flex-col gap-4 w-full max-w-7xl">

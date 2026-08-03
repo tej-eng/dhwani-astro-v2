@@ -1,14 +1,40 @@
 "use client";
+import { useGetGemSuggestionQuery } from "@/app/redux/services/astrologyAPI";
+export default function Gemsuggest({ formData }) {
+  const skip = !formData;
 
-export default function Gemsuggest({ gemData }) {
-  if (!gemData) {
+  const {
+    data: gemData,
+    isLoading,
+    error,
+  } = useGetGemSuggestionQuery(formData, { skip });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all"></span>
+        <span className="text-purple-600 font-medium">
+          Loading Gemstone Suggestions...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <p className="text-center text-red-500">
-        No gemstone data available.
+        Failed to load gemstone suggestions.
       </p>
     );
   }
 
+  if (!gemData) {
+    return (
+      <p className="text-center text-red-500">
+        No gemstone suggestions available.
+      </p>
+    );
+  }
   return (
     <div className="text-black w-full flex flex-col gap-5 border border-purple-100 rounded-2xl px-4 py-3 shadow-md">
       <span className="text-center font-semibold text-2xl text-purple-700">

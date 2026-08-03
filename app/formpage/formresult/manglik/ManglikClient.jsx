@@ -1,16 +1,43 @@
 "use client";
 
-export default function ManglikClient({ manglik }) {
-  if (!manglik) {
+import { useGetManglikQuery } from "@/app/redux/services/astrologyAPI";
+
+
+export default function ManglikClient({ formData }) {
+  const skip = !formData;
+
+  const {
+    data: manglik,
+    isLoading,
+    error,
+  } = useGetManglikQuery(formData, { skip });
+
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-40 gap-2">
-        <span className="text-red-500 font-medium">
-          No Manglik Dosha data available.
+      <div className="flex justify-center flex-col gap-4 items-center h-32">
+        <span className="loader-all" />
+        <span className="text-purple-600 font-medium">
+          Loading Manglik Report...
         </span>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <p className="text-center text-red-500">
+        Failed to load Manglik Dosha report.
+      </p>
+    );
+  }
+
+  if (!manglik) {
+    return (
+      <p className="text-center text-red-500">
+        No Manglik data available.
+      </p>
+    );
+  }
   return (
     <div className="basic-kundli-charts col-span-4 flex flex-col gap-4 items-center">
       <div className="flex flex-col gap-3 w-full max-w-7xl">

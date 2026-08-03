@@ -18,6 +18,7 @@ const sanitizeBody = (body = {}) => ({
 console.log("hello");
 
 const ASTRO_ENDPOINTS = {
+  DAILY_PRED: "daily_prediction",
   // Birth
   BIRTH_DETAILS: "birth_details",
   PLANETS: "planets",
@@ -145,6 +146,9 @@ export const astrologyApi = createApi({
         body,
       }),
     }),
+        getDailyPred: builder.query(
+      createPostQuery(ASTRO_ENDPOINTS.DAILY_PRED, "Daily"),
+    ),
     getPlanetPositions: builder.query(
       createPostQuery(ASTRO_ENDPOINTS.PLANETS, "Planet"),
     ),
@@ -335,6 +339,7 @@ export const astrologyApi = createApi({
 });
 
 export const {
+  useGetDailyPredQuery,
   // Birth
   useGetBirthDetailsMutation,
   useGetPlanetPositionsQuery,

@@ -1,42 +1,22 @@
 import { decodeKundliHash } from "@/utils/kundliHash";
 import AscendantClient from "../../../freeservices/kundali/getKundaliPage/ascendant/AscendantClient";
-import {  fetchGenAscRep,   fetchGenNakRep,} from "@/app/api/astrologySeo";
 
-
-export default async function Page({ params, searchParams }) {
-  const { slug } = params;
+export default function Page({ searchParams }) {
   const hash = searchParams.hash;
-
-
 
   if (!hash) {
     return <p className="text-center">Missing Kundli data</p>;
   }
 
-  
   const formData = decodeKundliHash(hash);
 
   if (!formData) {
-    return <p className="text-center">Invalid or expired link</p>;
-  }
-
-
-  const [ascData, nakData] = await Promise.all([
-    fetchGenAscRep(formData),
-    fetchGenNakRep(formData),
-  ]);
-
-  if (!ascData || !nakData) {
     return (
-      <p className="text-center text-red-500">
-        Failed to load Ascendant Report.
+      <p className="text-center">
+        Invalid or expired link
       </p>
     );
   }
-  return (
-    <AscendantClient
-      ascData={ascData}
-      nakData={nakData}
-    />
-  );
+
+  return <AscendantClient formData={formData} />;
 }
