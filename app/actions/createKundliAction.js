@@ -29,7 +29,7 @@ export async function createKundliAction(formData) {
   const slug = formData.get("slug");
 
   if (slug === "numerokundali") {
-    redirect(`/freeservices/kundali/getKundaliPage/numerokundli?hash=${hash}`);
+    redirect(`/freeservices/kundali/getKundaliPage/numerokundli?hash=${hash}&source=form`);
   }
   redirect(`/formpage/formresult/${slug}?hash=${hash}`);
 }

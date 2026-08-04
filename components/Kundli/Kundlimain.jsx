@@ -95,8 +95,13 @@ const selectStyles = {
         : "#fff",
     color: state.isSelected ? "#fff" : "#111827",
     cursor: "pointer",
+         padding: window.innerWidth < 768 ? "6px 10px" : "10px 12px",
+  fontSize: window.innerWidth < 768 ? "13px" : "15px",
   }),
-
+menuList: (base) => ({
+  ...base,
+  maxHeight: window.innerWidth < 768 ? 160 : 260,
+}),
   menu: (base) => ({
     ...base,
     borderRadius: 16,
@@ -232,66 +237,66 @@ const Kundlimain = () => {
   };
 
   return (
-    <section className="kundli-main-page py-5">
-      <div className="kundli-img-txt flex justify-center bg-linear-to-r from-pink-100 to-yellow-100 shadow-xl rounded-2xl p-5">
+    <section className="kundli-main-page sm:py-5">
+      <div className="kundli-img-txt flex justify-center bg-linear-to-r from-pink-100 to-yellow-100 shadow-xl rounded-b-2xl p-5">
         <div className="text-black text-center">
-          <h4 className="text-xl md:text-2xl uppercase font-bold">
+          <h4 className="text-sm md:text-xl uppercase font-bold">
             {t?.kform?.top || "Discover Your Future with a Free Online Kundli"}
           </h4>
-          <p>
+          <p className="text-xs sm:text-sm">
             Kundli is an astrological chart showing planetary positions at
             birth.
           </p>
         </div>
       </div>
 
-      <div className="kundli-page mt-5 md:max-w-7xl grid grid-cols-7 gap-5 p-2">
-        <div className="col-span-5 flex flex-col gap-5">
+         <div className="kundli-page mt-5 flex flex-col gap-4 md:max-w-7xl sm:grid sm:grid-cols-7 gap-5 p-2">
+         <div className="col-span-5 flex flex-col gap-6">
           <div className="grid grid-cols-6 gap-5 text-black">
-            <div className="col-span-2 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-5 text-center">
+            <div className="sm:col-span-2 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg hidden md:block rounded-2xl p-5 text-center text-black">
               <Image
                 src="/ds-img/ganeshji.png"
                 width={100}
                 height={100}
-                alt="Ganesh Ji"
+                alt="ganesh ji"
                 className="mx-auto hidden md:block"
               />
               <h4 className="text-xl font-semibold mt-2">KUNDLI FREE ONLINE</h4>
-              <p className="text-sm">
-                Accurate horoscope and birth chart analysis.
-              </p>
+              <p className="text-sm">Get accurate birth chart analysis.</p>
             </div>
 
-            <div className="col-span-4 bg-purple-200 shadow-lg rounded-2xl p-6">
-              <h2 className="text-xl font-semibold text-center text-purple-700 mb-5">
-                {t?.kform?.head || "Enter Your Birth Details"}
+            <div className="col-span-6 sm:col-span-4 bg-[#dfc7fd6e] shadow-lg rounded-2xl p-6 text-black">
+              <h2 className="text-mdsm:text-xl font-semibold text-center text-purple-700 mb-5">
+                {t?.kform?.head || "Enter Your Details"}
               </h2>
 
-              <form
-                onSubmit={handleSubmit}
-                className="max-w-md mx-auto flex flex-col gap-4"
-              >
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <CustomInput
-                  label="Name"
                   name="name"
+                  label="Name"
+                  placeholder="Enter your name"
+                  className="rounded-2xl bg-white/90 py-1 placeholder:text-xs sm:py-3 outline-none focus:ring-0 px-4"
                   value={formData.name}
                   onChange={handleChange}
                   required
                   autofill="name"
-                  className="rounded-2xl bg-white/90 py-3 outline-none focus:ring-0 px-4"
                 />
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-800">
+                  <label className="text-xs sm:text-sm font-semibold">
                     Date of Birth
                   </label>
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 text-black gap-3">
                     <Select
-                      className="p-1 text-xs rounded-"
+                      className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                       options={DAY_OPTIONS}
-                      placeholder="📅 Day"
+                      placeholder=" Day"
                       styles={selectStyles}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
                       value={DAY_OPTIONS.find((x) => x.value === formData.day)}
                       onChange={(option) =>
                         updateField("day", option?.value || "")
@@ -299,10 +304,14 @@ const Kundlimain = () => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={MONTH_OPTIONS}
-                      placeholder="🗓 Month"
+                      placeholder=" Month"
                       styles={selectStyles}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
                       value={MONTH_OPTIONS.find(
                         (x) => x.value === formData.month,
                       )}
@@ -312,10 +321,14 @@ const Kundlimain = () => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={YEAR_OPTIONS}
-                      placeholder="📆 Year"
+                      placeholder=" Year"
                       styles={selectStyles}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
                       value={YEAR_OPTIONS.find(
                         (x) => x.value === formData.year,
                       )}
@@ -324,23 +337,23 @@ const Kundlimain = () => {
                       }
                     />
                   </div>
-
-                  {errors.dob && (
-                    <p className="text-sm text-red-500">{errors.dob}</p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-800">
-                    Birth Time
+                  <label className="text-xs sm:text-sm font-semibold">
+                    Time of Birth
                   </label>
 
                   <div className="grid grid-cols-2 gap-3">
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={HOUR_OPTIONS}
                       placeholder="🕐 Hour"
                       styles={selectStyles}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
                       value={HOUR_OPTIONS.find(
                         (x) => x.value === formData.hour,
                       )}
@@ -350,10 +363,14 @@ const Kundlimain = () => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className="text-xs"
                       options={MINUTE_OPTIONS}
                       placeholder="🕑 Minute"
                       styles={selectStyles}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
                       value={MINUTE_OPTIONS.find(
                         (x) => x.value === formData.min,
                       )}
@@ -362,27 +379,19 @@ const Kundlimain = () => {
                       }
                     />
                   </div>
-
-                  {errors.birthTime && (
-                    <p className="text-sm text-red-500">{errors.birthTime}</p>
-                  )}
                 </div>
 
                 <LocationSelector
-                  placeholder="Your birth place"
+                  placeholder="Birth place"
                   onSelect={handleLocationSelect}
-                  className="rounded-2xl bg-white/90 py-3 outline-none focus:ring-0 px-4"
                 />
 
-                {errors.birthplace && (
-                  <p className="text-red-500 text-sm">{errors.birthplace}</p>
-                )}
-
                 <CustomButton
+                  variant={"purple"}
                   type="submit"
-                  className="bg-purple-600 hover:bg-purple-700 w-40 text-white px-4 py-2 self-center rounded-full shadow-lg"
+                  className="mt-4 w-[50%] sm:w-full  hover:scale-104 py-2 text-sm sm:text-md flex align-self-center justify-center place-self-center sm:py-3"
                 >
-                  {t?.kform?.submit || "Submit"}
+                  SUBMIT
                 </CustomButton>
               </form>
             </div>

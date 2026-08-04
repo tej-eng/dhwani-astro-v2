@@ -98,10 +98,9 @@ element.style {
 
 
 /* consultation css */
-.con-befr {
-  
-
-
+.blog-btn,
+.lang-btn {
+  padding: 2px 6px;
 }
 
 
@@ -545,8 +544,8 @@ body {
 
 .prblm-txt:hover {
   background-color: #000000f2;
-
 }
+
 
 .problem-base-card::-webkit-scrollbar {
   display: none;
@@ -976,8 +975,7 @@ body {
 .swiper-button-next-rec,
 .swiper-button-prev-free,
 .swiper-button-next-free {
-  background-color: #6a5781;
-  color: white;
+background: linear-gradient(to right,  #581c87,  #6b21a8,  #581c87);  color: white;
   border: none;
   padding: .2rem .8rem;
   font-size: 25px;
@@ -1530,7 +1528,12 @@ body {
 /* media queries ************************************** */
 
 @media (319px <=width <=430px) {
-
+  #react-select-2-placeholder{
+    font-size: 12px;
+  }
+.css-192zw6h-indicatorContainer{
+   font-size: 12px;
+}
   /* credentials */
   .pro-card-top {
     height: 5rem;

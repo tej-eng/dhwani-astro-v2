@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/app/context/LangContext";
@@ -26,8 +26,8 @@ const GET_FREE_SERVICES = gql`
   }
 `;
 export default function Navbarmob() {
-    const { user, setUser, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-  
+  const { user, setUser, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+
   useScrollZoom(".head-wrap");
   const { messages: t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +35,17 @@ export default function Navbarmob() {
   const [isFreeOpen, setIsFreeOpen] = useState(false);
 
   const { data, loading, error } = useQuery(GET_FREE_SERVICES);
+useEffect(() => {
+  if (isOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
 
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [isOpen]);
   const freeServices =
     data?.getFreeServices?.data?.map((item) => ({
       id: item.id,
@@ -155,15 +165,18 @@ export default function Navbarmob() {
                 priority
                 alt="user image"
               />
-              <span className="text-sm font-bold text-black">Hello {user?.name}</span>
+              <span className="text-sm font-bold text-black">
+                Hello {user?.name}
+              </span>
             </div>
             <button
               aria-label="Close Menu"
               className=" text-[#8334e4]"
               onClick={() => setIsOpen(false)}
-            >
+             >
               <svg
-             width={18} height={18}
+                width={18}
+                height={18}
                 viewBox="0 0 15 15"
                 version="1.1"
                 id="cross"
@@ -216,7 +229,8 @@ export default function Navbarmob() {
                 <svg
                   className={`transition-transform ${isDhwaniOpen ? "rotate-180" : ""}`}
                   fill="#000000"
-               width={18} height={18}
+                  width={18}
+                  height={18}
                   viewBox="0 -6 524 524"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -228,10 +242,11 @@ export default function Navbarmob() {
                 <ul className="pl-8 mt-2 space-y-2">
                   {dhwaniStoreItems.map((item) => (
                     <li key={item.id}>
-                      <Link
-                        href={item.href}
-                        className="flex items-center space-x-3 text-[#2f1254] hover:text-[#8334e4]"
-                      >
+                  <Link
+  href={item.href}
+  onClick={() => setIsOpen(false)}
+  className="flex items-center space-x-3 text-[#2f1254] hover:text-[#8334e4]"
+>
                         <Image
                           src={item.src}
                           width={20}
@@ -252,7 +267,7 @@ export default function Navbarmob() {
                 aria-label="Toggle Free Services Menu"
                 className="flex items-center justify-between w-full text-sm text-[#2f1254] hover:text-[#8334e4]"
                 onClick={() => setIsFreeOpen(!isFreeOpen)}
-               >
+              >
                 <div className="flex items-center space-x-3">
                   <Image
                     src="/prblm/prize.png"
@@ -266,7 +281,8 @@ export default function Navbarmob() {
                 <svg
                   className={`transition-transform ${isDhwaniOpen ? "rotate-180" : ""}`}
                   fill="#000000"
-                 width={18} height={18}
+                  width={18}
+                  height={18}
                   viewBox="0 -6 524 524"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -278,19 +294,11 @@ export default function Navbarmob() {
                 <ul className="pl-8 mt-2 space-y-2">
                   {freeServices.map((item) => (
                     <li key={item.id}>
-                      <Link
-                        href={
-                          item.slug
-                            ? {
-                                pathname: item.href,
-                                query: { slug: item.slug },
-                              }
-                            : {
-                                pathname: item.href,
-                              }
-                        }
-                        className="flex items-center space-x-3 text-[#2f1254] hover:text-[#8334e4]"
-                      >
+                    <Link
+  href={`/${item.slug}`}
+  onClick={() => setIsOpen(false)}
+  className="flex items-center space-x-3 text-[#2f1254] hover:text-[#8334e4]"
+>
                         {/* <Image
                           src={item.src}
                           width={20}

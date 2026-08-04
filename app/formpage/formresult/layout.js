@@ -15,15 +15,15 @@ export default function layout({ children }) {
         </div>
 
         <div className="kundli-items-box-side flex flex-col md:grid grid-cols-4 md:px-0 lg:px-20 gap-2 lg:gap-5 py-5">
-          <div className="kundli-items-main col-span-3 flex flex-col gap-10">
+          <div className="kundli-items-main col-span-3 flex flex-col gap-2 sm:gap-5">
             <Link
               href={"/"}
-              className="text-2xl flex items-center gap-2 font-bold text-[#2f1254]"
+              className="text-md flex items-center gap-1 font-bold text-[#2f1254]"
             >
-              <svg width={18} height={18} viewBox="0 0 640 640">
+              <svg width={16} height={16} viewBox="0 0 640 640">
                 <path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
               </svg>{" "}
-              <small className="text-xs font-extralight">Go to main page2</small>
+              <small className="text-[10px] font-extralight">Go to main page</small>
             </Link>
             {children}
           </div>

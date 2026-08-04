@@ -55,7 +55,7 @@ export default function NumerokundliUI({ data }) {
   ];
 
   return (
-    <div className="basic-kundli-charts flex flex-col md:col-span-4">
+    <div className="basic-kundli-charts flex flex-col md:col-span-4 p-1">
       <h5 className="text-sm text-center head-wrap md:text-xl text-black font-semibold">
         <span className="text-red-500">
           "Numerology & Favorability:{" "}
@@ -66,22 +66,22 @@ export default function NumerokundliUI({ data }) {
       <section className="basic-details-main w-full flex items-center justify-start flex-col gap-6">
         <div className=" flex flex-col gap-10">
 
-          <div className="p-5 rounded-lg bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg text-black border border-orange-300">
-            <h3 className="text-lg text-center font-bold text-black mb-2">
+          <div className="p-5 rounded-lg bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg text-black border border-orange-200">
+            <h3 className="text-sm sm:text-md text-center font-bold text-black mb-2">
               Today's Prediction : {daily?.prediction_date|| "Prediction not available"}
             </h3>
-            <p className="text-sm mb-2 leading-relaxed">
+            <p className="text-xs sm:text-sm mb-2 leading-relaxed">
               {daily?.prediction}
             </p>
 
-            <div className="flex flex-col justify-center md:flex-row gap-2 text-sm font-semibold">
-              <span className="bg-purple-50 px-4 text-base py-1 rounded-full text-gray-700">
+            <div className="flex justify-center md:flex-row gap-2 text-sm font-semibold">
+              <span className="bg-purple-50 px-4 text-xs sm:text-sm py-1 rounded-full text-gray-700">
                 Lucky Color:{" "}
                 <span className="font-bold">
                   {daily?.lucky_color}
                 </span>
               </span>
-              <span className="bg-purple-50 px-4 text-base py-1 rounded-full text-gray-700">
+              <span className="bg-purple-50 px-4 text-xs sm:text-sm py-1 rounded-full text-gray-700">
                 Lucky Number:{" "}
                 <span className="font-bold">
                   {daily?.lucky_number}
@@ -100,7 +100,7 @@ export default function NumerokundliUI({ data }) {
                 <span className="md:text-md text-center font-semibold">
                   {value ?? "-"}
                 </span>
-                <span className="bg-white  rounded-full px-2 md:px-4 py-1 text-xs ">
+                <span className="bg-white text-[10px] text-xs text-center  rounded-full px-2 md:px-4 py-1 ">
                   {label}
                 </span>
               </div>
@@ -131,12 +131,12 @@ export default function NumerokundliUI({ data }) {
                 item && (
                   <div
                     key={i}
-                    className="shadow-xl p-5 rounded-lg bg-purple-100 text-black"
+                    className="shadow-xl sm:p-5 p-3 rounded-lg bg-purple-100 text-black"
                   >
-                    <h3 className="text-lg font-bold text-[#7042ac] mb-1">
+                    <h3 className="text-xs sm:text-sm font-bold text-[#7042ac] mb-1">
                       {item?.title} :
                     </h3>
-                    <p className="text-sm leading-relaxed">
+                    <p className="text-xs sm:text-sm leading-relaxed">
                       {item?.description}
                     </p>
                   </div>

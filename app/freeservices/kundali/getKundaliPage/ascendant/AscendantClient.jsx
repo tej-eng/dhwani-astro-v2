@@ -63,24 +63,22 @@ export default function AscendantClient({ formData }) {
 
       <div className="bg-purple-100 rounded-2xl px-5 py-3 shadow-lg mb-5">
         <h5 className="text-center md:text-xl font-semibold">
-          <span className="text-red-500">
-            General Ascendant
-          </span>
+        
         </h5>
 
         <div className="mt-3 space-y-2">
-          <div className="flex gap-2">
+          <div className="flex text-xs sm:text-sm gap-2">
             <strong>Ascendant:</strong>
-            <span>{ascData?.asc_report?.ascendant}</span>
+            <span className="text-xs sm:text-sm">{ascData?.asc_report?.ascendant}</span>
           </div>
 
-          <p>{ascData?.asc_report?.report}</p>
+          <p className="text-xs sm:text-sm">{ascData?.asc_report?.report}</p>
         </div>
       </div>
 
       <div className="bg-purple-100 rounded-2xl px-5 py-3 shadow-lg">
         <h5 className="text-center md:text-xl font-semibold mb-3">
-          <span className="text-red-500">
+          <span className="text-red-500 text-sm sm:text-md">
             General Nakshatra
           </span>{" "}
           Report
@@ -89,12 +87,12 @@ export default function AscendantClient({ formData }) {
         {["physical", "character", "education", "family", "health"].map(
           (key) => (
             <div key={key} className="mb-4">
-              <h3 className="font-semibold capitalize">
+              <h3 className="font-semibold text-sm sm:text-md capitalize">
                 {key}:
               </h3>
 
               {nakData?.[key]?.map((item, idx) => (
-                <p key={idx}>{item}</p>
+                <p className="text-xs sm:text-sm" key={idx}>{item}</p>
               ))}
             </div>
           )

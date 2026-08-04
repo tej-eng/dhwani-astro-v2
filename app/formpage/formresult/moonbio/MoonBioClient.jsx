@@ -53,22 +53,22 @@ export default function MoonBioClient({ formData }) {
 
 
       <div className="h-f-par flex flex-col gap-2 items-center justify-center place-self-center w-[95%] md:w-full bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-lg p-5">
-        <h5 className="text-base md:text-xl text-black font-semibold">
+        <h5 className="text-sm sm:text-md md:text-xl text-black font-semibold">
           <span className="text-red-500">Moon Biorhythm </span> – Prediction Calculator
         </h5>
-        <span className="text-black text-sm md:text-base">
+        <span className="text-black text-xs sm:text-sm md:text-base">
           Birth pakshi details and recommended activities based on moon position.
         </span>
       </div>
 
 
       <div className="md:w-full w-[95%] place-self-center mt-3 p-4 bg-white rounded-2xl shadow space-y-4 text-black">
-        <h2 className="md:text-2xl text-xl font-bold text-purple-600">
+        <h2 className="md:text-2xl text-sm font-bold text-purple-600">
           🌙 Moon Bio
         </h2>
 
    
-        <div className="grid grid-cols-2 gap-2 text-sm md:text-base">
+        <div className="grid grid-cols-2 gap-2 text-xs md:text-base">
           <p><strong>Birth Pakshi:</strong> {birth_pakshi}</p>
           <p><strong>Considered Date:</strong> {considered_date}</p>
           <p><strong>Color:</strong> {details?.color}</p>
@@ -90,8 +90,8 @@ export default function MoonBioClient({ formData }) {
                   key={i}
                   className="border border-purple-200 bg-purple-200 rounded-lg shadow p-3"
                 >
-                  <h3 className="font-semibold">{title}</h3>
-                  <ul className="list-disc ml-5 text-sm md:text-base">
+                  <h3 className="font-semibold text-sm sm:text-md">{title}</h3>
+                  <ul className="list-disc ml-5 text-xs md:text-base">
                     {list.map((item, idx) => (
                       <li key={idx}>{item}</li>
                     ))}
@@ -103,16 +103,16 @@ export default function MoonBioClient({ formData }) {
 
 
         <div>
-          <h3 className="text-xl font-semibold mt-4">🌞 Day Activities</h3>
+          <h3 className="text-sm sm:text-md font-semibold mt-4">🌞 Day Activities</h3>
           <div className="grid grid-cols-2 gap-3 mt-2">
             {activityDay.map((act, idx) => (
               <div
                 key={idx}
-                className="p-3 border rounded-lg border-purple-200 bg-purple-200 text-sm md:text-base"
+                className="p-3 border rounded-lg  border-purple-200 bg-purple-200 text-xs md:text-sm"
               >
-                <p><strong>Time:</strong> {act.start_time} – {act.end_time}</p>
+                <p><strong className="text-xs sm:text-sm">Time:</strong> {act.start_time} – {act.end_time}</p>
                 <p>
-                  <strong>Activity:</strong> {act.activity} ({act.activity_meaning})
+                  <strong className="text-xs sm:text-sm">Activity:</strong> {act.activity} ({act.activity_meaning})
                 </p>
               </div>
             ))}
@@ -121,16 +121,16 @@ export default function MoonBioClient({ formData }) {
 
 
         <div>
-          <h3 className="text-xl font-semibold mt-4">🌜 Night Activities</h3>
+          <h3 className="text-sm sm:text-md font-semibold mt-4">🌜 Night Activities</h3>
           <div className="grid grid-cols-2 gap-3 mt-2">
             {activityNight.map((act, idx) => (
               <div
                 key={idx}
-                className="p-3 border rounded-lg border-purple-200 bg-purple-200 text-sm md:text-base"
+                className="p-3 border rounded-lg border-purple-200 bg-purple-200 text-xs md:text-sm"
               >
-                <p><strong>Time:</strong> {act.start_time} – {act.end_time}</p>
+                <p><strong className="text-xs sm:text-sm">Time:</strong> {act.start_time} – {act.end_time}</p>
                 <p>
-                  <strong>Activity:</strong> {act.activity} ({act.activity_meaning})
+                  <strong className="text-xs sm:text-sm">Activity:</strong> {act.activity} ({act.activity_meaning})
                 </p>
               </div>
             ))}

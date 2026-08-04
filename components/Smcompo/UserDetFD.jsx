@@ -83,12 +83,17 @@ const selectStyles = {
     backgroundColor: state.isSelected
       ? "#9333ea"
       : state.isFocused
-      ? "#f3e8ff"
-      : "#fff",
+        ? "#f3e8ff"
+        : "#fff",
     color: state.isSelected ? "#fff" : "#111827",
     cursor: "pointer",
+       padding: window.innerWidth < 768 ? "6px 10px" : "10px 12px",
+  fontSize: window.innerWidth < 768 ? "13px" : "15px",
   }),
-
+menuList: (base) => ({
+  ...base,
+  maxHeight: window.innerWidth < 768 ? 160 : 260,
+}),
   menu: (base) => ({
     ...base,
     borderRadius: 16,
@@ -169,16 +174,16 @@ const UserDetFD = ({
             onChange={handleChange}
             required
             placeholder={namePlaceholder}
-            className="w-full px-3 py-3 shadow-md rounded-2xl text-sm text-[#333] bg-white outline-none border-none"
+                  className="rounded-2xl bg-white/90 py-1 placeholder:text-xs placeholder:text-gray-400 sm:py-3 outline-none focus:ring-0 px-4"
           />
         </div>
 
         <div className="flex flex-col  gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-black">Date of Birth</label>
-
-            <div className="grid grid-cols-3 gap-3">
+              <label className="text-xs sm:text-sm text-black font-semibold">Date of Birth</label>
+           <div className="grid grid-cols-3 gap-3">
               <Select
+                 className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                 options={DAY_OPTIONS}
                 placeholder="Day"
                 value={DAY_OPTIONS.find((x) => x.value === day)}
@@ -191,6 +196,7 @@ const UserDetFD = ({
               />
 
               <Select
+                 className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                 options={MONTH_OPTIONS}
                 placeholder="Month"
                 value={MONTH_OPTIONS.find((x) => x.value === month)}
@@ -203,6 +209,7 @@ const UserDetFD = ({
               />
 
               <Select
+                 className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                 options={YEAR_OPTIONS}
                 placeholder="Year"
                 value={YEAR_OPTIONS.find((x) => x.value === year)}
@@ -217,10 +224,11 @@ const UserDetFD = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-black">Time of Birth</label>
+              <label className="text-xs sm:text-sm text-black font-semibold">Time of Birth</label>
 
             <div className="grid grid-cols-2 gap-3">
               <Select
+                  className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                 options={HOUR_OPTIONS}
                 placeholder="Hour"
                 value={HOUR_OPTIONS.find((x) => x.value === hour)}
@@ -233,6 +241,7 @@ const UserDetFD = ({
               />
 
               <Select
+                  className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                 options={MINUTE_OPTIONS}
                 placeholder="Minute"
                 value={MINUTE_OPTIONS.find((x) => x.value === minute)}

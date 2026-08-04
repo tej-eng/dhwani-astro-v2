@@ -50,9 +50,9 @@ export default function NakshatraClient({ formData }) {
       
           <div className="p-5 rounded-lg bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg text-black border border-orange-300">
             <div className="flex flex-col md:flex-row gap-5 text-sm items-center justify-center font-semibold">
-              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-base py-2 rounded-full text-black">
+              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-sm py-2 rounded-full text-black">
                 <span>Moon Sign:</span>
-                <span className="font-bold">
+                <span className="">
                   {daily.birth_moon_sign}
                 </span>
               </span>
@@ -72,10 +72,10 @@ export default function NakshatraClient({ formData }) {
               key={index}
               className="shadow p-5 rounded-lg bg-purple-100 text-black"
             >
-              <h3 className="text-lg font-bold text-[#7042ac] capitalize mb-1">
+              <h3 className="text-sm sm:text-md font-bold text-[#7042ac] capitalize mb-1">
                 {key.replace(/_/g, " ")}:
               </h3>
-              <p className="text-sm leading-relaxed">{value}</p>
+              <p className="text-xs sm:text-smleading-relaxed">{value}</p>
             </div>
           ))}
 

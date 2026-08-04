@@ -77,7 +77,7 @@ export default function CharYogClient({ formData }) {
             <li
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer px-4 py-1 rounded-full text-sm ${
+              className={`cursor-pointer px-4 py-1 rounded-full text-xs sm:text-sm ${
                 activeTab === tab.id
                   ? "bg-purple-500 text-white"
                   : "text-white"
@@ -89,7 +89,7 @@ export default function CharYogClient({ formData }) {
         </ul>
       </div>
 
-      <div className="py-5">
+      <div className="sm:py-5">
         {activeTab === "char" && (
           <Chardasha
             charData={charData}

@@ -54,17 +54,17 @@ export default function KpClient({ formData }) {
   }
   return (
     <section className="kundli-inter-page w-full flex justify-center">
-      <div className="max-w-6xl w-full flex flex-col gap-6">
+      <div className="sm:max-w-6xl w-full flex flex-col gap-4">
 
-        <h2 className="text-xl font-bold text-center">
+        <h2 className="sm:text-xl font-bold text-black text-center">
           <span className="text-red-500">Krishnamurti</span> Paddhati (KP)
         </h2>
 
       
         <Section title="KP Planets ">
-          <div className="overflow-x-auto text-black">
-            <div className="min-w-[60rem]">
-              <div className="grid grid-cols-11 bg-purple-500 text-white px-4 py-2">
+          <div className="overflow-x-scroll sm:w-100 w-90 text-black">
+            <div className="w-200">
+              <div className="grid grid-cols-11 bg-purple-500 rounded-xl text-xs sm:text-sm text-white px-4 py-1 sm:py-2">
                 {[
                   "Planet ID",
                   "Name",
@@ -85,7 +85,7 @@ export default function KpClient({ formData }) {
               {kp.map((p, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-11 bg-purple-100 px-4 py-2"
+                  className="grid grid-cols-11 bg-purple-100  px-4 py-1 text-xs sm:text-sm sm:py-2"
                 >
                   <span>{p.planet_id}</span>
                   <span>{p.planet_name}</span>
@@ -106,9 +106,9 @@ export default function KpClient({ formData }) {
 
 
         <Section title="KP Houses Significators">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-black">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 text-black">
             {houseData.map((h) => (
-              <div key={h.house_id} className="p-4 bg-purple-50 rounded">
+              <div key={h.house_id} className="p-4 text-xs  sm:text-sm bg-purple-50 rounded">
                 <h3 className="font-bold text-purple-700">
                   House {h.house_id}
                 </h3>
@@ -137,7 +137,7 @@ export default function KpClient({ formData }) {
 function Section({ title, children }) {
   return (
     <section>
-      <h3 className="text-lg font-bold text-center mb-4">
+      <h3 className="sm:text-lg text-black font-bold text-center mb-2">
         {title}
       </h3>
       {children}

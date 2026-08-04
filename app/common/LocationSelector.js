@@ -74,7 +74,7 @@ const SearchLocation = ({ placeholder, onSelect }) => {
         label={t?.kform?.place || "Birth Place"}
         value={searchTerm}
         placeholder={placeholder}
-        className="w-full text-black  border rounded-2xl bg-white/90 py-3  px-3 focus:ring-purple-100 focus:ring-1 focus:outline-0 border-gray-300"
+        className="w-full text-black  border rounded-2xl bg-white/90   px-3 py-1 placeholder:text-xs sm:py-3 focus:ring-purple-100 focus:ring-1 focus:outline-0 border-gray-300"
         required
         autofill="birthplace"
         onChange={handleSearch}
@@ -85,7 +85,7 @@ const SearchLocation = ({ placeholder, onSelect }) => {
       {show && results.length > 0 && (
         <ul
           role="listbox"
-          className="absolute z-50 w-full border border-gray-200 bg-white rounded-2xl p-2 mt-2 max-h-60 overflow-y-auto shadow-lg"
+          className="absolute z-50 w-full border border-gray-200 bg-white rounded-2xl p-2 mt-2  max-h-60 overflow-y-auto shadow-lg"
         >
           {results.map((city) => (
             <li

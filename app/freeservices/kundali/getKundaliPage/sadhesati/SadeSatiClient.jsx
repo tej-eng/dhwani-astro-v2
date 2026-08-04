@@ -1,6 +1,10 @@
 "use client";
 
-import { useGetSadeSatiLifeDetailsQuery, useGetSadeSatiQuery, useGetSadeSatiRemediesQuery } from "@/app/redux/services/astrologyAPI";
+import {
+  useGetSadeSatiLifeDetailsQuery,
+  useGetSadeSatiQuery,
+  useGetSadeSatiRemediesQuery,
+} from "@/app/redux/services/astrologyAPI";
 import Sadhesati from "./Sadhesati";
 
 export default function SadeSatiClient({ formData }) {
@@ -22,17 +26,11 @@ export default function SadeSatiClient({ formData }) {
     data: detailsData,
     isLoading: detailsLoading,
     error: detailsError,
-  } =  useGetSadeSatiLifeDetailsQuery(formData, { skip });
+  } = useGetSadeSatiLifeDetailsQuery(formData, { skip });
 
-  const loading =
-    satiLoading ||
-    remeLoading ||
-    detailsLoading;
+  const loading = satiLoading || remeLoading || detailsLoading;
 
-  const error =
-    satiError ||
-    remeError ||
-    detailsError;
+  const error = satiError || remeError || detailsError;
 
   if (loading) {
     return (
@@ -44,21 +42,15 @@ export default function SadeSatiClient({ formData }) {
 
   if (error) {
     return (
-      <p className="text-center text-red-500">
-        Failed to load Sade Sati data.
-      </p>
+      <p className="text-center text-red-500">Failed to load Sade Sati data.</p>
     );
   }
 
   if (!satiData) {
     return (
-      <p className="text-center text-gray-400">
-        No Sade Sati data available.
-      </p>
+      <p className="text-center text-gray-400">No Sade Sati data available.</p>
     );
   }
-
-
 
   return (
     <Sadhesati

@@ -28,7 +28,7 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button aria-label="Toggle  Language Switcher"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 px-1 text-[10px] sm:px-3 py-1 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]">
+        className="flex items-center gap-1 px-1 text-[9px] sm:text-[10px] sm:px-3 lang-btn sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]">
         <span>{languages.find((l) => l.code === lang)?.label || "Language"}</span>
         <FiChevronDown
           className={`transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`}

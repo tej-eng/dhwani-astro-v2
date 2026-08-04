@@ -70,7 +70,7 @@ export default function ProblembaseSwiper({ categorySlug }) {
               />
 
               <div className="absolute bottom-2 left-0 flex w-full justify-center">
-                <h2 className="prblm-txt w-[90%] rounded-full border text-xs sm:text-sm lg:text-base">
+                <h2 className="prblm-txt w-[90%] rounded-full border border-gray-400 text-xs sm:text-sm lg:text-base">
                   {service.name}
                 </h2>
               </div>

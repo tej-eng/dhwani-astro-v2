@@ -37,7 +37,7 @@ export default function Kundlioth() {
     return (
         <section>
             <div className=" md:p-3 p-2 flex flex-col gap-3">
-                <div className="  items-center grid grid-cols-3 md:grid-cols-4  justify-start gap-3 md:gap-5">
+                <div className="  items-center grid grid-cols-2 md:grid-cols-4  justify-start gap-3 md:gap-5">
                     {kundliother.map((kuoth, index) => (
                         <Link key={index} href={{
                             pathname: kuoth.link,
@@ -45,7 +45,7 @@ export default function Kundlioth() {
                         }} className="head-wrap rounded-2xl kundli-other-item  ">
                             <div className="  flex flex-col items-center justify-center gap-3">
                                 <Image src={kuoth.src} height={40} width={40} alt="kundli images" className="kunoth-img" />
-                                <div className="w-full rounded-full py-1 text-black bg-white text-center text-xs">
+                                <div className="w-full rounded-full py-1 text-black bg-white text-center text-[10px] sm:text-xs">
                                     {kuoth.name}
                                 </div>
                             </div>
