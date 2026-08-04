@@ -12,6 +12,8 @@ export default function Chardasha({ charData, charcData }) {
       </p>
     );
   }
+  console.log("xxxx");
+  
 
   return (
     <section className="kundli-inter-page w-full flex flex-col items-center md:p-2 p-2">
