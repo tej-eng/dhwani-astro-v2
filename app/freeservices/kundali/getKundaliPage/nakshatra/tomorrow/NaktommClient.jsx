@@ -26,12 +26,12 @@ export default function NaktommClient({ tomorrow }) {
          
           <div className="p-5 rounded-lg bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg text-black border border-orange-300">
             <div className="flex flex-col md:flex-row gap-5 items-center justify-center font-semibold">
-              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-base py-2 rounded-full">
+              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-xs sm:text-sm py-2 rounded-full">
                 <span>Moon Sign:</span>
                 <span className="font-bold">{tomorrow.birth_moon_sign}</span>
               </span>
 
-              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-base py-2 rounded-full">
+              <span className="bg-purple-300 px-5 flex w-full md:w-[45%] justify-between items-center text-xs sm:text-sm py-2 rounded-full">
                 <span>Nakshatra:</span>
                 <span className="font-bold">
                   {tomorrow.birth_moon_nakshatra}
@@ -47,10 +47,10 @@ export default function NaktommClient({ tomorrow }) {
               key={key}
               className="shadow p-5 rounded-lg bg-purple-100 text-black"
             >
-              <h3 className="text-lg font-bold text-[#7042ac] capitalize mb-1">
+              <h3 className="text-xs sm:text-sm font-bold text-[#7042ac] capitalize mb-1">
                 {key.replace(/_/g, " ")}:
               </h3>
-              <p className="text-sm leading-relaxed">{value}</p>
+              <p className="text-xs sm:text-sm leading-relaxed">{value}</p>
             </div>
           ))}
         </div>

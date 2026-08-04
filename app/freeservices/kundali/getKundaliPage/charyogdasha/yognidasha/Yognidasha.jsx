@@ -17,12 +17,12 @@ export default function Yoginidasha({  yogniData,yognicData,}) {
     <section className="kundli-inter-page w-full flex flex-col items-center md:p-2 p-2">
   
       <div className="w-full mb-6">
-        <h5 className="text-sm md:text-xl text-black font-semibold text-center mb-2">
-          <span className="text-red-500">Major Yogini Dasha</span> Report
+        <h5 className="text-sm sm:text-md text-black font-semibold text-center mb-2">
+          <span className="text-red-500 ">Major Yogini Dasha</span> Report
         </h5>
 
         <div className="bg-purple-100 rounded-xl shadow p-2">
-          <div className="grid grid-cols-5 bg-purple-400 text-white rounded-lg px-4 py-2 text-sm font-semibold">
+          <div className="grid grid-cols-5 bg-purple-400 text-white rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold">
             <span>Dasha Id</span>
             <span>Dasha Name</span>
             <span>Start Date</span>
@@ -33,7 +33,7 @@ export default function Yoginidasha({  yogniData,yognicData,}) {
           {yogniData.map((item, i) => (
             <div
               key={i}
-              className="grid grid-cols-5 text-black bg-purple-200 rounded-lg px-4 py-2 mt-1 text-sm"
+              className="grid grid-cols-5 text-black bg-purple-200 rounded-lg px-4 py-2 mt-1 text-xs sm:text-sm"
             >
               <span>{item.dasha_id}</span>
               <span>{item.dasha_name}</span>
@@ -48,7 +48,7 @@ export default function Yoginidasha({  yogniData,yognicData,}) {
 
       <div className="w-full bg-purple-100 rounded-xl shadow p-4 text-black">
         <h5 className="text-xl font-semibold text-center mb-3">
-          <span className="text-red-500">Current Yogini Dasha</span> Report
+          <span className="text-red-500 text-sm sm:text-md">Current Yogini Dasha</span> Report
         </h5>
 
         <div className="grid md:grid-cols-3 gap-6 text-sm md:text-base">
@@ -57,8 +57,8 @@ export default function Yoginidasha({  yogniData,yognicData,}) {
             if (!dasha) return null;
 
             return (
-              <div key={key}>
-                <h3 className="font-semibold text-lg capitalize mb-1">
+              <div key={key} className="text-xs sm:text-sm">
+                <h3 className="font-semibold text-sm sm:text-md capitalize mb-1">
                   {key.replace("_", " ")}
                 </h3>
                 <p>Dasha Id: {dasha.dasha_id}</p>

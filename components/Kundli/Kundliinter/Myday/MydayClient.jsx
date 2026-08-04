@@ -59,17 +59,17 @@ export default function MydayClient({ formData }) {
 
            {numero?.prediction && (
             <div className="p-5 rounded-2xl bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg border border-orange-300">
-              <h3 className="text-lg text-center font-bold text-black mb-2">
+              <h3 className="text-sm sm:text-md text-center font-bold text-black mb-2">
                 Today's Prediction - {numero?.prediction_date}
               </h3>
               <p className="text-sm mb-2 leading-relaxed">{numero?.prediction}</p>
 
-              <div className="flex flex-col justify-center md:flex-row gap-5 text-sm font-semibold">
-                <span className="bg-purple-300 flex justify-between items-center px-5 text-base py-2 w-[30%] rounded-full text-black">
+              <div className="flex flex-row justify-between md:flex-row gap-5 text-xs sm:text-sm font-semibold">
+                <span className="bg-purple-300 flex justify-between items-center px-5 text-xs sm:text-smpy-2 sm:w-[30%] rounded-full text-black">
                   <span> Lucky Color:</span>{" "}
                   <span className="font-semibold">{numero?.lucky_color}</span>
                 </span>
-                <span className="bg-purple-300 flex justify-between items-center px-5 text-base w-[30%] py-2 rounded-full text-black">
+                <span className="bg-purple-300 flex justify-between items-center px-5 text-xs sm:text-sm sm:w-[30%] py-2 rounded-full text-black">
                   <span>Lucky Number:</span>{" "}
                   <span className="font-semibold">{numero?.lucky_number}</span>
                 </span>

@@ -48,7 +48,7 @@ export default function PitradoshaClient({ formData }) {
 
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           <div className="rounded-2xl bg-purple-100 p-4 w-full">
-            <div className="flex flex-col gap-3 text-sm text-black">
+            <div className="flex flex-col gap-3 text-xs sm:text-sm text-black">
 
               <div>
                 <span className="font-semibold text-purple-600">

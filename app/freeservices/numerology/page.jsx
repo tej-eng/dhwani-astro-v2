@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import CustomButton from "@/components/Custom/CustomButton";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import CustomInput from "@/components/Custom/CustomInput";
-import CustomSelect from "@/components/Custom/CustomSelect";
 import Freereport from "@/components/Smcompo/Freereport";
 import Recastro from "@/components/Smcompo/Recastro";
 import FAQue from "@/components/FAQue";
 import Callchatsec from "@/components/Smcompo/Callchatsec";
 import Select from "react-select";
 import { useAuth } from "@/app/context/authContext";
+import { createKundliHash } from "@/utils/kundliHash";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -122,30 +122,21 @@ export default function Numerohome() {
   };
 
   const router = useRouter();
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  // Validation
-  if (
-    !formData.name ||
-    !formData.day ||
-    !formData.month ||
-    !formData.year
-  ) {
-    return;
-  }
+    const hash = createKundliHash(formData);
 
-  const route = `/inKundli/getKundlipage/numerokundli?${new URLSearchParams(formData).toString()}`;
+    const route = `/freeservices/kundali/getKundaliPage/numerokundli?hash=${hash}`;
 
-  // Login check
-  if (!isLoggedIn) {
-    setPendingRoute(route);
-    setShowLogin(true);
-    return;
-  }
+    if (!isLoggedIn) {
+      setPendingRoute(route);
+      setShowLogin(true);
+      return;
+    }
 
-  router.push(route);
-};
+    router.push(route);
+  };
 
   return (
     <section className="kundli-main-page py-5">
@@ -177,7 +168,7 @@ const handleSubmit = (e) => {
         <div className="kundli-sec-side-item w-full  flex flex-col">
           <div className="text-black w-[60%] head-wrap mx-auto mt-2 p-4 bg-purple-100 border-1 border-purple-300 shadow-xl rounded-2xl">
             <h2 className="text-xl md:text-2xl text-center font-semibold mb-6">
-              Get Ruling Number Predictions
+              Get Ruling Number Predictions 2
             </h2>
             <form onSubmit={handleSubmit}>
               <CustomInput
@@ -208,9 +199,12 @@ const handleSubmit = (e) => {
                     onChange={(option) =>
                       updateField("day", option?.value || "")
                     }
-menuPortalTarget={
-  typeof document !== "undefined" ? document.body : undefined
-}                    menuPosition="fixed"
+                    menuPortalTarget={
+                      typeof document !== "undefined"
+                        ? document.body
+                        : undefined
+                    }
+                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
 
@@ -225,9 +219,12 @@ menuPortalTarget={
                     onChange={(option) =>
                       updateField("month", option?.value || "")
                     }
-menuPortalTarget={
-  typeof document !== "undefined" ? document.body : undefined
-}                    menuPosition="fixed"
+                    menuPortalTarget={
+                      typeof document !== "undefined"
+                        ? document.body
+                        : undefined
+                    }
+                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
 
@@ -240,9 +237,12 @@ menuPortalTarget={
                     onChange={(option) =>
                       updateField("year", option?.value || "")
                     }
-menuPortalTarget={
-  typeof document !== "undefined" ? document.body : undefined
-}                    menuPosition="fixed"
+                    menuPortalTarget={
+                      typeof document !== "undefined"
+                        ? document.body
+                        : undefined
+                    }
+                    menuPosition="fixed"
                     menuPlacement="auto"
                   />
                 </div>

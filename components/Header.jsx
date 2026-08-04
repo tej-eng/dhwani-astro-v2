@@ -29,63 +29,48 @@ export default function Header({ openSignInModal }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isUserOpen, setIsUserOpen] = useState(false);
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-
-  // }, [isLoggedIn]);
-
-  // ==============================
-  // LOGOUT MUTATION
-  // ==============================
+ 
 
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
-const LogOut = async () => {
-  const storedUser = localStorage.getItem("user");
+  const LogOut = async () => {
+    const storedUser = localStorage.getItem("user");
 
-  // Agar user hi nahi hai to seedha logout state clear
-  if (!storedUser) {
-    setUser(null);
-    router.replace("/");
-    return;
-  }
-
-  try {
-    const result = await logoutMutation();
-
-    if (result?.data?.logout) {
-      toast.success("Logged out successfully");
-    } else {
-      toast.error("Logout failed");
+    // Agar user hi nahi hai to seedha logout state clear
+    if (!storedUser) {
+      setUser(null);
+      router.replace("/");
+      return;
     }
-  } catch (err) {
-    // Agar cookie expire ho gayi hai to backend Unauthorized dega
-    if (
-      err?.message?.includes("Unauthorized") ||
-      err?.graphQLErrors?.[0]?.message === "Unauthorized"
-    ) {
-      toast.error("Session expired. Please login again.");
-    } else {
-      toast.error("Logout failed");
+
+    try {
+      const result = await logoutMutation();
+
+      if (result?.data?.logout) {
+        toast.success("Logged out successfully");
+      } else {
+        toast.error("Logout failed");
+      }
+    } catch (err) {
+      // Agar cookie expire ho gayi hai to backend Unauthorized dega
+      if (
+        err?.message?.includes("Unauthorized") ||
+        err?.graphQLErrors?.[0]?.message === "Unauthorized"
+      ) {
+        toast.error("Session expired. Please login again.");
+      } else {
+        toast.error("Logout failed");
+      }
+    } finally {
+      localStorage.removeItem("user");
+      setUser(null);
+
+      await client.clearStore();
+      await persistor.purge();
+
+      router.replace("/");
     }
-  } finally {
-    localStorage.removeItem("user");
-    setUser(null);
-
-    await client.clearStore();
-    await persistor.purge();
-
-    router.replace("/");
-  }
-};
-
-  // ==============================
-  // CLICK OUTSIDE DROPDOWN
-  // ==============================
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -95,10 +80,6 @@ const LogOut = async () => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-  // ==============================
-  // UI
-  // ==============================
 
   return (
     <header className="z-50 flex items-center justify-between w-full p-1 px-2 shadow-lg head-top bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 md:px-18">
@@ -120,7 +101,7 @@ const LogOut = async () => {
 
         <Link
           href="/blogs"
-          className="flex items-center text-[10px] px-2 py-1  sm:px-3 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
+          className="flex items-center text-[9px] sm:text-[10px] px-2 blog-btn sm:px-3 sm:py-1 bg-[#f5f5a8] cursor-pointer sm:text-sm text-black rounded-full transition-all hover:bg-[#f5e78a]"
         >
           Blog
         </Link>
@@ -141,6 +122,7 @@ const LogOut = async () => {
           >
             <button className="flex items-center gap-2">
               <Image
+                className="w-6 h-auto sm:w-10"
                 src="/ds-img/user2.webp"
                 width={30}
                 height={30}
@@ -165,7 +147,6 @@ const LogOut = async () => {
                     <h3 className="sm:font-semibold  text-white">
                       {user?.name || "User"}
                     </h3>
-
                   </div>
                 </div>
 

@@ -18,7 +18,6 @@ export async function createKundliAction(formData) {
     birthplace: formData.get("birthplace"),
   };
 
-
   if (Number.isNaN(payload.lat) || Number.isNaN(payload.lon)) {
     throw new Error("Invalid form submission");
   }
@@ -29,5 +28,8 @@ export async function createKundliAction(formData) {
 
   const slug = formData.get("slug");
 
+  if (slug === "numerokundali") {
+    redirect(`/freeservices/kundali/getKundaliPage/numerokundli?hash=${hash}&source=form`);
+  }
   redirect(`/formpage/formresult/${slug}?hash=${hash}`);
 }

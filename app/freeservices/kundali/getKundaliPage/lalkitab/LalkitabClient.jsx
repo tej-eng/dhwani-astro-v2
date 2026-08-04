@@ -71,15 +71,15 @@ export default function LalkitabClient({ formData }) {
     );
   }
   return (
-    <div className="px-4 pb-10 flex flex-col gap-6 items-center">
-      <h5 className="text-xl md:text-2xl font-semibold text-black">
+    <div className="px-4 pb-10 flex flex-col gap-3 sm:gap-4 items-center">
+      <h5 className="text-center font-semibold  sm:text-2xl text-purple-700">
         <span className="text-red-500">Lal Kitab</span> Prediction & Remedies
       </h5>
 
 
       <Section title="Lal Kitab Predictions">
-        <div className="overflow-x-auto text-sm basic-box flex flex-col gap-1 w-160 md:w-full">
-          <div className="grid grid-cols-5 bg-purple-400 text-white font-semibold px-4 py-2 rounded-t-lg">
+        <div className="overflow-x-auto text-sm basic-box flex flex-col gap-1 sm:w-160 md:w-full">
+          <div className="grid grid-cols-5 bg-purple-400 text-white font-semibold px-4 py-1 text-xs sm:text-sm sm:py-2 rounded-t-lg">
             <span>Sign</span>
             <span>Sign Name</span>
             <span>Planet</span>
@@ -88,7 +88,7 @@ export default function LalkitabClient({ formData }) {
           </div>
 
           {kitabData.map((item, i) => (
-            <div key={i} className="grid grid-cols-5 px-4 py-2 bg-purple-100 text-black rounded-lg">
+            <div key={i} className="grid grid-cols-5 px-4 py-1 text-xs sm:text-sm sm:py-2 bg-purple-100 text-black rounded-lg">
               <span>{item.sign}</span>
               <span>{item.sign_name}</span>
               <span>{item.planet?.join(", ") || "—"}</span>
@@ -100,7 +100,7 @@ export default function LalkitabClient({ formData }) {
       </Section>
 
 
-      <Section title="Lal Kitab Debts mt-2" className="space-y-2">
+      <Section title="Lal Kitab Debts " className="space-y-2 ">
         {debtData.map((d, i) => (
           <Card key={i} title={d.debt_name} className="border border-purple-300 p-4 rounded-2xl shadow-sm bg-purple-50">
             <p><b >Indications:</b> {d.indications}</p>
@@ -111,7 +111,7 @@ export default function LalkitabClient({ formData }) {
 
  
       <Section title="Lal Kitab Houses">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {houseData.map((h, i) => (
             <Card key={i} title={`House ${h.khana_number}`}>
               <p>Maalik: {h.maalik}</p>
@@ -130,7 +130,7 @@ export default function LalkitabClient({ formData }) {
 
 
       <Section title="Lal Kitab Planets">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {planetData.map((p, i) => (
             <Card key={i} title={p.planet}>
               <p>Rashi: {p.rashi}</p>
@@ -149,7 +149,7 @@ export default function LalkitabClient({ formData }) {
 function Section({ title, children }) {
   return (
     <section className="w-full max-w-6xl space-y-3">
-      <h2 className="text-xl font-bold text-purple-800 mb-3 text-center">
+      <h2 className="sm:text-xl text-sm text-center font-semibold text-purple-600 mb-2">
         {title}
       </h2>
       {children}
@@ -160,8 +160,9 @@ function Section({ title, children }) {
 function Card({ title, children }) {
   return (
     <div className="bg-purple-100 p-4 rounded-xl shadow text-sm text-black">
-      <h4 className="text-purple-700 font-bold text-lg mb-2">{title}</h4>
-      {children}
+      <h4 className="sm:text-xl text-sm font-semibold text-purple-600 mb-2">{title}</h4>
+       <p className=" text-[12px] sm:text-sm text-gray-700">
+      {children}</p>
     </div>
   );
 }

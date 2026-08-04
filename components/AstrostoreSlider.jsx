@@ -67,7 +67,7 @@ export default function AstrostoreSlider({ items }) {
               />
   
               <div className="flex items-center justify-center absolute bottom-2 w-full left-0">
-                <h2 className="prblm-txt w-[90%] rounded-full border justify-self-center self-center place-self-center text-xs sm:text-sm lg:text-base text-center bg-white/80 backdrop-blur-md shadow-md">
+                <h2 className="prblm-txt w-[90%] rounded-full border border-gray-400 justify-self-center self-center place-self-center text-xs sm:text-sm lg:text-base text-center bg-white/80 backdrop-blur-md shadow-md">
                   {item.name}
                 </h2>
               </div>

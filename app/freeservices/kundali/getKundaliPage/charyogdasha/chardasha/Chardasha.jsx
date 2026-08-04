@@ -12,6 +12,8 @@ export default function Chardasha({ charData, charcData }) {
       </p>
     );
   }
+  console.log("xxxx");
+  
 
   return (
     <section className="kundli-inter-page w-full flex flex-col items-center md:p-2 p-2">
@@ -22,7 +24,7 @@ export default function Chardasha({ charData, charcData }) {
         </h5>
 
         <div className="bg-purple-100 rounded-xl shadow p-2">
-          <div className="grid grid-cols-5 bg-purple-400 text-white rounded-lg px-4 py-2 text-sm font-semibold">
+          <div className="grid grid-cols-5 bg-purple-400 text-white rounded-lg px-4 py-2 text-xs sm:text-smfont-semibold">
             <span>Sign Id</span>
             <span>Sign Name</span>
             <span>Duration</span>
@@ -33,7 +35,7 @@ export default function Chardasha({ charData, charcData }) {
           {charData.map((item, i) => (
             <div
               key={i}
-              className="grid grid-cols-5 bg-purple-200 text-black rounded-lg px-4 py-2 mt-1 text-sm"
+              className="grid grid-cols-5 bg-purple-200 text-black rounded-lg px-4 py-2 mt-1 text-xs sm:text-sm"
             >
               <span>{item.sign_id}</span>
               <span>{item.sign_name}</span>
@@ -48,27 +50,27 @@ export default function Chardasha({ charData, charcData }) {
 
   <div className="w-full bg-purple-100 rounded-xl shadow p-4 text-black">
   <h5 className="text-xl font-semibold text-center mb-3">
-    <span className="text-red-500">Current Char Dasha</span> Report
+    <span className="text-red-500 text-sm sm:text-md">Current Char Dasha</span> Report
   </h5>
 
   <div className="grid md:grid-cols-3 gap-4 text-sm">
 
     <div>
-      <h3 className="font-semibold text-lg">
+      <h3 className="font-semibold text-xs sm:text-sm">
         Major: {charcData?.major_dasha?.sign_name}
       </h3>
 
-      <p>Duration: {charcData?.major_dasha?.duration}</p>
+      <p className="text-xs sm:text-sm">Duration: {charcData?.major_dasha?.duration}</p>
 
-      <p>
+      <p className="text-xs sm:text-sm">
         {charcData?.major_dasha?.start_date} →
         {" "}
         {charcData?.major_dasha?.end_date}
       </p>
     </div>
 
-    <div>
-      <h3 className="font-semibold text-lg">
+    <div className="text-xs sm:text-sm">
+      <h3 className="font-semibold text-sm sm:text-md">
         Sub: {charcData?.sub_dasha?.sign_name}
       </h3>
 
@@ -81,8 +83,8 @@ export default function Chardasha({ charData, charcData }) {
       </p>
     </div>
 
-    <div>
-      <h3 className="font-semibold text-lg">
+    <div className="text-xs sm:text-sm">
+      <h3 className="font-semibold text-sm sm:text-md">
         Sub-Sub: {charcData?.sub_sub_dasha?.sign_name}
       </h3>
 

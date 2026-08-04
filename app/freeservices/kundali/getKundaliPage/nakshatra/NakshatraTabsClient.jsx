@@ -19,9 +19,9 @@ const NaktommClient = dynamic(() => import("./tomorrow/NaktommClient"), {
 });
 
 const TABS = [
-  { id: "nakprev", label: "Yesterday Nakshatra Prediction" },
-  { id: "naktoday", label: "Today Nakshatra Prediction" },
-  { id: "naktomm", label: "Tomorrow Nakshatra Prediction" },
+  { id: "nakprev", label: "Yesterday " },
+  { id: "naktoday", label: "Today " },
+  { id: "naktomm", label: "Tomorrow " },
 ];
 
 export default function NakshatraTabsClient({
@@ -89,13 +89,13 @@ export default function NakshatraTabsClient({
 
   return (
     <>
-      <div className="basic-list bg-[#2f1254] px-10 py-2 rounded-lg">
+      <div className="basic-list bg-[#2f1254] px-5 py-2 rounded-lg">
         <ul className="flex gap-5 justify-center">
           {TABS.map((tab) => (
             <li
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer px-4 py-1 rounded-full text-sm ${
+              className={`cursor-pointer px-4 py-1 rounded-full text-xs ${
                 activeTab === tab.id
                   ? "bg-purple-500 text-white"
                   : "text-white"
@@ -107,7 +107,7 @@ export default function NakshatraTabsClient({
         </ul>
       </div>
 
-      <div className="py-5">
+      <div className="sm:py-5">
         {activeTab === "nakprev" && (
           <NakprevClient prev={prev} />
         )}

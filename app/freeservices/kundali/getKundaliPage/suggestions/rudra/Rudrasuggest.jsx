@@ -44,7 +44,7 @@ export default function RudrasuggestClient({ formData }) {
   return (
     <section className="basic-details-main w-full flex flex-col gap-5">
       <div className="flex flex-col gap-5 text-black border border-purple-200 rounded-lg shadow-lg md:px-5 px-2 py-3 bg-purple-100">
-        <span className="text-center text-2xl font-semibold text-purple-700">
+          <span className="text-center font-semibold  sm:text-2xl text-purple-700">
           Rudraksha Suggestion
         </span>
 
@@ -75,7 +75,7 @@ function Info({ label, value }) {
   return (
     <div className="flex flex-col bg-purple-100 rounded-lg px-4 py-1">
       <h5 className="font-semibold">{label}:</h5>
-      <span>{value || "—"}</span>
+      <span className="sm:text-sm text-xs text-gray-700 ">{value || "—"}</span>
     </div>
   );
 }

@@ -73,7 +73,10 @@ const selectStyles = {
       borderColor: "#9333ea",
     },
   }),
-
+menuList: (base) => ({
+  ...base,
+  maxHeight: window.innerWidth < 768 ? 160 : 260,
+}),
   placeholder: (base) => ({
     ...base,
     color: "#6b7280",
@@ -95,10 +98,12 @@ const selectStyles = {
     backgroundColor: state.isSelected
       ? "#9333ea"
       : state.isFocused
-      ? "#f3e8ff"
-      : "#fff",
+        ? "#f3e8ff"
+        : "#fff",
     color: state.isSelected ? "#fff" : "#111827",
     cursor: "pointer",
+      padding: window.innerWidth < 768 ? "6px 10px" : "10px 12px",
+  fontSize: window.innerWidth < 768 ? "13px" : "15px",
   }),
 
   menu: (base) => ({
@@ -144,53 +149,53 @@ export default function Formremedies({ slug }) {
       [field]: value,
     }));
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // login check
-  if (!isLoggedIn) {
-    setPendingRoute({
-      type: "remedies",
-      payload: {
-        slug,
-        ...formData,
-      },
-    });
+    // login check
+    if (!isLoggedIn) {
+      setPendingRoute({
+        type: "remedies",
+        payload: {
+          slug,
+          ...formData,
+        },
+      });
 
-    setShowLogin(true);
-    return;
-  }
+      setShowLogin(true);
+      return;
+    }
 
-  // validation
-  if (
-    !formData.name ||
-    !formData.day ||
-    !formData.month ||
-    !formData.year ||
-    !formData.hour ||
-    !formData.min ||
-    !formData.birthplace
-  ) {
-    alert("Please fill all fields.");
-    return;
-  }
+    // validation
+    if (
+      !formData.name ||
+      !formData.day ||
+      !formData.month ||
+      !formData.year ||
+      !formData.hour ||
+      !formData.min ||
+      !formData.birthplace
+    ) {
+      alert("Please fill all fields.");
+      return;
+    }
 
-  const fd = new FormData();
+    const fd = new FormData();
 
-  fd.append("slug", slug);
-  fd.append("name", formData.name);
-  fd.append("day", formData.day);
-  fd.append("month", formData.month);
-  fd.append("year", formData.year);
-  fd.append("hour", formData.hour);
-  fd.append("min", formData.min);
-  fd.append("lat", String(formData.lat));
-  fd.append("lon", String(formData.lon));
-  fd.append("tzone", String(formData.tzone));
-  fd.append("birthplace", formData.birthplace);
+    fd.append("slug", slug);
+    fd.append("name", formData.name);
+    fd.append("day", formData.day);
+    fd.append("month", formData.month);
+    fd.append("year", formData.year);
+    fd.append("hour", formData.hour);
+    fd.append("min", formData.min);
+    fd.append("lat", String(formData.lat));
+    fd.append("lon", String(formData.lon));
+    fd.append("tzone", String(formData.tzone));
+    fd.append("birthplace", formData.birthplace);
 
-  await createKundliAction(fd);
-};
+    await createKundliAction(fd);
+  };
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -205,20 +210,22 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <section className="kundli-main-page py-5">
-      <div className="kundli-img-txt flex justify-center bg-linear-to-r from-pink-100 to-yellow-100 shadow-xl rounded-2xl p-5">
-        <div className="text-center text-black">
-          <h4 className="text-xl md:text-2xl font-bold uppercase">
+    <section className="kundli-main-page ">
+      <div className="kundli-img-txt flex justify-center bg-linear-to-r from-pink-100 to-yellow-100 shadow-xl rounded-b-2xl p-5">
+        <div className="text-center flex flex-col gap-1 text-black">
+          <h4 className="text-md sm:text-2xl font-bold uppercase">
             {t?.kform?.top || "Discover Your Future with a Free Online Kundli"}
           </h4>
-          <p>Kundli is an astrological chart that shows planetary positions.</p>
+          <p className="text-xs sm:text-md">
+            Kundli is an astrological chart that shows planetary positions.
+          </p>
         </div>
       </div>
 
-      <div className="kundli-page mt-5 md:max-w-7xl grid grid-cols-7 gap-5 p-2">
-        <div className="col-span-5">
+      <div className="kundli-page mt-5 flex flex-col gap-4 md:max-w-7xl sm:grid sm:grid-cols-7 gap-5 p-2">
+        <div className="col-span-5 flex flex-col gap-6">
           <div className="grid grid-cols-6 gap-5">
-            <div className="col-span-2 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-5 text-center text-black">
+            <div className="sm:col-span-2 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg hidden md:block rounded-2xl p-5 text-center text-black">
               <Image
                 src="/ds-img/ganeshji.png"
                 width={100}
@@ -230,22 +237,17 @@ const handleSubmit = async (e) => {
               <p className="text-sm">Get accurate birth chart analysis.</p>
             </div>
 
-            <div className="col-span-4 bg-[#dfc7fd6e] shadow-lg rounded-2xl p-6 text-black">
-              <h2 className="text-xl font-semibold text-center text-purple-700 mb-5">
+            <div className="col-span-6 sm:col-span-4 bg-[#dfc7fd6e] shadow-lg rounded-2xl p-6 text-black">
+              <h2 className="text-mdsm:text-xl font-semibold text-center text-purple-700 mb-5">
                 {t?.kform?.head || "Enter Your Details"}
               </h2>
 
-      <form
-  onSubmit={handleSubmit}
-                className="flex flex-col gap-3"
-              >
-      
-
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <CustomInput
                   name="name"
                   label="Name"
                   placeholder="Enter your name"
-                  className="rounded-2xl bg-white/90 py-3 outline-none focus:ring-0 px-4"
+                  className="rounded-2xl bg-white/90 py-1 placeholder:text-xs sm:py-3 outline-none focus:ring-0 px-4"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -253,13 +255,13 @@ const handleSubmit = async (e) => {
                 />
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold">Date of Birth</label>
+                  <label className="text-xs sm:text-sm font-semibold">Date of Birth</label>
 
                   <div className="grid grid-cols-3 text-black gap-3">
                     <Select
-                      className="p-1 text-xs text-black "
+                      className="text-xs py-1 placeholder:text-xs sm:py-3 text-black "
                       options={DAY_OPTIONS}
-                      placeholder="📅 Day"
+                      placeholder=" Day"
                       styles={selectStyles}
                       menuPortalTarget={
                         typeof window !== "undefined" ? document.body : null
@@ -272,9 +274,9 @@ const handleSubmit = async (e) => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={MONTH_OPTIONS}
-                      placeholder="🗓 Month"
+                      placeholder=" Month"
                       styles={selectStyles}
                       menuPortalTarget={
                         typeof window !== "undefined" ? document.body : null
@@ -289,9 +291,9 @@ const handleSubmit = async (e) => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={YEAR_OPTIONS}
-                      placeholder="📆 Year"
+                      placeholder=" Year"
                       styles={selectStyles}
                       menuPortalTarget={
                         typeof window !== "undefined" ? document.body : null
@@ -308,11 +310,11 @@ const handleSubmit = async (e) => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold">Time of Birth</label>
+                  <label className="text-xs sm:text-sm font-semibold">Time of Birth</label>
 
                   <div className="grid grid-cols-2 gap-3">
                     <Select
-                      className="p-1 text-xs"
+                      className=" text-xs"
                       options={HOUR_OPTIONS}
                       placeholder="🕐 Hour"
                       styles={selectStyles}
@@ -329,7 +331,7 @@ const handleSubmit = async (e) => {
                     />
 
                     <Select
-                      className="p-1 text-xs"
+                      className="text-xs"
                       options={MINUTE_OPTIONS}
                       placeholder="🕑 Minute"
                       styles={selectStyles}
@@ -355,7 +357,7 @@ const handleSubmit = async (e) => {
                 <CustomButton
                   variant={"purple"}
                   type="submit"
-                  className="mt-4 hover:scale-104 py-3"
+                  className="mt-4 w-[50%] sm:w-full  hover:scale-104 py-2 text-sm sm:text-md flex align-self-center justify-center place-self-center sm:py-3"
                 >
                   SUBMIT
                 </CustomButton>
@@ -366,7 +368,7 @@ const handleSubmit = async (e) => {
           <Kundlioth />
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-2 flex flex-col gap-5">
           <Bestsell />
           <Sidebanner />
         </div>

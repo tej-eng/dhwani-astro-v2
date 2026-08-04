@@ -2,7 +2,10 @@
 
 import { useSelector } from "react-redux";
 
-import { useGetPlanetPositionsQuery, useGetVimAllQuery } from "@/app/redux/services/astrologyAPI";
+import {
+  useGetPlanetPositionsQuery,
+  useGetVimAllQuery,
+} from "@/app/redux/services/astrologyAPI";
 
 export default function Planets() {
   const formData = useSelector((state) => state.daUserForm);
@@ -17,23 +20,21 @@ export default function Planets() {
     !formData?.lon ||
     !formData?.tzone;
 
-const {
-  data: planetsData,
-  isLoading: planetsLoading,
-  error: planetsError,
-} = useGetPlanetPositionsQuery(formData, {
-  skip: isFormEmpty,
-});
+  const {
+    data: planetsData,
+    isLoading: planetsLoading,
+    error: planetsError,
+  } = useGetPlanetPositionsQuery(formData, {
+    skip: isFormEmpty,
+  });
 
-const {
-  data: vimData,
-  isLoading: vimLoading,
-  error: vimError,
-} = useGetVimAllQuery(formData, {
-  skip: isFormEmpty,
-});
-
-
+  const {
+    data: vimData,
+    isLoading: vimLoading,
+    error: vimError,
+  } = useGetVimAllQuery(formData, {
+    skip: isFormEmpty,
+  });
 
   if (isFormEmpty) {
     return (
@@ -41,7 +42,7 @@ const {
     );
   }
 
- if (planetsLoading || vimLoading) {
+  if (planetsLoading || vimLoading) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-32">
         <span className="loader-all"></span>
@@ -52,14 +53,9 @@ const {
     );
   }
 
-if (planetsError || vimError) {
-  return (
-    <Message
-      text="Failed to load planetary data."
-      color="red"
-    />
-  );
-}
+  if (planetsError || vimError) {
+    return <Message text="Failed to load planetary data." color="red" />;
+  }
   if (!planetsData || !vimData)
     return <Message text="No data received." color="red" />;
 
@@ -70,14 +66,14 @@ if (planetsError || vimError) {
   };
 
   return (
-    <div className="basic-kundli-charts flex flex-col gap-4 items-center px-4 pb-10">
-      <h2 className="text-lg md:text-xl font-bold text-purple-700">
+    <div className="basic-kundli-charts flex flex-col gap-4 items-center px-2 sm:px-4 pb-10">
+      <h2 className="text-sm md:text-xl font-bold text-purple-700">
         Planet Positions
       </h2>
 
       <div className="basic-det w-full flex flex-col border rounded-lg shadow-lg p-2 border-purple-100">
-        <div className="overflow-x-auto w-88 md:w-full text-black text-xs md:text-sm">
-          <div className="basic-box flex flex-col gap-1 w-160 md:w-full">
+        <div className="overflow-x-auto sm:w-88 w-80 md:w-full text-black text-xs md:text-sm">
+          <div className="basic-box flex flex-col gap-1 w-180 md:w-full">
             <div className="pl-ul grid grid-cols-9 bg-purple-400 rounded-lg px-5 py-2 text-nowrap">
               {[
                 "Planet",
@@ -90,7 +86,7 @@ if (planetsError || vimError) {
                 "Awastha",
                 "House",
               ].map((head, i) => (
-                <h5 key={i} className="text-sm font-semibold">
+                <h5 key={i} className="text-xs sm:text-sm font-semibold">
                   {head}
                 </h5>
               ))}
@@ -99,7 +95,7 @@ if (planetsError || vimError) {
             {planetsData.map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-9 bg-purple-200 rounded-lg px-4 py-2 mb-2"
+                className="grid grid-cols-9 text-xs sm:text-sm bg-purple-200 rounded-lg px-4 py-2 mb-2"
               >
                 <span>{item.name || "—"}</span>
                 <span>{item.sign || "—"}</span>
@@ -115,15 +111,14 @@ if (planetsError || vimError) {
           </div>
         </div>
 
-        {/* Vimshottari Dasha */}
         <div className="vimh-det mt-6 w-full">
-          <h5 className="p-5 text-center text-2xl text-black">
+          <h5 className="text-sm md:text-xl text-center  mb-2 font-bold text-purple-700">
             Vimshottari Dasha
           </h5>
           <div className="basic-box flex flex-col gap-3 text-black">
             <div className="pl-ul grid grid-cols-4 bg-purple-400 rounded-lg px-5 py-2">
               {["Planet", "Start Date", "End Date", "Next"].map((head, i) => (
-                <h5 key={i} className="md:text-sm text-xs font-semibold">
+                <h5 key={i} className="text-xs sm:text-sm font-semibold">
                   {head}
                 </h5>
               ))}
@@ -132,7 +127,7 @@ if (planetsError || vimError) {
             {vimData.map((item, index) => (
               <div
                 key={index}
-                className="basic-card grid grid-cols-4 gap-4 bg-purple-200 rounded-lg px-5 text-sm py-2"
+                className="basic-card grid grid-cols-4 gap-4 bg-purple-200 rounded-lg px-5 text-xs sm:text-sm py-2"
               >
                 <span>{item.planet || "—"}</span>
                 <span>{item.start || "—"}</span>

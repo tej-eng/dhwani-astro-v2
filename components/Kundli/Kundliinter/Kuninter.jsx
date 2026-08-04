@@ -3,8 +3,6 @@ import {createKundliHash} from "../../../utils/kundliHash"
 import { useRouter } from 'next/navigation';
 import { useSelector, shallowEqual } from 'react-redux';
 import Image from 'next/image';
-import Personal from '@/components/Smcompo/Personal';
-import Callchatsec from '@/components/Smcompo/Callchatsec';
 import useScrollZoom from '@/Hooks/scrollZoom';
 
 export default function Kuninter() {

@@ -23,7 +23,7 @@ export default function Remecalc() {
     { id: 4, ulname: `${t.doshas.dosha4 || 'Sadhe Sati Dosha'}`, src: "/ds-img/pitradosha.png", link: "/formpage", slug: "sadesati" },
   ];
   const calbox = [
-    { id: 3, ulname: `${t.calculator.calc1 || 'Numerology Calculator'}`, src: "/ds-img/number-blocks.webp", link: "/formpage", slug: "numerokundli" },
+    { id: 3, ulname: `${t.calculator.calc1 || 'Numerology Calculator'}`, src: "/ds-img/number-blocks.webp", link: "/formpage", slug: "numerokundali" },
     { id: 5, ulname: `${t.calculator.calc2 || 'Nakshatra Calculator'}`, src: "/ds-img/astrology.webp", link: "/formpage", slug: "nakform" },
     { id: 9, ulname: `${t.calculator.calc3 || 'Kundli Milan'}`, src: "/ds-img/not-compatible.png", link: "/doubleform", slug: "kundlislug" },
     { id: 9, ulname: `${t.calculator.calc4 || 'Moon Biorhythm'}`, src: "/ds-img/esoteric.png", link: "/formpage", slug: "moonbio" },

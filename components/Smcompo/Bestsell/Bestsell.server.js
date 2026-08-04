@@ -4,8 +4,8 @@ import Link from "next/link";
 export default function BestsellServer({ title, items }) {
   return (
     <section className="w-full">
-      <div className="side-pop p-3 flex flex-col gap-3 shadow-lg rounded-2xl">
-        <span className="text-center font-semibold text-xl text-black">
+      <div className="side-pop p-3 flex flex-col gap-3  rounded-2xl">
+        <span className="text-center font-semibold sm:text-xl text-black">
           {title}
         </span>
         
