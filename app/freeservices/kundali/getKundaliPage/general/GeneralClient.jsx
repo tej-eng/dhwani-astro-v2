@@ -18,9 +18,7 @@ export default function GeneralClient({ formData }) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-32">
         <span className="loader-all"></span>
-        <span className="text-purple-600 font-medium">
-          Loading Reports...
-        </span>
+        <span className="text-purple-600 font-medium">Loading Reports...</span>
       </div>
     );
   }
