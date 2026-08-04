@@ -89,7 +89,7 @@ export default function KpClient({ formData }) {
                 >
                   <span>{p.planet_id}</span>
                   <span>{p.planet_name}</span>
-                  <span>{roundUp(p.degree, 2)}</span>
+                  <span>{(p.degree).toFixed(2)}</span>
                   <span>{p.is_retro ? "Yes" : "No"}</span>
                   <span>{p.house}</span>
                   <span>{p.sign}</span>
@@ -118,7 +118,7 @@ export default function KpClient({ formData }) {
           </div>
         </Section>
 
-        <Section title="KP Planet Significators">
+        {/* <Section title="KP Planet Significators">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-black">
             {planetSigData.map((p) => (
               <div key={p.planet_id} className="p-4 bg-purple-50 rounded">
@@ -127,7 +127,7 @@ export default function KpClient({ formData }) {
               </div>
             ))}
           </div>
-        </Section>
+        </Section> */}
 
       </div>
     </section>

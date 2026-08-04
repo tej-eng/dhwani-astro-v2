@@ -95,8 +95,8 @@ const selectStyles = {
     backgroundColor: state.isSelected
       ? "#9333ea"
       : state.isFocused
-      ? "#f3e8ff"
-      : "#fff",
+        ? "#f3e8ff"
+        : "#fff",
     color: state.isSelected ? "#fff" : "#111827",
     cursor: "pointer",
   }),
@@ -144,53 +144,53 @@ export default function Formremedies({ slug }) {
       [field]: value,
     }));
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // login check
-  if (!isLoggedIn) {
-    setPendingRoute({
-      type: "remedies",
-      payload: {
-        slug,
-        ...formData,
-      },
-    });
+    // login check
+    if (!isLoggedIn) {
+      setPendingRoute({
+        type: "remedies",
+        payload: {
+          slug,
+          ...formData,
+        },
+      });
 
-    setShowLogin(true);
-    return;
-  }
+      setShowLogin(true);
+      return;
+    }
 
-  // validation
-  if (
-    !formData.name ||
-    !formData.day ||
-    !formData.month ||
-    !formData.year ||
-    !formData.hour ||
-    !formData.min ||
-    !formData.birthplace
-  ) {
-    alert("Please fill all fields.");
-    return;
-  }
+    // validation
+    if (
+      !formData.name ||
+      !formData.day ||
+      !formData.month ||
+      !formData.year ||
+      !formData.hour ||
+      !formData.min ||
+      !formData.birthplace
+    ) {
+      alert("Please fill all fields.");
+      return;
+    }
 
-  const fd = new FormData();
+    const fd = new FormData();
 
-  fd.append("slug", slug);
-  fd.append("name", formData.name);
-  fd.append("day", formData.day);
-  fd.append("month", formData.month);
-  fd.append("year", formData.year);
-  fd.append("hour", formData.hour);
-  fd.append("min", formData.min);
-  fd.append("lat", String(formData.lat));
-  fd.append("lon", String(formData.lon));
-  fd.append("tzone", String(formData.tzone));
-  fd.append("birthplace", formData.birthplace);
+    fd.append("slug", slug);
+    fd.append("name", formData.name);
+    fd.append("day", formData.day);
+    fd.append("month", formData.month);
+    fd.append("year", formData.year);
+    fd.append("hour", formData.hour);
+    fd.append("min", formData.min);
+    fd.append("lat", String(formData.lat));
+    fd.append("lon", String(formData.lon));
+    fd.append("tzone", String(formData.tzone));
+    fd.append("birthplace", formData.birthplace);
 
-  await createKundliAction(fd);
-};
+    await createKundliAction(fd);
+  };
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -235,12 +235,7 @@ const handleSubmit = async (e) => {
                 {t?.kform?.head || "Enter Your Details"}
               </h2>
 
-      <form
-  onSubmit={handleSubmit}
-                className="flex flex-col gap-3"
-              >
-      
-
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <CustomInput
                   name="name"
                   label="Name"

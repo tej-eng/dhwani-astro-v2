@@ -16,7 +16,7 @@ const sanitizeBody = (body = {}) => ({
 console.log("hello");
 
 const ASTRO_ENDPOINTS = {
-  DAILY_PRED: "daily_prediction",
+  DAILY_PRED: "daily_nakshatra_prediction",
   // Birth
   BIRTH_DETAILS: "birth_details",
   PLANETS: "planets",

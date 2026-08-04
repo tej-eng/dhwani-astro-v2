@@ -71,7 +71,7 @@ export default function Numerohome() {
 
                 <div className="kundli-sec-side-item w-full  flex flex-col">
                     <div className="text-black w-[70%] head-wrap mx-auto mt-2 p-4 bg-purple-100 border-2 border-purple-500 shadow-md rounded-md">
-                        <h2 className="text-xl md:text-2xl text-center font-semibold mb-6">Get Ruling Number Predictions</h2>
+                        <h2 className="text-xl md:text-2xl text-center font-semibold mb-6">Get Ruling Number Predictions 1</h2>
                         <form onSubmit={handleSubmit}>
 
                             <CustomInput
