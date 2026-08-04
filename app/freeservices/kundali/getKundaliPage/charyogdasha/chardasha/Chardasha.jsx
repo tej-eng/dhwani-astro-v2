@@ -12,7 +12,6 @@ export default function Chardasha({ charData, charcData }) {
       </p>
     );
   }
-  console.log("xxxx");
   
 
   return (
