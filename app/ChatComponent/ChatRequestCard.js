@@ -603,17 +603,17 @@ const ChatRequestCard = ({
             alt="Neha Vermaaaa"
             width={50}
             height={50}
-            className="rounded-full object-cover"
+           className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-white ">{astro_Name}</h3>
-            <p className="text-xs text-gray-300 font-extralight">
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white ">{astro_Name}</h3>
+            <p className="text-[8px] sm:text-sm text-gray-300 font-extralight">
               Wait Time: {formatTime(timeLeft)}
             </p>
           </div>
           <button
             onClick={() => handleRequestCancel(type)}
-            className="absolute  right-1 top-1 text-xs bg-red-500 text-white h-5 w-5 rounded-full"
+            className="absolute right-2 top-2 text-xs bg-red-500 text-white  h-5 w-5 rounded-full"
           >
             ✕
           </button>
@@ -621,28 +621,28 @@ const ChatRequestCard = ({
       )}
 
       {!showWaitingPopup && showQueuePopup && (
-        <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
+        <div className="w-full  bg-gray-800 px-3 sm:py-2 py-1 rounded-full flex relative">
           
           <Image
             src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
             alt="Neha Verma"
             width={50}
             height={50}
-            className="rounded-full object-cover"
+            className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-white">{astro_Name}</h3>
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white">{astro_Name}</h3>
 
-            <p className="text-sm font-medium">
+            <p className=" text-[8px] sm:text-sm font-extralight sm:font-medium">
               You are in line! Position : {queueData?.position}
             </p>
-            <p className="text-xs text-gray-300 font-extralight">
+            <p className="text-[8px] sm:text-sm text-gray-300 font-extralight">
               Estimated wait time: {formatTime(timeLeft)}
             </p>
           </div>
           <button
             onClick={() => handleRequestCancel(queueData?.type)}
-            className="absolute right-2 top-2 text-xs bg-red-500 text-white px-2 rounded"
+            className="absolute right-2 top-2 text-xs bg-red-500 text-white  h-5 w-5 rounded-full"
           >
             ✕
           </button>

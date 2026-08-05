@@ -220,27 +220,27 @@ export default function ZodiacServer() {
 
   return (
     <section className="unc-zod-sign w-full flex flex-col items-center bg-linear-to-r from-purple-400 to-purple-600 p-8 rounded-3xl text-white gap-4 mx-auto">
-      <h2 className="text-2xl font-semibold">
+      <h2 className="text-md sm:text-2xl font-semibold">
         🔮 Uncover Your Zodiac or Rashi
       </h2>
-      <p className="text-center text-sm max-w-2xl text-white/90">
+      <p className="text-center text-xs sm:text-sm max-w-2xl text-white/90">
         Use your birth date or name to find your Zodiac sign and its traits
         instantly.
       </p>
-      <div className="w-[80%] flex flex-wrap justify-between items-center gap-5 mt-5">
+      <div className="w-full sm:w-[80%] flex flex-wrap justify-between items-center gap-5 mt-5">
         <div className="flex items-center gap-4">
           <CustomInput
             type="date"
             value={birthDate}
             onChange={(e) => setBirthDate(e.target.value)}
-            className="px-2 py-2.5 text-gray-800 bg-white/50 rounded-full outline-none"
+            className="px-2 sm:py-2.5 py-1  text-gray-800 placeholder:text-xs placeholder:text-gray-400 bg-white/50 rounded-full outline-none"
           />
           <button
             aria-label="Find Zodiac Sign"
             onClick={findZodiac}
-            className="bg-purple-800 hover:bg-purple-900  w-65 py-2 rounded-full"
+            className="bg-purple-800 hover:bg-purple-900 px-5 text-[10px] sm:text-sm   w-fit py-2 rounded-full"
           >
-            Find Zodiac Sign
+            Find Sign
           </button>
         </div>
 
@@ -250,12 +250,12 @@ export default function ZodiacServer() {
             placeholder="Enter Your Name"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            className="px-2 py-2.5 text-gray-800 bg-white/50 rounded-full outline-none text-start placeholder:text-gray-400"
+            className="px-2 sm:py-2.5 py-1  text-gray-800 bg-white/50 rounded-full outline-none text-start placeholder:text-xs placeholder:text-gray-400"
           />
           <button
             aria-label="Find Rashi"
             onClick={findRashi}
-            className="bg-purple-800 hover:bg-purple-900 w-52 py-2 rounded-full"
+            className="bg-purple-800 hover:bg-purple-900 text-[10px] sm:text-sm px-5 w-fit py-2 rounded-full"
           >
             Find Rashi
           </button>

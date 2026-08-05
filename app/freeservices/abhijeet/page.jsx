@@ -115,12 +115,12 @@ export default function AbhijitPage({ initialPanchang = null, inputParams = null
   };
 
   return (
-    <div className="kundli-page w-full md:max-w-7xl flex flex-col p-5 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
+    <div className="kundli-page w-full md:max-w-7xl flex flex-col sm:p-5 px-2 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
       <div className="flex flex-col gap-5 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-5 w-full text-center">
         <h5 className="text-lg md:text-xl font-semibold text-black">
           <span className="text-red-500">ABHIJIT MUHURTA:</span> (AAJ KA ABHIJIT MUHURTA)
         </h5>
-        <p className="text-sm">The most auspicious time during midday — ideal for starting new ventures or rituals.</p>
+        <p className="text-xs sm:text-sm">The most auspicious time during midday — ideal for starting new ventures or rituals.</p>
       </div>
 
       <div className="h-40 rounded-2xl flex flex-col sm:flex-row items-center justify-between relative w-full py-10 px-6 bg-cover bg-center" style={{ backgroundImage: "url('/ds-img/cho.jpg')" }}>
@@ -154,7 +154,7 @@ export default function AbhijitPage({ initialPanchang = null, inputParams = null
           <p className="bg-yellow-300 rounded-xl px-4 py-2 font-bold shadow">{getStatus()}</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex text-xs sm:text-sm items-center gap-2">
           <div onClick={() => changeDate(-1)} className="bg-yellow-300 px-4 py-2 rounded-l-2xl cursor-pointer flex items-center gap-1">
             <svg width={18} height={18} viewBox="0 0 640 640"><path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" /></svg>
             Prev</div>
@@ -173,7 +173,7 @@ export default function AbhijitPage({ initialPanchang = null, inputParams = null
           <Image src="/ds-img/d2.png" width={100} height={100} alt="muhurta" />
           <div className="flex flex-col gap-2">
             <p className="text-lg font-bold text-purple-700">{abhijitData.start} - {abhijitData.end}</p>
-            <p className="text-base font-semibold">Duration: {calcDuration(abhijitData.start, abhijitData.end)}</p>
+            <p className="text-sm font-semibold">Duration: {calcDuration(abhijitData.start, abhijitData.end)}</p>
           </div>
         </div>
       ) : null}

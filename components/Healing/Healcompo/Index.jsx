@@ -96,30 +96,31 @@ const Heal = ({ categorySlug, serviceSlug }) => {
 
   return (
     <div className="flex w-full flex-col items-center gap-10 justify-center px-2 sm:px-4  py-5 md:py-5">
-      <Searchtop />
+      {/* <Searchtop /> */}
 
-      <div className="bg-white shadow-2xl rounded-3xl overflow-hidden max-w-7xl w-[85%]  flex flex-col sm:flex-row items-start">
-        <div className="md:w-1/2  flex items-center flex-col justify-center p-4">
+      <div className="bg-white shadow-2xl rounded-3xl overflow-hidden max-w-7xl w-[93%] sm:w-[85%]  flex flex-col sm:flex-row items-start">
+        <div className="md:w-1/2  flex items-center  flex-col justify-center p-4">
           <Image
+            className="object-cover bg-center w-full h-73"
             src={
               service?.image
                 ? `https://www.dhwaniastro.com${service.image}`
                 : "/placeholder.webp"
             }
             alt={service?.name}
-            width={400}
-            height={400}
+            width={40}
+            height={40}
           />
           {formInput && (
-            <div className="name-price w-full flex flex-col bg-purple-200 border items-center justify-center border-purple-300 shadow-lg rounded-full px-5 py-3 mt-8">
+            <div className="name-price w-full flex flex-col bg-purple-200 border items-center justify-center border-purple-200 shadow-lg rounded-full px-5 py-2 sm:py-3 mt-6">
               <h1 className="mb-0 text-xl font-bold text-purple-700 sm:text-2xl">
                 {service?.name}
               </h1>
               <div className="flex items-center mt-0 space-x-2">
-                <span className="text-base font-semibold text-purple-600 sm:text-lg">
+                <span className="text-xs sm:text-base font-semibold text-purple-600 ">
                   Starting From: ₹ {startingPrice}
                 </span>
-                <span className="text-sm text-gray-500">(Per Session)</span>
+                <span className="text-xs text-gray-500">(Per Session)</span>
               </div>
             </div>
           )}
@@ -147,7 +148,7 @@ const Heal = ({ categorySlug, serviceSlug }) => {
             <CustomButton
               aria-label="Book Healing Session"
               variant={"gcircle"}
-              className="mt-5 bg-green-500 rounded-full shadow-xl hover:scale-105 px-2 py-2 hover:bg-green-600 duration-300 place-self-center w-[50%]"
+              className="mt-5 bg-green-500 rounded-full shadow-xl hover:scale-105 px-2 text-xs sm:text-md py-1 sm:py-2 hover:bg-green-600 duration-300 place-self-center w-[40%] sm:w-[50%]"
               onClick={handleBooking}
             >
               Book Now

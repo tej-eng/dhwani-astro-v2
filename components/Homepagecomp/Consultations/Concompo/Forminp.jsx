@@ -35,29 +35,25 @@ export default function Forminp({
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // ONLINE | WALLET
 
+  //  const CREATE_HEALING_ORDER = gql`
+  //   mutation CreateHealingOrder($bookingId: ID!) {
+  //     createHealingOrder(bookingId: $bookingId) {
+  //       success
+  //       orderId
+  //       bookingId
+  //       currency
+  //       totalAmount
+  //       payableAmount
+  //     }
+  //   }
+  // `;
 
-
-//  const CREATE_HEALING_ORDER = gql`
-//   mutation CreateHealingOrder($bookingId: ID!) {
-//     createHealingOrder(bookingId: $bookingId) {
-//       success
-//       orderId
-//       bookingId
-//       currency
-//       totalAmount
-//       payableAmount
-//     }
-//   }
-// `;
-
-  
   // const [createHealingOrder] = useMutation(CREATE_HEALING_ORDER);
 
   const [createBooking, { loading: bookingLoading }] = useMutation(
     CREATE_SERVICE_BOOKING,
   );
   const [updateBookingAstrologer] = useMutation(UPDATE_BOOKING_ASTROLOGER);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +107,6 @@ export default function Forminp({
         },
       });
 
-
       const booking = data?.createServiceBooking;
 
       setBookingId(booking.id);
@@ -121,134 +116,130 @@ export default function Forminp({
     }
   };
 
-  
-const handleAstrologerSelect = async (mapping) => {
-  const astrologer = mapping.astrologer;
+  const handleAstrologerSelect = async (mapping) => {
+    const astrologer = mapping.astrologer;
 
-  try {
-    const { data } = await updateBookingAstrologer({
-      variables: {
-        bookingId,
-        astrologerId: astrologer.id,
-      },
-    });
+    try {
+      const { data } = await updateBookingAstrologer({
+        variables: {
+          bookingId,
+          astrologerId: astrologer.id,
+        },
+      });
 
-    const booking = data?.updateBookingAstrologer;
+      const booking = data?.updateBookingAstrologer;
 
-    setShowAstroModal(false);
+      setShowAstroModal(false);
 
-    // const orderRes = await createHealingOrder({
-    //   variables: {
-    //     bookingId: booking.id,
-    //   },
-    // });
+      // const orderRes = await createHealingOrder({
+      //   variables: {
+      //     bookingId: booking.id,
+      //   },
+      // });
 
-    // const order = orderRes?.data?.createHealingOrder;
+      // const order = orderRes?.data?.createHealingOrder;
 
-    // if (!order) {
-    //   toast.error("Failed to create order");
-    //   return;
-    // }
+      // if (!order) {
+      //   toast.error("Failed to create order");
+      //   return;
+      // }
 
+      router.push(`/buy-services/payment-options/${booking.id}`);
+      // handleRazorpay({
+      //   ...order,
+      //   bookingId: booking.id,
+      //   astrologerId: astrologer.id,
+      // });
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
+  };
 
+  //  const handlePaymentMethodContinue = async () => {
+  //   try {
+  //     setCreatingOrder(true);
 
+  //     // const orderRes = await createHealingOrder({
+  //     //   variables: {
+  //     //     bookingId: paymentData.bookingId,
+  //     //   },
+  //     // });
 
-router.push(`/buy-services/payment-options/${booking.id}`);
-    // handleRazorpay({
-    //   ...order,
-    //   bookingId: booking.id,
-    //   astrologerId: astrologer.id,
-    // });
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message);
-  }
-};
+  //     const order = orderRes?.data?.createHealingOrder;
 
-//  const handlePaymentMethodContinue = async () => {
-//   try {
-//     setCreatingOrder(true);
+  //     if (!order) {
+  //       toast.error("Failed to create order");
+  //       return;
+  //     }
 
-//     // const orderRes = await createHealingOrder({
-//     //   variables: {
-//     //     bookingId: paymentData.bookingId,
-//     //   },
-//     // });
+  //     handleRazorpay(order);
+  //   } catch (err) {
+  //     toast.error(err.message);
+  //   } finally {
+  //     setCreatingOrder(false);
+  //   }
+  // };
+  //  const handleRazorpay = (order) => {
+  //   try {
+  //     if (!window.Razorpay) {
+  //       toast.error("Razorpay SDK not loaded");
+  //       return;
+  //     }
 
-//     const order = orderRes?.data?.createHealingOrder;
+  //     const options = {
+  //       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
-//     if (!order) {
-//       toast.error("Failed to create order");
-//       return;
-//     }
+  //       amount: Number(order.payableAmount) * 100,
 
-//     handleRazorpay(order);
-//   } catch (err) {
-//     toast.error(err.message);
-//   } finally {
-//     setCreatingOrder(false);
-//   }
-// };
-//  const handleRazorpay = (order) => {
-//   try {
-//     if (!window.Razorpay) {
-//       toast.error("Razorpay SDK not loaded");
-//       return;
-//     }
+  //       currency: order.currency || "INR",
 
-//     const options = {
-//       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
+  //       name: "Dhwani Astro LLP",
 
-//       amount: Number(order.payableAmount) * 100,
+  //       description: "Healing Service Payment",
 
-//       currency: order.currency || "INR",
+  //       order_id: order.orderId,
 
-//       name: "Dhwani Astro LLP",
+  //      notes: {
+  //   bookingId: order.bookingId,
+  //   astrologerId: order.astrologerId,
+  //   serviceType: "SERVICE",
+  // },
 
-//       description: "Healing Service Payment",
+  //       handler: async function (response) {
 
-//       order_id: order.orderId,
+  //         toast.success("Payment Successful");
 
-//      notes: {
-//   bookingId: order.bookingId,
-//   astrologerId: order.astrologerId,
-//   serviceType: "SERVICE",
-// },
+  //         router.push("/");
+  //       },
 
-//       handler: async function (response) {
+  //       modal: {
+  //         ondismiss: function () {
+  //           toast.error("Payment Cancelled");
+  //         },
+  //       },
 
-//         toast.success("Payment Successful");
+  //       theme: {
+  //         color: "#C89B3C",
+  //       },
+  //     };
 
-//         router.push("/");
-//       },
+  //     const razorpay = new window.Razorpay(options);
 
-//       modal: {
-//         ondismiss: function () {
-//           toast.error("Payment Cancelled");
-//         },
-//       },
+  //     razorpay.on("payment.failed", function (response) {
+  //       console.error("Payment Failed", response.error);
 
-//       theme: {
-//         color: "#C89B3C",
-//       },
-//     };
+  //       toast.error(response.error.description);
+  //     });
 
-//     const razorpay = new window.Razorpay(options);
-
-//     razorpay.on("payment.failed", function (response) {
-//       console.error("Payment Failed", response.error);
-
-//       toast.error(response.error.description);
-//     });
-
-//     razorpay.open();
-//   } catch (error) {
-//     console.error("Razorpay Error", error);
-//     toast.error("Unable to open payment gateway");
-//   }
-// };
-//   console.log("pageContent", pageContent);
-// console.log("astrologerMappings", pageContent?.astrologerMappings);
+  //     razorpay.open();
+  //   } catch (error) {
+  //     console.error("Razorpay Error", error);
+  //     toast.error("Unable to open payment gateway");
+  //   }
+  // };
+  //   console.log("pageContent", pageContent);
+  // console.log("astrologerMappings", pageContent?.astrologerMappings);
 
   return (
     <>
@@ -261,15 +252,15 @@ router.push(`/buy-services/payment-options/${booking.id}`);
           strategy="afterInteractive"
         /> */}
         <div className="flex items-center justify-between ">
-          <h5 className="text-xl place-self-center  font-semibold text-black justify-center text-center py-2">
+          <h5 className="text-sm sm:text-base place-self-center  font-semibold text-black justify-center text-center py-2">
             Basic Details :
           </h5>
           <div className="flex ">
             <button aria-label="Close Form" type="button" onClick={onClose}>
               <svg
-                fill="#000000"
-                width={25}
-                height={25}
+                fill="#888"
+                width={20}
+                height={20}
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -280,7 +271,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
           </div>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="space-y-2 grid md:grid-cols-2 place-content-center px-5 gap-5">
+          <div className="space-y-2 grid md:grid-cols-2 place-content-center px-5 sm:gap-5 gap-2">
             <div className="flex flex-col items-start justify-between">
               <CustomInput
                 name="name"
@@ -348,7 +339,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
               />
             </div>
             <div className="flex flex-col">
-              <label className="block text-gray-700  text-sm md:text-sm mb-1">
+              <label className="block text-gray-700  text-xs sm:text-base md:text-sm mb-1">
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <div className="flex gap-2">
@@ -370,7 +361,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
             </div>
 
             <div className="space-y-2 text-sm md:text-sm">
-              <label className="block text-gray-700 font-semibold text-sm md:text-sm mb-1">
+              <label className="block text-gray-700 font-semibold text-xs sm:text-base md:text-sm mb-1">
                 Gender <span className="text-red-500">*</span>
               </label>
               <div className="flex text-black flex-col gap-2">
@@ -396,7 +387,7 @@ router.push(`/buy-services/payment-options/${booking.id}`);
             </div>
 
             <div className="flex flex-col text-sm md:text-sm">
-              <label className="block text-gray-700 font-semibold text-sm md:text-sm mb-1">
+              <label className="block text-gray-700 font-semibold text-xs sm:text-base md:text-sm mb-1">
                 Your Detailed Concern <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -405,19 +396,22 @@ router.push(`/buy-services/payment-options/${booking.id}`);
                   setformDat({ ...formDat, txt: e.target.value })
                 }
                 rows="4"
-                className=" placeholder:text-sm border border-gray-300 text-black  rounded-md p-1"
+                className=" placeholder:text-sm border border-gray-300 text-black  rounded-2xl p-1"
                 placeholder="Enter your text here....."
               ></textarea>
             </div>
           </div>
 
-          <CustomButton className="rounded-full bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-4 text-center items-center justify-center" type="submit" disabled={bookingLoading }>
+          <CustomButton
+            className="rounded-full bg-green-500 text-white px-5 py-1 font-semibold w-[50%] flex self-center mt-4 text-center items-center justify-center"
+            type="submit"
+            disabled={bookingLoading}
+          >
             {bookingLoading ? "Processing..." : "Continue"}
           </CustomButton>
         </form>
 
         <Selectastro
-        
           open={showAstroModal}
           astrologers={pageContent?.astrologerMappings || []}
           loading={bookingLoading}
@@ -425,7 +419,6 @@ router.push(`/buy-services/payment-options/${booking.id}`);
           onClose={() => setShowAstroModal(false)}
         />
       </div>
-      
     </>
   );
 }

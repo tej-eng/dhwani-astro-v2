@@ -18,8 +18,6 @@ const loadrx = (name) =>
 
 const RxCrossCircled = loadrx("RxCrossCircled");
 
-
-
 const SignInModal = ({ onClose }) => {
   const { setUser } = useAuth();
   const router = useRouter();
@@ -42,7 +40,7 @@ const SignInModal = ({ onClose }) => {
     mobile: "",
     isValid: false,
   });
-
+  const [resetPhoneInput, setResetPhoneInput] = useState(0);
   const [existingUserName, setExistingUserName] = useState("");
   const [userName, setUserName] = useState("");
 
@@ -77,8 +75,11 @@ const SignInModal = ({ onClose }) => {
         toast.error("Enter valid mobile number");
         return;
       }
-
+setOtp(["", "", "", ""]);
       await sendOtp(phoneData.countryCode, phoneData.mobile);
+
+      setResetPhoneInput((prev) => prev + 1); 
+
       toast.success("OTP sent successfully");
     } catch (err) {
       toast.error(err.message);
@@ -96,7 +97,7 @@ const SignInModal = ({ onClose }) => {
 
       setUser(result.user);
       // setIsLoggedIn(true);
- 
+
       if (result.hasName) {
         setExistingUserName(result.user.name);
 
@@ -195,6 +196,10 @@ const SignInModal = ({ onClose }) => {
         prevInput?.focus();
       }
     }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleVerifyOTP();
+    }
   };
 
   /* =============================
@@ -202,9 +207,9 @@ const SignInModal = ({ onClose }) => {
   ============================= */
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
-      <div className="flex flex-col w-full max-w-2xl bg-white text-black rounded-lg shadow-lg overflow-hidden">
-        <div className="relative py-4 flex items-center justify-center bg-[#3f1069]">
+    <div className="fixed inset-0 bg-black/40 flex items-center overflow-hidden justify-center z-[9999]">
+      <div className="flex flex-col sm:w-full w-[90%] max-w-2xl overflow-hidden  text-black rounded-2xl shadow-lg ">
+        <div className="relative py-4 md:flex items-center hidden overflow-hidden justify-center bg-[#3f1069]">
           <span className="text-xl font-semibold text-white">
             Continue With Mobile
           </span>
@@ -214,8 +219,8 @@ const SignInModal = ({ onClose }) => {
           />
         </div>
 
-        <div className="flex side-div">
-          <div className="bg-[#3f1069] text-white w-2/5 flex flex-col items-center p-8">
+        <div className="flex flex-col bg-white md:flex-row side-div">
+          <div className="bg-[#3f1069] text-white w-full sm:w-2/5 flex flex-col items-center px-8 py-5 sm:p-8">
             <Image
               src="/ds-img/logo.webp"
               alt="Logo"
@@ -223,16 +228,27 @@ const SignInModal = ({ onClose }) => {
               height={100}
             />
             <h2 className="text-xl font-bold">Welcome to Dhwani Astro</h2>
+            <h2 className="text-sm text-yellow-500 font-serif font-light">
+              "Unlock your destiny with Dhwani Astro"
+            </h2>
           </div>
 
-          <div className="w-3/5 flex flex-col items-center justify-center p-8 gap-4">
+          <div className="w-full sm:w-3/5 flex flex-col items-center justify-center p-4 sm:p-8 gap-4">
             {step === "PHONE" && (
               <>
-                <PhoneInput onChange={setPhoneData} />
+                <PhoneInput
+                  onChange={setPhoneData}
+                  resetTrigger={resetPhoneInput}
+                  handleKeyEnter={(e) => {
+                    if (e.key === "Enter") {
+                      handleGetOTP();
+                    }
+                  }}
+                />
                 <button
                   onClick={handleGetOTP}
                   disabled={otpLoading}
-                  className="w-[70%] bg-yellow-400 py-2 rounded-full"
+                  className="sm:w-[70%] w-[40%] py-1 text-sm sm:text-base bg-yellow-400 sm:py-2 rounded-full"
                 >
                   {otpLoading ? "Sending OTP..." : "GET OTP"}
                 </button>
@@ -251,7 +267,7 @@ const SignInModal = ({ onClose }) => {
                       value={digit}
                       onChange={(e) => handleOtpChange(e, index)}
                       onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                      className="w-12 h-12 text-center border-2"
+                      className="w-12 h-12 rounded-xl  text-center border border-gray-300"
                     />
                   ))}
                 </div>
@@ -259,13 +275,13 @@ const SignInModal = ({ onClose }) => {
                 <button
                   onClick={handleVerifyOTP}
                   disabled={verifyLoading || timer === 0}
-                  className="w-[70%] bg-yellow-400 py-2 rounded-full"
+                  className="w-[40%] sm:w-[70%] bg-yellow-400 text-xs sm:text-base py-2 rounded-full"
                 >
                   {verifyLoading ? "Verifying..." : "Verify OTP"}
                 </button>
 
                 {timer > 0 ? (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500">
                     Resend OTP in {timer}s
                   </p>
                 ) : (
@@ -290,6 +306,12 @@ const SignInModal = ({ onClose }) => {
                   onChange={(e) => setUserName(e.target.value)}
                   className="w-full border p-2 rounded"
                   placeholder="Your Name"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSaveName();
+                    }
+                  }}
                 />
 
                 <button

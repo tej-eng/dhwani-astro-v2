@@ -134,8 +134,7 @@ export default function Dhservices() {
                 <div className="mt-1 mb-1 flex flex-col lg:flex-row w-full items-center justify-around gap-2 sm:gap-3">
                   <Link
                     href={item.href}
-                    className="bg-[#8a2be2] w-[60%] text-white px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-base hover:bg-[#7325c0] transition"
-                  >
+                    className="bg-[#8a2be2] w-[60%] sm:w-[60%] text-white px-2 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-base hover:bg-[#7325c0] transition">
                     {t?.healing?.exp || "Explore Now"}
                   </Link>
                 </div>

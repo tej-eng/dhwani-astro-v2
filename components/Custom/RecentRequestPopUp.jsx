@@ -136,17 +136,17 @@ export default function RecentRequestPopup({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4 text-black">
-      <div className="bg-white rounded-3xl p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] bg-black/60  flex items-center justify-center p-4 text-black">
+      <div className="bg-white  rounded-3xl p-3 sm:p-5 w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl font-semibold">Recent Requests</h2>
+          <h2 className="text-base  sm:text-2xl font-semibold">Recent Requests</h2>
 
-          <button onClick={onClose}>✕</button>
+          <button className="bg-gray-700 text-white px-1 py- rounded-full" onClick={onClose}>✕</button>
         </div>
 
         <button
           onClick={handleCreateNew}
-          className="w-full bg-purple-600 text-white py-3 rounded-2xl mb-5"
+          className="w-full bg-purple-600 text-white py-2 sm:py-3 rounded-full mb-3 text-sm sm:text-base sm:mb-5"
         >
           + Create New Request
         </button>
@@ -159,15 +159,15 @@ export default function RecentRequestPopup({
               <div
                 key={profile.id}
                 onClick={() => handleProfileSelect(profile)}
-                className="px-3 py-2 rounded-4xl border border-gray-200 cursor-pointer hover:bg-purple-50"
+                className="px-3 py-2 rounded-2xl border border-gray-200 cursor-pointer hover:bg-purple-50"
               >
-                <h3 className="font-semibold text-lg">{profile.name}</h3>
+                <h3 className="font-semibold text-xs sm:text-lg">{profile.name}</h3>
 
-                <div className="grid grid-cols-3 gap-3 mt-2 text-sm">
+                <div className="grid grid-cols-3 gap-1 sm:gap-3 sm:mt-2 text-sm">
                   <div>
                     <p className="text-purple-600 text-xs">Gender</p>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-xs sm:text-sm text-gray-700">
                       {profile.gender}
                     </p>
                   </div>
@@ -175,7 +175,7 @@ export default function RecentRequestPopup({
                   <div>
                     <p className="text-purple-600 text-xs">Occupation</p>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-xs sm:text-sm text-gray-700">
                       {profile.occupation}
                     </p>
                   </div>
@@ -183,7 +183,7 @@ export default function RecentRequestPopup({
                   <div>
                     <p className="text-purple-600 text-xs">Date of Birth</p>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-xs sm:text-sm text-gray-700">
                       {formatDate(profile.birthDate)}
                     </p>
                   </div>
@@ -191,7 +191,7 @@ export default function RecentRequestPopup({
                   <div>
                     <p className="text-purple-600 text-xs">Time of Birth</p>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-xs sm:text-sm text-gray-700">
                       {profile.birthTime}
                     </p>
                   </div>
@@ -199,19 +199,19 @@ export default function RecentRequestPopup({
                   <div className="col-span-2">
                     <p className="text-purple-600 text-xs">Birth Place</p>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-xs sm:text-sm text-gray-700">
                       {profile.birthPlace || "India"}
                     </p>
                   </div>
                 </div>
 
               
-                <div className="mt-3 flex items-center justify-between">
+                <div className="sm:mt-3 mt-1 flex items-center justify-between">
                   <span className="text-xs text-gray-500 uppercase">
                     {mode} Price
                   </span>
 
-                  <span className="font-semibold text-purple-700">
+                  <span className="font-semibold text-xs sm:text-sm text-purple-700">
                     ₹
                     {astrologer?.pricing?.find(
                       (item) =>

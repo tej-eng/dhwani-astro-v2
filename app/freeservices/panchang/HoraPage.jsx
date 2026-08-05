@@ -96,7 +96,7 @@ setHoraData(res?.data || res);
   }, [horaData, date]);
 
   return (
-    <div className="kundli-page w-full md:max-w-7xl flex flex-col p-5 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
+    <div className="kundli-page w-full md:max-w-7xl flex flex-col px-2 sm:p-5 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
       <div className="flex flex-col gap-5 items-center md:w-[95%] w-full">
         <div className="flex flex-col w-full gap-4 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-4">
           <h5 className="text-sm md:text-xl text-black font-semibold text-center">

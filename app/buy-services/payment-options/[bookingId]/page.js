@@ -131,14 +131,14 @@ export default function CartPage() {
   };
 
   return (
-    <div className="text-gray-500 lg:w-[80%] w-full md:p-4 p-2 bg-white rounded-xl shadow-md flex flex-col gap-3 my-8 place-self-center">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="p-4 shadow-xl rounded-xl bg-white">
-          <h3 className="bg-gradient-to-r from-purple-400 to-purple-600 py-2 px-3 text-white rounded-lg font-bold mb-4">
+    <div className="text-gray-500 lg:w-[80%] w-full md:p-4 p-2 bg-white rounded-xl shadow-md flex flex-col gap-3 my-4 sm:my-8 place-self-center">
+      <div className="grid grid-cols-1 w-full sm:gap-6 md:grid-cols-3">
+        <div className="p-4 shadow-xl w-full mb-5 sm:mb-0 rounded-xl bg-white">
+          <h3 className="bg-gradient-to-r text-sm sm:text-md text-center from-purple-400 to-purple-600 py-2 px-3 text-white rounded-lg font-bold mb-4">
             Dhwani Services Payment
           </h3>
 
-          <div className="space-y-3 text-black">
+          <div className="sm:space-y-3 space-y-2 text-sm sm:text-md w-full text-black">
             <div className="flex justify-between">
               <span>Item</span>
               <span className="font-semibold">{booking.service.name}</span>
@@ -157,9 +157,9 @@ export default function CartPage() {
               <span>GST @18%</span>
               <span>₹ {gstAmount.toFixed(2)}</span>
             </div>
-            <div className="mt-4">
-              <div className="border border-gray-300 rounded-2xl px-3 py-3 flex justify-between items-center">
-                <span className="text-purple-400 font-semibold text-sm">
+            <div className="sm:mt-4 mt-2">
+              <div className="border border-gray-300 rounded-2xl px-3 sm:py-3 py-1 flex justify-between items-center">
+                <span className="text-purple-400 font-semibold text-xs sm:text-sm">
                   {selectedCoupon
                     ? `${selectedCoupon.code} Applied`
                     : "Apply Coupon"}
@@ -178,7 +178,7 @@ export default function CartPage() {
                 ) : (
                   <button
                     onClick={() => setShowCouponModal(true)}
-                    className="text-white bg-green-500 rounded-full px-2 py-1 text-sm cursor-pointer font-semibold"
+                    className="text-white bg-green-500 rounded-full px-2 py-1 text-xs sm:text-sm cursor-pointer font-semibold"
                   >
                     Apply
                   </button>
@@ -188,13 +188,13 @@ export default function CartPage() {
 
             <hr />
             {selectedCoupon && (
-              <div className="flex justify-between text-green-600">
+              <div className="flex text-xs sm:text-base justify-between text-green-600">
                 <span>Coupon Discount</span>
                 <span>- ₹{discountAmount.toFixed(2)}</span>
               </div>
             )}
 
-            <div className="flex justify-between font-bold text-lg">
+            <div className="flex justify-between font-bold text-sm sm:text-base">
               <span>Total Payable</span>
               <span>₹ {finalAmount.toFixed(2)}</span>
             </div>
@@ -213,9 +213,9 @@ export default function CartPage() {
       </div>
        {showCouponModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-100 p-5">
+          <div className="bg-white rounded-xl w-80 sm:w-100 p-5">
             <div className="flex bg-purple-200 rounded-2xl px-4 py-2 text-black items-center justify-between">
-              <h2 className="font-bold text-md ">Available Coupons R</h2>
+              <h2 className="font-bold text-sm sm:text-base">Available Coupons R</h2>
               <button
                 className="cursor-pointer hover:scale-104"
                 onClick={() => closeCoup()}
@@ -242,12 +242,12 @@ export default function CartPage() {
                   }
                 }}
                 placeholder="Enter coupon code"
-                className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-purple-500"
+                className="flex-1 rounded-full border border-gray-300 px-4 py-1 sm:py-2 text-sm outline-none focus:border-purple-500"
               />
 
               <button
                 onClick={applyCouponByCode}
-                className="rounded-full bg-purple-600 text-white px-5 py-2 text-sm font-semibold hover:bg-purple-700 transition"
+                className="rounded-full bg-purple-600 text-white px-5 py-1 sm:py-2 text-xs sm:text-sm font-semibold hover:bg-purple-700 transition"
               >
                 Apply
               </button>
@@ -263,11 +263,11 @@ export default function CartPage() {
                 <div
                   key={coupon.id}
                   onClick={() => applyCoupon(coupon)}
-                  className="border text-black border-gray-300 bg-gradient-to-r from-purple-200 via-violet-200 to-indigo-200 rounded-2xl shadow-xl p-3 mb-3 mt-5 cursor-pointer hover:bg-gray-100"
+                  className="border text-black border-gray-300 bg-linear-to-r from-purple-200 via-violet-200 to-indigo-200 rounded-2xl shadow-xl p-3 mb-3 mt-5 cursor-pointer hover:bg-gray-100"
                 >
-                  <div className="font-semibold">{coupon.code}</div>
+                  <div className="font-semibold text-sm sm:text-sm ">{coupon.code}</div>
 
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs sm:text-sm text-gray-500">
                     {coupon.type === "FLAT"
                       ? `₹${coupon.flatAmount} OFF`
                       : `${coupon.percentage}% OFF`}

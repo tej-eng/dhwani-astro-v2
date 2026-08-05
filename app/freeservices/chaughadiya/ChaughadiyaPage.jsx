@@ -110,14 +110,14 @@ setChaughadiyaData(res?.data || res);
   }, [chaughadiyaData]);
 
   return (
-    <div className="kundli-page w-full md:max-w-7xl flex flex-col p-5 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
+    <div className="kundli-page w-full md:max-w-7xl flex flex-col sm:p-5 px-2 gap-5 rounded-2xl shadow-lg items-center my-2 text-black">
       <div className="flex flex-col gap-5 items-center md:w-[95%] w-full sm:pb-8">
         <div className="flex w-full flex-col gap-4 bg-linear-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-2 sm:p-5">
           <h5 className="text-sm md:text-xl text-black font-semibold text-center">
             <span className="text-red-500">CHAUGHADIYA CHART:</span> (AAJ KA
             CHAUGHADIYA)
           </h5>
-          <p className="text-sm text-center">
+          <p className="text-xs sm:text-sm text-center">
             Get fast chaughadiya timings for your chosen city.
           </p>
         </div>
@@ -213,21 +213,21 @@ setChaughadiyaData(res?.data || res);
               <svg width={18} height={18} viewBox="0 0 640 640">
                 <path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z" />
               </svg>{" "}
-              <h6 className="font-semibold text-xs md:text-sm">Previous</h6>
+              <h6 className="font- text-xs md:text-sm">Previous</h6>
             </button>
             <button
               aria-label="Current Date"
               onClick={() => setDate(today)}
               className="flex items-center gap-1 bg-yellow-300 px-5 py-2 cursor-pointer rounded-lg"
             >
-              <h6 className="font-semibold text-xs md:text-sm">Current</h6>
+              <h6 className=" text-xs md:text-sm">Current</h6>
             </button>
             <button
               aria-label="Next Date"
               onClick={() => changeDate(1)}
               className="flex items-center gap-1 rounded-r-2xl bg-yellow-300 px-5 py-2 cursor-pointer"
             >
-              <h6 className="font-semibold text-xs md:text-sm">Next</h6>
+              <h6 className="font- text-xs md:text-sm">Next</h6>
               <svg width={18} height={18} viewBox="0 0 640 640">
                 <path d="M471.1 297.4C483.6 309.9 483.6 330.2 471.1 342.7L279.1 534.7C266.6 547.2 246.3 547.2 233.8 534.7C221.3 522.2 221.3 501.9 233.8 489.4L403.2 320L233.9 150.6C221.4 138.1 221.4 117.8 233.9 105.3C246.4 92.8 266.7 92.8 279.2 105.3L471.2 297.3z" />
               </svg>{" "}
