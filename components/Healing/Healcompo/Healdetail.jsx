@@ -10,15 +10,15 @@ export default function Healdetail({ data,sp }) {
     return (
 
         <div className="flex flex-col gap-2">
-            <h1 className="mb-0 text-xl font-bold text-purple-700 sm:text-3xl">{data?.name}</h1>
+            <h1 className="mb-0 text-xl text-center font-bold text-purple-700 sm:text-3xl">{data?.name}</h1>
             <div className="flex items-center mt-0 space-x-2">
-                <span className="text-base font-semibold text-purple-600 sm:text-xl">  Starting From: ₹ {sp ?? 0}</span>
-                <span className="text-sm text-gray-500">(Per Session)</span>
+                <span className="text-sm font-semibold text-purple-600 sm:text-xl">  Starting From: ₹ {sp ?? 0}</span>
+                <span className="text-xs text-gray-500">(Per Session)</span>
             </div>
-            <p className="mb-1 text-sm text-gray-600 sm:text-base">
+            <p className="mb-1 text-xs sm:text-base text-gray-600 ">
                 {data?.description}
             </p>
-                <p className="mb-1 text-sm text-gray-600 sm:text-base">
+                <p className="mb-1 text-xs sm:text-base text-gray-600 sm:text-base">
                 {data?.longText}
             </p>
 

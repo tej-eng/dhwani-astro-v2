@@ -43,11 +43,11 @@ export default function CategoryServices({ categorySlug }) {
 
   return (
     <section className="relative flex flex-col items-center self-center p-2 sm:p-5 w-full xl:w-[90%]">
-      <Searchtop
+      {/* <Searchtop
         searchPlaceholder
         searchValue={search}
         onSearchChange={(e) => setSearch(e.target.value)}
-      />
+      /> */}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 py-5">
         {filteredData.length > 0 ? (
@@ -56,18 +56,24 @@ export default function CategoryServices({ categorySlug }) {
               key={heal.id}
               className="element-item head-wrap cat-Service rounded-4xl overflow-hidden bg-[#892be226] shadow-xl text-center"
             >
-              <div className="relative w-full overflow-hidden sm:h-30 h-25">
+              <div className="relative w-full sm:h-50 h-35 overflow-hidden">
                 <Image
                   src={`https://dhwaniastro.com${heal.image}`}
                   alt="heal image"
                   width={300}
                   height={160}
-                  className="object-cover w-full h-full"
+                  className="w-full bg-no-repeat h-full object-cover"
+                  style={{
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 90%, transparent 100%)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 90%, transparent 100%)",
+                  }}
                 />
               </div>
 
               <div className="p-1 sm:p-2">
-                <h3 className="text-[#8a2be2] font-bold text-base sm:text-lg mb-1">
+                <h3 className="text-[#8a2be2] font-bold text-base sm:text-lg sm:mb-1">
                   {heal.name}
                 </h3>
 
@@ -75,11 +81,11 @@ export default function CategoryServices({ categorySlug }) {
                   {heal.description?.slice(0, 75)}
                 </p>
 
-                <div className="flex flex-col items-center justify-around w-full gap-2 mt-1 mb-1 sm:mt-3 lg:flex-row sm:gap-3">
+                <div className="flex flex-col items-center justify-around w-full gap-1  sm:mb-1 sm:mt-3 lg:flex-row sm:gap-3">
                   <div className="flex flex-col items-center w-full gap-1">
-                    <span className="inline-block text-[#8a2be2] bg-white px-2 py-1 rounded-full font-bold text-xs sm:text-base shadow-md">
-                      Starting ₹ {heal.price ?? "--"}
-                      <span className="text-[10px] sm:text-xs">
+                    <span className="inline-block text-[#8a2be2] sm:bg-white px-2 sm:rounded-full font-bold text-xs sm:text-base sm:shadow-md">
+                      Starting : ₹ {heal.price ?? "--"}
+                      <span className="text-[8px] sm:text-xs">
                         {" /"}
                         {t?.healing?.per || " Session"}
                       </span>
@@ -87,7 +93,7 @@ export default function CategoryServices({ categorySlug }) {
                   </div>
                   <Link
                     href={`/dhwani-services/${categorySlug}/${heal.slug}`}
-                    className="bg-[#8a2be2] w-[80%] text-white px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-medium hover:bg-[#7325c0] transition"
+                    className="bg-[#8a2be2] sm:w-[80%] text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-medium hover:bg-[#7325c0] transition"
                   >
                     {t?.healing?.book || "Book Now"}
                   </Link>

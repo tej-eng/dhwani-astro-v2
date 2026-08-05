@@ -32,7 +32,7 @@ export default function BlogSidebar({ categories, recentBlogs, loading }) {
     );
   }
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 my-5">
       {/* Categories */}
 
       <div className="blog-cat-nw hidden sm:flex rounded-2xl md:block">
@@ -75,7 +75,7 @@ export default function BlogSidebar({ categories, recentBlogs, loading }) {
                   />
                 </div>
 
-                <p className="text-[14px] w-60 text-gray-600 line-clamp-2">
+                <p className="text-[12px] sm:text-sm w-60 text-gray-600 line-clamp-2">
                   {item.title}
                 </p>
               </div>

@@ -71,15 +71,15 @@ export default function BlogDetail() {
   }
 
   return (
-    <section className="w-full max-w-6xl border border-gray-200 shadow-xl p-5 px-8 rounded-2xl mx-auto px-4 py-10">
+    <section className="w-full max-w-6xl border border-gray-200 shadow-xl  py-3  sm:px-8 rounded-2xl mx-auto px-4 sm:py-10">
       <div className="flex flex-col gap-2">
         {/* Title */}
-        <h1 className="text-2xl text-center md:text-3xl font-bold text-black">
+        <h1 className="text-lg sm:text-2xl text-center md:text-3xl font-bold text-black">
           {blog.title}
         </h1>
 
         {/* Meta */}
-        <div className="flex items-center justify-center gap-3 text-xs text-gray-600">
+        <div className="flex items-center justify-center gap-3 text-[10px] sm:text-xs text-gray-600">
           <span>{formatDate(blog.createdAt)}</span>
 
           <span>• Posted By DhwaniAstro</span>
@@ -91,50 +91,56 @@ export default function BlogDetail() {
             {blog.categories.map((category) => (
               <span
                 key={category.id}
-                className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs"
+                className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[10px] sm:text-xs"
               >
                 {category.name}
               </span>
             ))}
           </div>
         )}
-<div className="grid rounded-2xl overflow-hidden grid-cols-6">
-        {blog.featuredImage && (
-          <div className="overflow-hidden col-span-4 rounded-xl">
-            <Image
-              src={`https://www.dhwaniastro.com${blog.featuredImage}`}
-              className="w-full h-80 rounded-2xl"
-              width={400}
-              height={200}
-              alt={blog.title}
-              priority
-            />
-          </div>
-        )}
+        <div className="grid rounded-2xl overflow-hidden sm:grid-cols-6">
+          {blog.featuredImage && (
+            <div className="overflow-hidden col-span-4 rounded-xl">
+              <Image
+                src={`https://www.dhwaniastro.com${blog.featuredImage}`}
+                className="w-full h-45 sm:h-80 rounded-2xl"
+                width={400}
+                height={200}
+                alt={blog.title}
+                priority
+              />
+            </div>
+          )}
 
-        <div className="flex flex-col items-center justify-center bg-gray-100 px-6 py-2 col-span-2 gap-2">
-          <h6 class="text-md text-black font-semibold">Need Guidance On Your Problems?</h6>
-          <p class="text-xs text-black font-semibold">Consult With The Best Online Astrologers</p>
-          <div className="flex flex-col gap-2">
-            <button
-              type="button"
-              className="rounded-full px-2 py-1 bg-green-500"
-            >
-              Talk To Astrologer
-            </button>
+          <div className="flex flex-col items-center justify-center bg-gray-100 px-2 w-full sm:px-6 py-2 col-span-4 sm:col-span-2 gap-2">
+            <h6 class="text-xs sm:text-md text-black font-semibold">
+              Need Guidance On Your Problems?
+            </h6>
+            <p class="text-[10px] sm:text-xs text-black font-semibold">
+              Consult With The Best Online Astrologers
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+               onClick={() => router.push("/astrologer/call")}
+                type="button"
+                className="rounded-full text-xs sm:text-sm px-2 py-1 bg-green-500"
+              >
+                Talk To Astrologer
+              </button>
 
-            <button
-              type="button"
-              className="rounded-full px-2 py-1 bg-red-500"
-            >
-              Chat With Astrologer
-            </button>
+              <button
+                onClick={() => router.push("/astrologer/chat")}
+                type="button"
+                className="rounded-full text-xs sm:text-sm px-2 py-1 bg-red-500"
+              >
+                Chat With Astrologer
+              </button>
+            </div>
           </div>
         </div>
-</div>
         {/* Content */}
         <div
-          className="prose max-w-none prose-headings:text-black text-black prose-p:text-black mt-8"
+          className="prose max-w-none text-xs sm:text-sm prose-headings:text-black text-black prose-p:text-black mt-8"
           dangerouslySetInnerHTML={{
             __html: blog.content || "",
           }}

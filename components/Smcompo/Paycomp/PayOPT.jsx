@@ -27,8 +27,6 @@ export default function PayOPT({
   type,
   amount,
   oriamount,
-  coupon_id,
-  couponprice,
   coupon_code,
   packid,
   bookingId,
@@ -117,7 +115,8 @@ export default function PayOPT({
           variables: {
             input: {
               bookingId,
-              couponCode: "askfkasf",
+              couponCode: coupon_code || "",
+                amount: payAmount,
             },
           },
         });
@@ -139,7 +138,7 @@ export default function PayOPT({
         key:
           process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
-        amount: order.amount,
+       amount: order.payableAmount * 100,
         currency: order.currency,
         order_id: order.orderId,
 

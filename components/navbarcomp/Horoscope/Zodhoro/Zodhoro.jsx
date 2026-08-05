@@ -42,7 +42,7 @@ export default function Zodhoro({
       </h5>
 
       <section className="zod-days w-[90%] m-5 justify-self-center">
-        <ul className="flex justify-center bg-linear-to-r from-[#8d5c9cec] to-[#5b35b3f9] rounded-2xl w-full p-3 flex-wrap gap-5">
+        <ul className="flex justify-center bg-linear-to-r from-[#8d5c9cec] to-[#5b35b3f9] rounded-2xl w-full px-2 py-3 sm:p-3 flex-wrap gap-3 sm:gap-5">
           {tabs.map((tab) => (
             <li
               key={tab.id}

@@ -19,7 +19,7 @@ import Image from "next/image";
 import { StarIcon } from "flowbite-react";
 import { addActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { createRequestAndEmit } from "@/utils/createRequestAndEmit";
-
+import Select from "react-select";
 // import { createRequestAndEmit } from "@/utils/createRequestAndEmit";
 
 const CREATE_INTAKE = gql`
@@ -226,7 +226,48 @@ export default function RequestForm({ mode, astroId }) {
       setIsSubmitting(false);
     }
   };
+  const CURRENT_YEAR = new Date().getFullYear();
 
+  const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => ({
+    value: String(i + 1).padStart(2, "0"),
+    label: String(i + 1),
+  }));
+
+  const MONTH_OPTIONS = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ].map((month, index) => ({
+    value: String(index + 1).padStart(2, "0"),
+    label: month,
+  }));
+
+  const YEAR_OPTIONS = Array.from(
+    { length: CURRENT_YEAR - 1950 + 1 },
+    (_, i) => ({
+      value: String(CURRENT_YEAR - i),
+      label: String(CURRENT_YEAR - i),
+    }),
+  );
+
+  const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({
+    value: String(i).padStart(2, "0"),
+    label: String(i).padStart(2, "0"),
+  }));
+
+  const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({
+    value: String(i).padStart(2, "0"),
+    label: String(i).padStart(2, "0"),
+  }));
   const occupation_list = [
     "Student",
     "Engineer",
@@ -261,30 +302,116 @@ export default function RequestForm({ mode, astroId }) {
     { id: 7, img: "/ds-img/s7.png" },
     { id: 8, img: "/ds-img/anvi.svg" },
   ];
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: 52,
+      borderRadius: 18,
+      borderColor: state.isFocused ? "#9333ea" : "#ddd6fe",
+      boxShadow: state.isFocused
+        ? "0 0 0 4px rgba(147,51,234,.15)"
+        : "0 2px 10px rgba(0,0,0,.05)",
+      cursor: "pointer",
+      "&:hover": {
+        borderColor: "#9333ea",
+      },
+    }),
+    menuList: (base) => ({
+      ...base,
+      maxHeight:
+        typeof window !== "undefined" && window.innerWidth < 768 ? 160 : 260,
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6b7280",
+    }),
 
+    singleValue: (base) => ({
+      ...base,
+      color: "#111827",
+      fontWeight: 500,
+    }),
+
+    input: (base) => ({
+      ...base,
+      color: "#111827",
+    }),
+
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#9333ea"
+        : state.isFocused
+          ? "#f3e8ff"
+          : "#fff",
+      color: state.isSelected ? "#fff" : "#111827",
+      cursor: "pointer",
+      padding: window.innerWidth < 768 ? "6px 10px" : "10px 12px",
+      fontSize: window.innerWidth < 768 ? "13px" : "15px",
+    }),
+
+    menu: (base) => ({
+      ...base,
+      borderRadius: 16,
+      overflow: "hidden",
+    }),
+
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 999999,
+    }),
+
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: "#9333ea",
+    }),
+  };
+  const genderOptions = [
+    {
+      value: "MALE",
+      label: "Male",
+    },
+    {
+      value: "FEMALE",
+      label: "Female",
+    },
+    {
+      value: "OTHER",
+      label: "Other",
+    },
+  ];
+  const occupationOptions = occupation_list.map((item) => ({
+    value: item,
+    label: item,
+  }));
   return (
     <div className="w-full">
       {/*  IMPORTANT CHANGE HERE */}
       <form onSubmit={handleSubmit(handleDebouncedSubmit)}>
-        <div className="flex items-start justify-center gap-5 px-10 my-10 text-black">
-          <div className="w-full max-w-5xl bg-white shadow-lg rounded-2xl">
-            <div className="bg-linear-to-r from-purple-900 via-purple-800 to-purple-900 gap-2 items-center justify-center py-3 rounded-full flex flex-col text-white">
-              <h1 className="text-2xl font-semibold">Consultation Form</h1>
-              <div className="flex items-center justify-between gap-15 text-xs font-extralight">
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
-                  ✨ Get answers in 2 minutes
+        <div className="flex items-start justify-center gap-5 px-2 sm:px-10 my-3 sm:my-10 text-black">
+          <div className="w-full  sm:max-w-5xl bg-white shadow-lg rounded-2xl">
+            <div className="bg-linear-to-r from-purple-900 via-purple-800 to-purple-900 gap-2 items-center justify-center py-3 rounded-2xl sm:rounded-full flex flex-col text-white">
+              <h1 className="text-xl smtext-2xl font-semibold">
+                Consultation Form
+              </h1>
+              <div className="flex flex-wrap items-center justify-between sm:gap-15 gap-1 px-4 text-xs font-extralight">
+                <span className="border text-[10px] sm:text-base border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  ✨Answers in 2 minutes
                 </span>
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
-                  🔒 “Your data is secure”
+                <span className="border text-[10px] sm:text-base border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  🔒Your data is secure
                 </span>
-                <span className="border border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
-                  👨‍🔬 “Verified astrologers only”
+                <span className="border text-[10px] sm:text-base border-purple-700 bg-black/20 shadow-2xl px-4 py-1 rounded-full">
+                  👨‍🔬Verified astrologers only
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-              {/* NAME */}
+            <div className="grid grid-cols-1 bg-purple-100 md:grid-cols-3 gap-4 p-6">
               <Controller
                 name="name"
                 control={control}
@@ -293,7 +420,7 @@ export default function RequestForm({ mode, astroId }) {
                     {...field}
                     label="Name"
                     placeholder="Enter your name here"
-                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                    className="rounded-full text-sm border-gray-200 border bg-white focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
                     error={errors.name?.message}
                     maxLength={150}
                     onChange={(e) => {
@@ -306,34 +433,34 @@ export default function RequestForm({ mode, astroId }) {
               />
 
               <div className="flex flex-col space-y-1">
-                <label className="text-sm font-semibold">Contact Number</label>
-                <div className="flex items-center gap-2">
+                <label className="text-xs sm:text-sm font-semibold">
+                  Contact Number
+                </label>
+                <div className="flex items-center gap-1">
                   <Controller
                     name="countryCode"
                     control={control}
                     render={({ field }) => <input type="hidden" {...field} />}
                   />
-
-                  <select
-                    className=" border-gray-200 border text-xs rounded-lg focus:ring-purple-100  focus:ring-1 focus:outline-0 px-2 py-2"
-                    value={country?.iso || ""}
-                    onChange={(e) => {
-                      const selected = countries.find(
-                        (c) => c.iso === e.target.value,
-                      );
+                  <Select
+                    className="w-28 sm:w-32 text-xs p-0"
+                    styles={selectStyles}
+                    options={countries}
+                    menuPortalTarget={
+                      typeof window !== "undefined" ? document.body : null
+                    }
+                    menuPosition="fixed"
+                    value={country}
+                    getOptionValue={(option) => option.iso}
+                    getOptionLabel={(option) => option.dialCode}
+                    onChange={(selected) => {
                       setCountry(selected);
 
                       setValue("countryCode", selected?.dialCode, {
                         shouldValidate: true,
                       });
                     }}
-                  >
-                    {countries.map((c) => (
-                      <option className="text-xs" key={c.iso} value={c.iso}>
-                        {c.dialCode}
-                      </option>
-                    ))}
-                  </select>
+                  />
 
                   <Controller
                     name="phone"
@@ -343,7 +470,7 @@ export default function RequestForm({ mode, astroId }) {
                         {...field}
                         type="tel"
                         placeholder="Enter your contact number here"
-                        className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                        className="rounded-full text-sm border-gray-200 border bg-white focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
                         error={errors.phone?.message}
                         maxLength={15}
                         onChange={(e) => {
@@ -358,34 +485,119 @@ export default function RequestForm({ mode, astroId }) {
                 </div>
               </div>
 
-              {/* GENDER */}
               <Controller
                 name="usergender"
                 control={control}
                 render={({ field }) => (
-                  <CustomSelect
-                    {...field}
-                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
-                    label="Gender"
-                    options={["MALE", "FEMALE", "OTHER"]}
-                    error={errors.usergender?.message}
-                  />
+                  <div className="space-y-1">
+                    <label className="text-xs sm:text-sm font-semibold">
+                      Gender
+                    </label>
+
+                    <Select
+                      className="text-xs"
+                      styles={selectStyles}
+                      options={genderOptions}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
+                      value={
+                        genderOptions.find((x) => x.value === field.value) ||
+                        null
+                      }
+                      onChange={(option) => field.onChange(option.value)}
+                    />
+
+                    {errors.usergender && (
+                      <p className="text-xs text-red-500">
+                        {errors.usergender.message}
+                      </p>
+                    )}
+                  </div>
                 )}
               />
 
-              {/* DOB */}
               <Controller
                 name="dob"
                 control={control}
                 render={({ field }) => (
-                  <CustomInput
-                    {...field}
-                    type="date"
-                    label="Date of Birth"
-                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
-                    max={new Date().toISOString().split("T")[0]}
-                    error={errors.dob?.message}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-xs sm:text-sm font-semibold">
+                      Date of Birth
+                    </label>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <Select
+                        className="text-xs"
+                        styles={selectStyles}
+                        options={DAY_OPTIONS}
+                        placeholder="Day"
+                        menuPortalTarget={
+                          typeof window !== "undefined" ? document.body : null
+                        }
+                        menuPosition="fixed"
+                        value={DAY_OPTIONS.find(
+                          (x) => x.value === field.value?.split("-")[2],
+                        )}
+                        onChange={(option) => {
+                          const [, month, year] = (field.value || "--").split(
+                            "-",
+                          );
+
+                          field.onChange(
+                            `${year || ""}-${month || ""}-${option.value}`,
+                          );
+                        }}
+                      />
+
+                      <Select
+                        className="text-xs"
+                        styles={selectStyles}
+                        options={MONTH_OPTIONS}
+                        placeholder="Month"
+                        menuPortalTarget={
+                          typeof window !== "undefined" ? document.body : null
+                        }
+                        menuPosition="fixed"
+                        value={MONTH_OPTIONS.find(
+                          (x) => x.value === field.value?.split("-")[1],
+                        )}
+                        onChange={(option) => {
+                          const [year, , day] = (field.value || "--").split(
+                            "-",
+                          );
+
+                          field.onChange(
+                            `${year || ""}-${option.value}-${day || ""}`,
+                          );
+                        }}
+                      />
+
+                      <Select
+                        className="text-xs"
+                        styles={selectStyles}
+                        options={YEAR_OPTIONS}
+                        placeholder="Year"
+                        menuPortalTarget={
+                          typeof window !== "undefined" ? document.body : null
+                        }
+                        menuPosition="fixed"
+                        value={YEAR_OPTIONS.find(
+                          (x) => x.value === field.value?.split("-")[0],
+                        )}
+                        onChange={(option) => {
+                          const [, month, day] = (field.value || "--").split(
+                            "-",
+                          );
+
+                          field.onChange(
+                            `${option.value}-${month || ""}-${day || ""}`,
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
                 )}
               />
 
@@ -394,29 +606,78 @@ export default function RequestForm({ mode, astroId }) {
                 name="time"
                 control={control}
                 render={({ field }) => (
-                  <CustomInput
-                    {...field}
-                    type="time"
-                    label="Time of Birth"
-                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
-                    error={errors.time?.message}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-xs sm:text-sm font-semibold">
+                      Time of Birth
+                    </label>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <Select
+                        className="text-xs"
+                        styles={selectStyles}
+                        options={HOUR_OPTIONS}
+                        placeholder="Hour"
+                        menuPortalTarget={
+                          typeof window !== "undefined" ? document.body : null
+                        }
+                        menuPosition="fixed"
+                        value={HOUR_OPTIONS.find(
+                          (x) => x.value === field.value?.split(":")[0],
+                        )}
+                        onChange={(option) => {
+                          const [, min] = (field.value || ":").split(":");
+
+                          field.onChange(`${option.value}:${min || "00"}`);
+                        }}
+                      />
+
+                      <Select
+                        className="text-xs"
+                        styles={selectStyles}
+                        options={MINUTE_OPTIONS}
+                        placeholder="Minute"
+                        menuPortalTarget={
+                          typeof window !== "undefined" ? document.body : null
+                        }
+                        menuPosition="fixed"
+                        value={MINUTE_OPTIONS.find(
+                          (x) => x.value === field.value?.split(":")[1],
+                        )}
+                        onChange={(option) => {
+                          const [hour] = (field.value || ":").split(":");
+
+                          field.onChange(`${hour || "00"}:${option.value}`);
+                        }}
+                      />
+                    </div>
+                  </div>
                 )}
               />
 
-              {/* OCCUPATION */}
               <Controller
                 name="occupation"
                 control={control}
                 render={({ field }) => (
-                  <CustomSelect
-                    {...field}
-                    label="Your Occupation"
-                    className="rounded-full text-sm border-gray-200 border focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
-                    options={occupation_list}
-                    error={errors.occupation?.message}
-                    maxLength={150}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-xs sm:text-sm font-semibold">
+                      Occupation
+                    </label>
+                    <Select
+                      className="text-xs"
+                      styles={selectStyles}
+                      options={occupationOptions}
+                      menuPortalTarget={
+                        typeof window !== "undefined" ? document.body : null
+                      }
+                      menuPosition="fixed"
+                      value={
+                        occupationOptions.find(
+                          (x) => x.value === field.value,
+                        ) || null
+                      }
+                      onChange={(option) => field.onChange(option.value)}
+                    />
+                  </div>
                 )}
               />
 
@@ -460,7 +721,7 @@ export default function RequestForm({ mode, astroId }) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-yellow-400 rounded-full disabled:opacity-50"
+                  className="sm:px-6 sm:py-2 px-3 py-1 text-xs sm:text-base bg-yellow-400 rounded-full disabled:opacity-50"
                 >
                   {isSubmitting
                     ? "Please wait..."
@@ -475,15 +736,15 @@ export default function RequestForm({ mode, astroId }) {
       </form>
 
       <div className="bg-linear-to-r from-purple-300 via-violet-400 to-purple-200 gap-2 items-center justify-center py-3 flex flex-col text-white">
-        <div className="flex items-center text-black justify-between gap-15 text-sm font-semibold">
+        <div className="flex flex-col sm:flex-row  items-center text-black justify-between gap-1 sm:gap-15 text-sm font-semibold">
           <div className="flex items-center gap-3">
             {/* Avatar Stack */}
-            <div className="flex items-center">
+            <div className="flex  items-center">
               {users.map((user, index) => (
                 <div
                   key={user.id}
                   className={`w-10 h-10 rounded-full border-2 border-white overflow-hidden 
-            ${index !== 0 ? "-ml-3" : ""}`}
+                ${index !== 0 ? "-ml-3" : ""}`}
                 >
                   <Image
                     src={user.img}

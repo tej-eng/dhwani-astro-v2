@@ -154,7 +154,6 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
       };
     }
 
-   
     if (!serviceActive) {
       return {
         status: "Online",
@@ -186,7 +185,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
       <section className="chatastro-cards-main items-center flex-wrap gap-2 sm:gap-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 justify-around w-full lg:w-[95%]">
         {data?.slice(0, visibleCount).map((astro, index) => (
           <div key={index} className="overflow-hidden ">
-            <div className="relative w-full   bg-center bg-cover  shadow-lg h-75 md:h-51 sm:p-1 back-astro-image">
+            <div className="relative w-full   bg-center bg-cover  shadow-lg h-66 md:h-51 sm:p-1 back-astro-image">
               <div className="relative h-full p-2 overflow-hidden flex rounded-xl justify-center items-center text-white 	bg-linear-to-r from-purple-100 via-indigo-100 to-purple-100">
                 {!astro?.astro_tag ? (
                   <></>
@@ -198,7 +197,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                   </div>
                 )}
 
-                <div className="flex flex-col items-center justify-between w-full gap-2 astro-image-price-box md:flex-row md:gap-3">
+                <div className="flex flex-col items-center justify-between w-full gap-1 sm:gap-2 astro-image-price-box md:flex-row md:gap-3">
                   <div className="md:w-[30%] flex flex-col items-center justify-between gap-1 md:pt-5 astro-image-name place-self-center sm:gap-2">
                     <Image
                       src={
@@ -206,7 +205,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                           ? `https://www.dhwaniastro.com${astro.profilePic}`
                           : "/man.png"
                       }
-                      className="object-cover cursor-pointer border-3 border-purple-200 rounded-full shadow-md w-22 h-22 sm:w-22 sm:h-22"
+                      className="object-cover cursor-pointer border-3 border-purple-200 rounded-full shadow-md w-18 h-18 sm:w-22 sm:h-22"
                       width={50}
                       height={50}
                       loading="lazy"
@@ -259,11 +258,11 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       const status = getAstroStatus(astro);
 
                       return (
-                        <div className="flex items-center gap-1">
+                        <div className="flex absolute top-1 right-2 items-center gap-1">
                           <span
-                            className={`w-3 h-3 rounded-full ${status.color}`}
+                            className={`sm:w-3 sm:h-3 h-2 w-2  rounded-full ${status.color}`}
                           />
-                          <span className="text-xs text-black font-semibold">
+                          <span className="text-[9px] sm:text-xs text-black font-semibold">
                             {status.status}
                           </span>
                         </div>
@@ -274,29 +273,29 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                     <div className="flex flex-col items-center md:gap-1.5 gap-1 astro-name-exp">
                       <h2
                         onClick={() => astrologerprofile(astro?.id)}
-                        className="text-[17px] font-semibold cursor-pointer text-black sm:mt-1 sm:text-[18px]"
+                        className="text-sm sm:text-[17px] font-semibold cursor-pointer text-black sm:mt-1 sm:text-[18px]"
                       >
                         {astro?.name}
                       </h2>
 
-                      <p className="text-[11px] font- text-black break-all line-clamp-1">
+                      <p className="text-[11px] font- text-gray-700  break-all line-clamp-1">
                         {astro?.skills?.join(", ")}
                       </p>
 
                       <div className="flex items-center gap-2 lang-bar">
-                        <p className="overflow-hidden text-[11px] font- text-black whitespace-nowrap text-ellipsis">
+                        <p className="overflow-hidden text-[11px] font- text-gray-700 whitespace-nowrap text-ellipsis">
                           {astro?.languages?.join(", ")}
                         </p>
                       </div>
 
                       <span className="flex flex-wrap items-center justify-center gap-1 ">
-                        <p className="text-[10px] text-black border border-purple-300 rounded-lg md:py-1 px-1 w-fit">
+                        <p className="text-[10px] text-gray-700 border border-purple-300 rounded-lg md:py-1 px-1 w-fit">
                           Exp: {astro.experience} Yrs
                         </p>
-                        <span className="text-[10px] text-black border border-purple-300 flex gap-1  md:p-1 px-1 rounded-lg">
+                        <span className="text-[10px] text-gray-700 border border-purple-300 flex gap-1  md:p-1 px-1 rounded-lg">
                           2000 <h6>Orders</h6>
                         </span>
-                        <p className="text-[10px]  text-black border border-purple-300 rounded-lg md:py-1 px-1 w-fit flex items-center gap-2">
+                        <p className="text-[10px]  text-gray-700 border border-purple-300 rounded-lg md:py-1 px-1 w-fit flex items-center gap-2">
                           {astro.rating?.toFixed?.(2) ?? "0.00"}
                           <svg width={15} height={15} viewBox="0 0 640 640">
                             <path d="M320.1 417.6C330.1 417.6 340 419.9 349.1 424.6L423.5 462.5L410.5 380C407.3 359.8 414 339.3 428.4 324.8L487.4 265.7L404.9 252.6C384.7 249.4 367.2 236.7 357.9 218.5L319.9 144.1L319.9 417.7zM489.4 553C482.1 558.3 472.4 559.1 464.4 555L320.1 481.6L175.8 555C167.8 559.1 158.1 558.3 150.8 553C143.5 547.7 139.8 538.8 141.2 529.8L166.4 369.9L52 255.4C45.6 249 43.4 239.6 46.2 231C49 222.4 56.3 216.1 65.3 214.7L225.2 189.3L298.8 45.1C302.9 37.1 311.2 32 320.2 32C329.2 32 337.5 37.1 341.6 45.1L415 189.3L574.9 214.7C583.8 216.1 591.2 222.4 594 231C596.8 239.6 594.5 249 588.2 255.4L473.7 369.9L499 529.8C500.4 538.7 496.7 547.7 489.4 553z" />
@@ -314,10 +313,10 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-center w-full gap-2 pb-2 md:mt-3 astrologer-price-box">
+                    <div className="flex items-center justify-center w-full gap-2 py-2 md:mt-3 astrologer-price-box">
                       <AstrologerPrice mode={mode} astro={astro} />
                     </div>
-                    <div className="sm:hidden space-x-4 justify-around w-[80%]">
+                    <div className="sm:hidden space-x-4 flex items-center justify-center w-[80%]">
                       <CustomButton
                         aria-label={`Select Astrologer ${astro.name}`}
                         variant="green"

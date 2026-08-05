@@ -7,7 +7,7 @@ import Searchtop from "@/components/Smcompo/Searchtop";
 import { useBlog } from "../context/blogContext";
 
 export default function Blogcomp() {
- const { blogs, categories } = useBlog();
+  const { blogs, categories } = useBlog();
 
   const formatDate = (date) => {
     const timestamp = parseInt(date, 10);
@@ -51,15 +51,17 @@ export default function Blogcomp() {
     <section className=" relative p-0 sm:pt-4 pt-1 sm:p-5 w-[100%] sm:w-[95%] flex gap-1  flex-col items-center self-center ">
       <div className=" sm:hidden w-full mb-1 overflow-hidden">
         <div className="bl-cat-main-nw flex overflow-auto gap-1">
-                    {categories.map((categories, index) => (
-                        <Link href="#" key={index} className="text-decoration-none">
-                            <div className="category-nw p-1 sm:w-25 w-21 md:w-30 flex flex-col  items-center justify-center">
-                                <div className="bl-cat-nw h-10 w-4">{categories.smanme}</div>
-                                <h6 className="text-[10px] md:font-semibold text-black text-center">{categories.name}</h6>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+          {categories.map((categories, index) => (
+            <Link href="#" key={index} className="text-decoration-none">
+              <div className="category-nw p-1 sm:w-25 w-21 md:w-30 flex flex-col  items-center justify-center">
+                <div className="bl-cat-nw text-center rounded-full text-xl flex items-center justify-center h-10 w-10">{categories.name?.slice(0,1)}</div>
+                <h6 className="text-[10px] md:font-semibold text-black text-center">
+                  {categories.name}
+                </h6>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
       <Searchtop />
 
@@ -79,13 +81,13 @@ export default function Blogcomp() {
                       alt="image here"
                       width={100}
                       height={100}
-                      className="bl-img-nw md:h-42 h-26 hover:scale-102"
+                      className="bl-img-nw md:h-42 h-24 hover:scale-102"
                     />
                   </div>
 
                   <div className="bl-con-nw col-span-3 flex flex-col p-2  justify-between">
                     <div className="decoration-none">
-                      <h6 className="text-sm font-semibold line-clamp-2 md:text-sm text-start text-[#4c307a]">
+                      <h6 className="text-xs  font-semibold line-clamp-2 md:text-sm text-start text-[#4c307a]">
                         {blog.title}
                       </h6>
                     </div>

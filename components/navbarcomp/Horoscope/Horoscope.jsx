@@ -20,14 +20,14 @@ router.push(`/freeservices/horoscope/${zodiac.toLowerCase()}`, {
   };
 
   return (
-    <section className="py-5 flex flex-col w-full gap-5">
+    <section className=" flex flex-col w-full gap-5">
       {/* Header */}
       <div className="text-black md:p-5 head-wrap bg-gradient-to-r from-pink-100 to-yellow-100 shadow-lg rounded-2xl p-5 text-center">
-        <h1 className="text-[#2f1254] text-2xl font-semibold">
+        <h1 className="text-[#2f1254] text-base sm:text-2xl font-semibold">
           About Horoscope
         </h1>
 
-        <p className="text-black text-sm mt-2">
+        <p className="text-black text-xs sm:text-sm mt-2">
           Horoscopes help you discover your strengths and challenges through the
           lens of Vedic Astrology.
         </p>
@@ -43,7 +43,7 @@ router.push(`/freeservices/horoscope/${zodiac.toLowerCase()}`, {
         />
 
         <div className="relative flex flex-col justify-center">
-          <h2 className="text-2xl pb-4 text-white text-center font-bold">
+          <h2 className="text-base sm:text-2xl pb-4 text-white text-center font-bold">
             • Know Yourself Through Your Sign •
           </h2>
 
@@ -52,7 +52,7 @@ router.push(`/freeservices/horoscope/${zodiac.toLowerCase()}`, {
               <div
                 key={horo.name}
                 onClick={() => handleZodiacClick(horo.name)}
-                className={`cursor-pointer flex flex-col items-center rounded-4xl shadow-lg p-3 lg:p-5 transition-all ${
+                className={`cursor-pointer flex flex-col items-center rounded-xl sm:rounded-4xl shadow-lg p-3 lg:p-5 transition-all ${
                   selectedZodiac === horo.name
                     ? "bg-purple-200 scale-105"
                     : "bg-white hover:scale-105"
