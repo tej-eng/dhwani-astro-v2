@@ -19,7 +19,7 @@ function getCountries() {
   });
 }
 
-export default function PhoneInput({ onChange, handleKeyEnter,  resetTrigger,}) {
+export default function PhoneInput({ onChange, handleKeyEnter, resetTrigger }) {
   const countries = useMemo(() => getCountries(), []);
 
   const defaultCountry = countries.find((c) => c.iso === "IN") || countries[0];
@@ -27,29 +27,34 @@ export default function PhoneInput({ onChange, handleKeyEnter,  resetTrigger,}) 
   const [country, setCountry] = useState(defaultCountry);
 
   const [number, setNumber] = useState("");
-useEffect(() => {
-  setNumber("");
- 
-}, [resetTrigger, defaultCountry]);
   useEffect(() => {
-    const phone = parsePhoneNumberFromString(`${country.dialCode}${number}`);
-    // console.log("Parsed phonexxxxxxxxxxxxxxxxxx:", phone);
-    const cleanNumber = number.replace(/^0+/, "");
+    setNumber("");
+  }, [resetTrigger, defaultCountry]);
+  const updatePhoneData = (value, selectedCountry = country) => {
+    const phone = parsePhoneNumberFromString(
+      `${selectedCountry.dialCode}${value}`,
+    );
+
+    const cleanNumber = value.replace(/^0+/, "");
+
     onChange({
-      countryCode: country.dialCode,
+      countryCode: selectedCountry.dialCode,
       mobile: cleanNumber,
-      iso: country.iso,
+      iso: selectedCountry.iso,
       e164: phone?.number || "",
-      isValid: (phone?.isValid() && number.length >= 6) || false,
+      isValid: (phone?.isValid() && value.length >= 6) || false,
     });
-  }, [number, country, onChange]);
+  };
 
   return (
     <div className="flex gap-0.5 rounded">
       <div className="flex w-20 sm:w-30 items-center gap-0.5 h-full  px-1 py-1 sm:px-3 sm:py-2 border border-gray-200 rounded-lg shadow-lg">
         <Select
           value={country}
-          onChange={(selected) => setCountry(selected)}
+          onChange={(selected) => {
+            setCountry(selected);
+            updatePhoneData(number, selected);
+          }}
           options={countries}
           getOptionValue={(option) => option.iso}
           getOptionLabel={(option) => option.name}
@@ -125,7 +130,10 @@ useEffect(() => {
         onKeyDown={handleKeyEnter}
         onChange={(e) => {
           const val = e.target.value.replace(/\D/g, "");
-          if (val.length <= 15) setNumber(val);
+          if (val.length <= 15) {
+            setNumber(val);
+            updatePhoneData(val);
+          }
         }}
       />
     </div>

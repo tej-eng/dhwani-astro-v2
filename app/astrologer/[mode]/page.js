@@ -40,11 +40,11 @@ const {
   },
   fetchPolicy: "network-only",
 });
-console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",{
-  loading,
-  error,
-  data,
-});
+// console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",{
+//   loading,
+//   error,
+//   data,
+// });
   if (loading || authLoading) {
     return <Astroskelton />;
   }

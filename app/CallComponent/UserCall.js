@@ -9,7 +9,6 @@ import { removeActiveRequest } from "@/app/redux/reducer/chat/sendRequestSlice";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 
-
 const UPLOAD_CALL_RECORDING = gql`
   mutation UploadCallRecording(
     $recording: Upload!
@@ -48,14 +47,16 @@ const UPLOAD_CALL_RECORDING = gql`
   }
 `;
 
-export default function CallPage( room_Id,
+export default function CallPage(
+  room_Id,
   astro_Name,
   astroImage,
   chattime,
   user_Id,
   astroid,
   astro_price,
-  userIntakeId,) {
+  userIntakeId,
+) {
   const dispatch = useDispatch();
   const { roomId } = useParams();
 
@@ -87,7 +88,6 @@ export default function CallPage( room_Id,
   const recordingInitializedRef = useRef(false);
   const remoteStreamRef = useRef(null);
   const callFullyConnectedRef = useRef(false);
-
 
   const [callStatus, setCallStatus] = useState("Connecting...");
   const [isMuted, setIsMuted] = useState(false);
@@ -140,10 +140,8 @@ export default function CallPage( room_Id,
     };
   }, [remoteAudio.current?.srcObject]);
 
-
   const startRecording = () => {
     try {
-  
       if (recordingInitializedRef.current) {
         return;
       }
@@ -247,7 +245,6 @@ export default function CallPage( room_Id,
     }
   };
 
-
   const stopRecording = () => {
     try {
       if (mediaRecorderRef.current && isRecordingRef.current) {
@@ -269,7 +266,6 @@ export default function CallPage( room_Id,
     }
   };
 
-
   const sendRecordingToServer = async () => {
     try {
       if (recordedChunksRef.current.length === 0) {
@@ -281,7 +277,6 @@ export default function CallPage( room_Id,
       const blob = new Blob(recordedChunksRef.current, {
         type: mediaRecorderRef.current?.mimeType || "audio/webm",
       });
-
 
       let astroData = null;
       let userId = null;
@@ -299,7 +294,6 @@ export default function CallPage( room_Id,
       }
 
       if (!astroId) {
-
       }
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -312,7 +306,6 @@ export default function CallPage( room_Id,
       const duration = Math.floor(
         (Date.now() - callStartTimeRef.current) / 1000,
       );
-
 
       const { data, errors } = await uploadRecording({
         variables: {
@@ -499,7 +492,6 @@ export default function CallPage( room_Id,
         }
       };
 
-
       statsIntervalRef.current = setInterval(async () => {
         if (!pc.current) return;
         try {
@@ -518,12 +510,10 @@ export default function CallPage( room_Id,
       return pc.current;
     };
 
-
     activeSocket.on("peer_joined", async () => {
       setCallStatus("Ringing...");
 
       const peer = await createPeer();
-
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -532,7 +522,6 @@ export default function CallPage( room_Id,
       } else {
         return;
       }
-
 
       try {
         const offer = await peer.createOffer({
@@ -551,10 +540,7 @@ export default function CallPage( room_Id,
       }
     });
 
-
-
     activeSocket.on("answer", async ({ answer }) => {
-
       if (!pc.current) {
         console.warn("No peer connection available for answer");
         return;
@@ -599,7 +585,6 @@ export default function CallPage( room_Id,
       }
     });
 
-
     activeSocket.on("ice-candidate", async ({ candidate, room_id }) => {
       if (!pc.current) {
         return;
@@ -621,8 +606,6 @@ export default function CallPage( room_Id,
       }
     });
 
-
-
     activeSocket.on("call_ended_by_astrologer", () => {
       // Stop recording before cleanup (hidden)
       if (isRecordingRef.current) {
@@ -635,7 +618,7 @@ export default function CallPage( room_Id,
       router.push("/astrologer/call");
     });
 
-     activeSocket.on("call_ended_by_admin", () => {
+    activeSocket.on("call_ended_by_admin", () => {
       debugger;
       console.log("call_ended_by_admin");
       // Stop recording before cleanup (hidden)
@@ -649,12 +632,9 @@ export default function CallPage( room_Id,
       router.push("/astrologer/call");
     });
 
-
-
     activeSocket.emit("join_call", {
       roomId,
     });
-
 
     return () => {
       // Stop recording on unmount (hidden)
@@ -816,9 +796,9 @@ export default function CallPage( room_Id,
       <div className="absolute w-[500px] h-[500px] bg-violet-500 opacity-20 blur-3xl rounded-full bottom-[-100px] right-[-100px]" />
       <div className="md:w-3/5 overflow-hidden w-full shadow-lg rounded-3xl  flex flex-col md:h-[95vh] h-[100vh]">
         <div className="flex flex-col w-full  rounded-3xl shadow-xl items-center justify-between py-10    h-full bg-gray-900 text-white">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col  items-center gap-3">
             <img
-               src={
+              src={
                 astroImage
                   ? `https://www.dhwaniastro.com${astroImage}`
                   : "/man.png"
@@ -830,11 +810,13 @@ export default function CallPage( room_Id,
             />
 
             <h2 className="text-xl">{astroData?.astrologer?.name}</h2>
+                  <div className="flex items-center gap-2 mt-2 text-green-400">
+                    <span className="w-2 h-2 bg-green-400 rounded-full text-xs animate-pulse" />{callStatus}</div>
           </div>
           <div className="flex flex-col items-center ">
-            <h2 className="text-2xl mb-4">📞 Call Status</h2>
+            {/* <h2 className="text-2xl mb-4">📞 Call Status</h2> */}
 
-            <p className="mb-6 text-lg">{callStatus}</p>
+
 
             {callStatus === "Connected" && (
               <p className="mb-2 text-lg">
@@ -859,21 +841,19 @@ export default function CallPage( room_Id,
           <audio ref={remoteAudio} autoPlay playsInline />
 
           <div className="flex gap-6  w-full items-center justify-center   ">
-          
             <button
               onClick={toggleMute}
               className="w-18 h-18 bg-gray-200 rounded-full flex items-center justify-center shadow-2xl"
             >
               {isMuted ? (
-                  <svg width={25} height={25} viewBox="0 0 640 640">
+                <svg width={25} height={25} viewBox="0 0 640 640">
                   <path
                     fill="rgb(230, 54, 18)"
                     d="M73 39.1C63.6 29.7 48.4 29.7 39.1 39.1C29.8 48.5 29.7 63.7 39 73.1L567 601.1C576.4 610.5 591.6 610.5 600.9 601.1C610.2 591.7 610.3 576.5 600.9 567.2L456.7 422.8C490.9 388.2 512 340.6 512 288L512 248C512 234.7 501.3 224 488 224C474.7 224 464 234.7 464 248L464 288C464 327.3 448.3 362.9 422.7 388.9L388.8 355C405.6 337.7 416 314 416 288L416 160C416 107 373 64 320 64C267 64 224 107 224 160L224 190.2L73 39.2zM371.3 473.1L329.9 431.7C326.6 431.9 323.4 432 320.1 432C240.6 432 176.1 367.5 176.1 288L176.1 277.8L132.5 234.2C129.7 238.1 128.1 242.9 128.1 248L128.1 288C128.1 385.9 201.4 466.7 296.1 478.5L296.1 528L248.1 528C234.8 528 224.1 538.7 224.1 552C224.1 565.3 234.8 576 248.1 576L392.1 576C405.4 576 416.1 565.3 416.1 552C416.1 538.7 405.4 528 392.1 528L344.1 528L344.1 478.5C353.4 477.3 362.5 475.5 371.4 473.1z"
                   />
                 </svg>
               ) : (
-           
-                   <svg width={25} height={25} viewBox="0 0 640 640">
+                <svg width={25} height={25} viewBox="0 0 640 640">
                   <path
                     fill="rgb(12, 208, 22)"
                     d="M320 64C267 64 224 107 224 160L224 288C224 341 267 384 320 384C373 384 416 341 416 288L416 160C416 107 373 64 320 64zM176 248C176 234.7 165.3 224 152 224C138.7 224 128 234.7 128 248L128 288C128 385.9 201.3 466.7 296 478.5L296 528L248 528C234.7 528 224 538.7 224 552C224 565.3 234.7 576 248 576L392 576C405.3 576 416 565.3 416 552C416 538.7 405.3 528 392 528L344 528L344 478.5C438.7 466.7 512 385.9 512 288L512 248C512 234.7 501.3 224 488 224C474.7 224 464 234.7 464 248L464 288C464 367.5 399.5 432 320 432C240.5 432 176 367.5 176 288L176 248z"
@@ -882,7 +862,6 @@ export default function CallPage( room_Id,
               )}
             </button>
 
-        
             <button
               onClick={handleEndCall}
               className="w-18 h-18 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-2xl"
