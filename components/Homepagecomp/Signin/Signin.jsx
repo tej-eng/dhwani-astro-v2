@@ -35,6 +35,7 @@ const SignInModal = ({ onClose }) => {
     setStep,
   } = useOTP();
 
+
   const [phoneData, setPhoneData] = useState({
     countryCode: "",
     mobile: "",
@@ -75,20 +76,17 @@ const SignInModal = ({ onClose }) => {
         toast.error("Enter valid mobile number");
         return;
       }
-setOtp(["", "", "", ""]);
+      setOtp(["", "", "", ""]);
       await sendOtp(phoneData.countryCode, phoneData.mobile);
 
-      setResetPhoneInput((prev) => prev + 1); 
+      setResetPhoneInput((prev) => prev + 1);
 
-      toast.success("OTP sent successfully");
+      toast.success("OTP sent successfully 1");
     } catch (err) {
       toast.error(err.message);
     }
   };
 
-  /* =============================
-     VERIFY OTP
-  ============================= */
 
   const handleVerifyOTP = async () => {
     try {

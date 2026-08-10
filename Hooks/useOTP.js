@@ -61,21 +61,29 @@ export const useOTP = () => {
   };
 
   const sendOtp = async (countryCode, mobile) => {
-    try {
-      const res = await requestOtp({
-        variables: { countryCode, mobile },
-      });
+  try {
+    // console.log("1. sendOtp started");
 
-      if (res.data.requestOtp.message === "OTP sent successfully") {
-        setStep("OTP");
-        startTimer(60);
-      } else {
-        alert("Failed to send OTP");
-      }
-    } catch (err) {
-      console.error("OTP Error:", err);
+    const res = await requestOtp({
+      variables: { countryCode, mobile },
+    });
+
+    console.log("2. API response:", res.data.requestOtp.message);
+
+    if (res.data.requestOtp.message === "OTP sent successfully") {
+      // console.log("3. BEFORE setStep OTP");
+
+      setStep("OTP");
+      startTimer(60);
+
+      // console.log("4. AFTER setStep OTP");
+    } else {
+      alert("Failed to send OTP");
     }
-  };
+  } catch (err) {
+    console.error("OTP Error:", err);
+  }
+};
 
   const confirmOtp = async (countryCode, mobile) => {
     const otpValue = otp.join("");
