@@ -129,6 +129,8 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
   //     "Astrologer selected by you is Busy now so please choose another astrologer.",
   //   );
   // };
+  console.log("xxxx");
+  
 
   const astrologerprofile = (id) => {
     setAlert(true);
