@@ -278,6 +278,7 @@ export const GET_ASTROLOGERS_USER = gql`
       data {
         id
         profilePic
+        dname
         name
         experience
         rating
@@ -350,6 +351,7 @@ export const GET_ASTROLOGERS_GUEST = gql`
         id
         profilePic
         name
+        dname
         experience
         rating
         skills
