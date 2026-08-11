@@ -214,7 +214,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                     />
                     <div className="hidden md:flex space-x-4 justify-around w-[80%]">
                       <CustomButton
-                        aria-label={`Select Astrologer ${astro.name}`}
+                        aria-label={`Select Astrologer ${astro.dname}`}
                         variant="green"
                         disabled={getAstroStatus(astro).disabled}
                         className={
