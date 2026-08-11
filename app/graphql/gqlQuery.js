@@ -351,7 +351,7 @@ export const GET_ASTROLOGERS_GUEST = gql`
         id
         profilePic
         name
-        dname
+        displayName
         experience
         rating
         skills
