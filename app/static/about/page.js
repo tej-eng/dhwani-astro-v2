@@ -1,25 +1,30 @@
 import Image from "next/image";
-import { GET_ABOUT_PAGE } from "@/app/graphql/gqlQuery";
+import { GET_ABOUT_PAGE } from "../../graphql/seoQuery";
 //export const revalidate = 604800; 
 
 export default async function AboutP() {
-const res = await fetch(
-  "https://dhwaniastro.com/userAuth/graphql",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: GET_ABOUT_PAGE.loc?.source.body,
-    }),
-    cache: "force-cache",
-  }
-);
+  const res = await fetch(
+    "https://dhwaniastro.com/userAuth/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: GET_ABOUT_PAGE,
+      }),
+      cache: "no-store",
+    }
+  );
 
-const { data } = await res.json();
+  const result = await res.json();
 
-  const about = data?.getAboutPage;
+  console.log("GRAPHQL STATUS:", res.status);
+  console.log("GRAPHQL RESULT:", JSON.stringify(result, null, 2));
+
+  const about = result?.data?.getAboutPage;
+
+  console.log("ABOUT:", about);
 
   const mentor = about?.mentors?.[0];
   const founder = about?.founders?.[0];

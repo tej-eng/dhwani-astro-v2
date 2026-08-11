@@ -1,5 +1,5 @@
 
-import { GET_REFUND_POLICY_PAGE } from "@/app/graphql/gqlQuery";
+import { GET_REFUND_POLICY_PAGE } from "@/app/graphql/seoQuery";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
@@ -50,23 +50,25 @@ export async function generateMetadata() {
   }
 }
 export default async function RefundP() {
-const res = await fetch(
-  "https://dhwaniastro.com/userAuth/graphql",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: GET_REFUND_POLICY_PAGE.loc?.source.body,
-    }),
-    cache: "force-cache",
-  }
-);
+ const res = await fetch(
+    "https://dhwaniastro.com/userAuth/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: GET_REFUND_POLICY_PAGE,
+      }),
+      cache: "no-store",
+    }
+  );
 
-const { data } = await res.json();
+  const result = await res.json();
+  console.log("xxxxxx",result);
+  
 
-const refund = data?.getRefundPolicyPage;
+const refund = result?.data?.getRefundPolicyPage;
 
   if (!refund) {
     notFound();

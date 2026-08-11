@@ -102,52 +102,52 @@ export const CREATE_HEALING_ORDER = gql`
 // `;
 
 export const GET_ASTROLOGER_BY_ID = gql`
-query GetAstrologerById($id: String!) {
-  getAstrologerById(id: $id) {
-    id
-    name
-    displayName
-    profilePic
-    about
-    experience
-    rating
-
-    languages
-    skills
-    problems
-
-    isBusy
-    isOnline
-    isChatActive
-    isCallActive
-    isLiveActive
-
-    activeOffer {
+  query GetAstrologerById($id: String!) {
+    getAstrologerById(id: $id) {
       id
-      offerName
-      price
-      description
-    }
-
-    pricing {
-      type
-      price
-      originalPrice
-      offerPrice
-      commissionPercent
-      isActive
-    }
-
-    reviews {
-      id
+      name
+      displayName
+      profilePic
+      about
+      experience
       rating
-      comment
-      reply
-      userName
-      createdAt
+
+      languages
+      skills
+      problems
+
+      isBusy
+      isOnline
+      isChatActive
+      isCallActive
+      isLiveActive
+
+      activeOffer {
+        id
+        offerName
+        price
+        description
+      }
+
+      pricing {
+        type
+        price
+        originalPrice
+        offerPrice
+        commissionPercent
+        isActive
+      }
+
+      reviews {
+        id
+        rating
+        comment
+        reply
+        userName
+        createdAt
+      }
     }
   }
-}
 `;
 export const GET_GIFTS = gql`
   query GetGifts {
@@ -165,7 +165,7 @@ export const GET_GIFTS = gql`
 `;
 
 export const GET_SERVICES = gql`
- query GetServices {
+  query GetServices {
     getServices {
       id
       name
@@ -182,7 +182,6 @@ export const GET_SERVICES = gql`
       }
       astrologerMappings {
         price
-
       }
     }
   }
@@ -218,8 +217,6 @@ export const GET_SERVICE = gql`
           skills
           languages
           about
-
-       
         }
       }
     }
@@ -261,9 +258,7 @@ export const GET_CATEGORY = gql`
 `;
 
 export const CREATE_SERVICE_BOOKING = gql`
-  mutation CreateServiceBooking(
-    $input: CreateServiceBookingInput!
-  ) {
+  mutation CreateServiceBooking($input: CreateServiceBookingInput!) {
     createServiceBooking(input: $input) {
       id
       amount
@@ -274,12 +269,8 @@ export const CREATE_SERVICE_BOOKING = gql`
 `;
 
 export const GET_ASTROLOGERS_USER = gql`
-  query GetAstrologerListForUser(
-    $searchInput: AstrologerSearchInput
-  ) {
-    getAstrologerListForUser(
-      searchInput: $searchInput
-    ) {
+  query GetAstrologerListForUser($searchInput: AstrologerSearchInput) {
+    getAstrologerListForUser(searchInput: $searchInput) {
       totalCount
       currentPage
       totalPages
@@ -393,10 +384,7 @@ export const GET_ASTROLOGERS_GUEST = gql`
 `;
 
 export const UPDATE_BOOKING_ASTROLOGER = gql`
-  mutation UpdateBookingAstrologer(
-    $bookingId: ID!
-    $astrologerId: ID!
-  ) {
+  mutation UpdateBookingAstrologer($bookingId: ID!, $astrologerId: ID!) {
     updateBookingAstrologer(
       bookingId: $bookingId
       astrologerId: $astrologerId
@@ -415,12 +403,11 @@ export const GET_BLOGS = gql`
       slug
       featuredImage
       createdAt
-        categories {
+      categories {
         id
         name
         slug
       }
-  
     }
   }
 `;
@@ -454,14 +441,8 @@ export const GET_BLOG_CATEGORIES = gql`
 `;
 
 export const GET_UPCOMING_LIVES = gql`
-  query GetUpcomingLives(
-    $page: Int
-    $limit: Int
-  ) {
-    getUpcomingLives(
-      page: $page
-      limit: $limit
-    ) {
+  query GetUpcomingLives($page: Int, $limit: Int) {
+    getUpcomingLives(page: $page, limit: $limit) {
       data {
         id
         title
@@ -486,27 +467,23 @@ export const GET_UPCOMING_LIVES = gql`
 `;
 export const JOIN_LIVE_STREAM = gql`
   query JoinLive($channelName: String!) {
-  joinLive(channelName: $channelName) {
-    rtcToken
-    uid
-    appId
-    channelName
+    joinLive(channelName: $channelName) {
+      rtcToken
+      uid
+      appId
+      channelName
 
-    chatUserId
-    chatToken
-    chatRoomId
-    chatAppKey
+      chatUserId
+      chatToken
+      chatRoomId
+      chatAppKey
+    }
   }
-}
 `;
 
 export const START_LIVE = gql`
-  mutation StartLive(
-    $title: String!
-  ) {
-    startLive(
-      title: $title
-    ) {
+  mutation StartLive($title: String!) {
+    startLive(title: $title) {
       token
       uid
       appId
@@ -545,37 +522,7 @@ export const GET_TESTIMONIALS = gql`
   }
 `;
 
-export const GET_ABOUT_PAGE = gql`
-  query GetAboutPage {
-    getAboutPage {
-      id
-      pageType
-      heroTitle
-      heroDescription
 
-      mentors {
-        name
-        image
-        description
-        designation
-      }
-
-      founders {
-        name
-        image
-        description
-        designation
-      }
-
-      metaTitle
-      metaDescription
-      keywords
-      status
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const GET_DISCLAIMER_PAGE = gql`
   query GetDisclaimerPage {
     getDisclaimerPage {
@@ -739,11 +686,11 @@ export const GET_ACTIVE_PROBLEMS = gql`
   }
 `;
 export const GET_ASTROLOGER_CATEGORIES = gql`
-query GetAstrologerCategories{
-  getAstrologerCategories{
-    id
-    name
-    type
+  query GetAstrologerCategories {
+    getAstrologerCategories {
+      id
+      name
+      type
+    }
   }
-}
 `;

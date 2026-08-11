@@ -129,7 +129,7 @@ export default function PromisesCredentials() {
               <Image className="w-12 h-10 hidden" src="/ds-img/cred2.webp" alt="" width={50} height={50} />
             </div>
 
-            <div className="grid grid-cols-2 gap-6 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
               <Stat img="/ds-img/cred6.webp" value="800+" label="Astrologers" />
               <Stat img="/ds-img/cred8.webp" value="200K" label="Kundalis Served" />
               <Stat img="/ds-img/cred7.webp" value="50 Lakh" label="Customer Base" />

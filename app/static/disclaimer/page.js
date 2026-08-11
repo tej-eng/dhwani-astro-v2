@@ -1,5 +1,5 @@
 
-import { GET_DISCLAIMER_PAGE } from "@/app/graphql/gqlQuery";
+import { GET_DISCLAIMER_PAGE } from "@/app/graphql/seoQuery";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
@@ -50,27 +50,31 @@ export async function generateMetadata() {
 
 export const dynamic = "force-static";
 export default async function Disclaimer() {
-const res = await fetch(
-  "https://dhwaniastro.com/userAuth/graphql",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: GET_DISCLAIMER_PAGE.loc?.source.body,
-    }),
-    cache: "force-cache",
-  }
-);
+  const res = await fetch(
+    "https://dhwaniastro.com/userAuth/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: GET_DISCLAIMER_PAGE,
+      }),
+      cache: "no-store",
+    }
+  );
 
-const { data } = await res.json();
+  const result = await res.json();
 
-const disclaimer = data?.getDisclaimerPage;
+console.log("DISCLAIMER API RESPONSE:", result);
 
-  if (!disclaimer) {
-    notFound();
-  }
+const disclaimer = result?.data?.getDisclaimerPage;
+
+console.log("DISCLAIMER DATA:", disclaimer);
+
+if (!disclaimer) {
+  notFound();
+}
 
   return (
     <div className="w-full flex flex-col">

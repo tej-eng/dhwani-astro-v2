@@ -1,4 +1,4 @@
-import { GET_PRIVACY_PAGE } from "@/app/graphql/gqlQuery";
+import { GET_PRIVACY_PAGE } from "@/app/graphql/seoQuery";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata() {
@@ -49,23 +49,25 @@ export async function generateMetadata() {
   }
 }
 export default async function PrivacyP() {
-const res = await fetch(
-  "https://dhwaniastro.com/userAuth/graphql",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: GET_PRIVACY_PAGE.loc?.source.body,
-    }),
-    cache: "force-cache",
-  }
-);
+  const res = await fetch(
+    "https://dhwaniastro.com/userAuth/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: GET_PRIVACY_PAGE,
+      }),
+      cache: "no-store",
+    }
+  );
 
-const { data } = await res.json();
+  const result = await res.json();
+  console.log("xxxx",result);
+  
 
-const privacy = data?.getPrivacyPage;
+const privacy = result?.data?.getPrivacyPage;
 
   return (
     <div className="w-full flex flex-col items-center">
