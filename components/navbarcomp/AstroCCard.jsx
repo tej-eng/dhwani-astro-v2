@@ -277,7 +277,7 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                         onClick={() => astrologerprofile(astro?.id)}
                         className="text-sm sm:text-[17px] font-semibold cursor-pointer text-black sm:mt-1 sm:text-[18px]"
                       >
-                        {astro?.name}
+                        {astro?.displayName}
                       </h2>
 
                       <p className="text-[11px] font- text-gray-700  break-all line-clamp-1">
