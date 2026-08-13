@@ -16,6 +16,16 @@ import { removeActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { BiCheckDouble } from "react-icons/bi";
 
 // ================= GRAPHQL =================
+const CREATE_ORDER = gql`
+  mutation CreateOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      success
+      orderId
+      amount
+      currency
+    }
+  }
+`;
 const GET_RECHARGE_PACKS = gql`
   query GetRechargePacks {
     getRechargePacks {
@@ -91,6 +101,7 @@ const UserChat = ({
   astro_price,
   userIntakeId,
 }) => {
+  const [createOrder] = useMutation(CREATE_ORDER);
   const router = useRouter();
   const dispatch = useDispatch();
   const { socket, connectSocket } = useContext(SocketContext);
@@ -337,82 +348,110 @@ const UserChat = ({
     });
   };
   // ================= RECHARGE FUNCTION =================
-  const handleCheckout = async (amount, packId) => {
-    try {
-      customer_recharge();
-      //  PAUSE TIMER
+const handleCheckout = async (amount, packId) => {
+  try {
+    customer_recharge();
+    setIsPaused(true);
 
-      setIsPaused(true);
+    console.log("🟡 Creating recharge order:", {
+      amount,
+      packId,
+    });
 
-      const res = await fetch("https://dhwaniastro.com/api/createOrder", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const { data } = await createOrder({
+      variables: {
+        input: {
+          rechargePackId: packId,
+          coupan_code: "",
         },
-        body: JSON.stringify({ amount }),
-      });
+      },
+    });
 
-      const order = await res.json();
+    const order = data?.createOrder;
 
-      if (order.error) {
-        setIsPaused(false); //  resume if error
-        return alert("Error creating order");
-      }
+    console.log("🟢 GraphQL Order:", order);
 
-      const options = {
-        key:
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
-        amount: order.amount,
-        currency: order.currency,
-        name: "Dhwani Astro LLp",
-        description: "Recharge Payment",
-        order_id: order.id,
+    if (!order?.success || !order?.orderId) {
+      setIsPaused(false);
+      toast.error("Error creating order");
+      return;
+    }
 
-        handler: async function (response) {
-          //  PAYMENT SUCCESS
+    const options = {
+      key:
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "rzp_test_SNXjhTOgP1CIx0",
 
-          toast.success("Payment Successful ");
+      // Backend ke Razorpay order se aaya amount
+      amount: order.amount,
 
-          //  Add time (based on pack)
-          const selectedPack = rechargePacks.find((p) => p.id === packId);
+      currency: order.currency,
+      order_id: order.orderId,
 
-          if (selectedPack) {
-            const newTime = timeLeft + selectedPack.talktime * 60;
-            customer_recharge_completed(newTime); // Send updated time to backend
+      name: "Dhwani Astro LLP",
+      description: "Wallet Recharge",
 
-            setTimeLeft(newTime); // Update local timer
-          }
+      notes: {
+        userId: user?.id ?? "guest",
+        rechargePackId: packId,
+        platform: "WEB",
+      },
 
-          //  RESUME TIMER
+      handler: async function (response) {
+        console.log("🟢 Razorpay Response:", response);
+
+        toast.success("Payment Successful");
+
+        const selectedPack = rechargePacks.find(
+          (p) => p.id === packId
+        );
+
+        if (selectedPack) {
+          const newTime =
+            timeLeft + selectedPack.talktime * 60;
+
+          customer_recharge_completed(newTime);
+
+          setTimeLeft(newTime);
+        }
+
+        setIsPaused(false);
+      },
+
+      modal: {
+        ondismiss: function () {
+          console.log("🔴 Payment cancelled");
+
+          customer_recharge_fail();
+
+          toast.error("Payment Cancelled");
+
           setIsPaused(false);
         },
+      },
 
-        modal: {
-          ondismiss: function () {
-            customer_recharge_fail();
-            //  USER CLOSED PAYMENT
-            toast.error("Payment Cancelled");
-            setIsPaused(false); // resume timer
-          },
-        },
+      theme: {
+        color: "#fff49e",
+      },
+    };
 
-        notes: {
-          userId: user?.id ?? "guest",
-          rechargePackId: packId,
-        },
-
-        theme: {
-          color: "#fff49e",
-        },
-      };
-
-      const razor = new window.Razorpay(options);
-      razor.open();
-    } catch (error) {
-      setIsPaused(false); // safety
-      alert("Error: " + error.message);
+    if (!window.Razorpay) {
+      setIsPaused(false);
+      toast.error("Razorpay is not loaded");
+      return;
     }
-  };
+
+    const razor = new window.Razorpay(options);
+
+    razor.open();
+  } catch (error) {
+    console.error("🔴 Checkout Error:", error);
+
+    setIsPaused(false);
+
+    toast.error(error?.message || "Payment failed");
+  }
+};
 
   const handleMessageChange = (e) => {
     const value = e.target.value;
