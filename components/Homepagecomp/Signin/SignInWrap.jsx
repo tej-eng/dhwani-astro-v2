@@ -11,12 +11,13 @@ export default function SignInModalWrapper({ children }) {
   const [showSignInModal, setShowSignInModal] = useState(false);
 
   const pathname = usePathname();
-
-  const isChatPage = pathname.startsWith("/chat-with-astrologer") || pathname.startsWith("/call");
+  const hideGlobalHeader =
+    pathname.startsWith("/chat-with-astrologer") ||
+    pathname.startsWith("/call");
 
   return (
     <>
-      {!isChatPage && (
+      {!hideGlobalHeader && (
         <div className="fixed top-0 left-0 head_nav_top_all z-50 w-full">
           <Header openSignInModal={() => setShowSignInModal(true)} />
           <Navbarmob />
@@ -30,7 +31,7 @@ export default function SignInModalWrapper({ children }) {
           <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/10">
             <SignInModal onClose={() => setShowSignInModal(false)} />
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );

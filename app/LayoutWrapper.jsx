@@ -8,13 +8,16 @@ import { ChatToast } from "./common";
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
-  const isChatPage = pathname.startsWith("/chat-with-astrologer") ||   pathname.startsWith("/call");;
+const hideGlobalHeader =
+  pathname.startsWith("/chat-with-astrologer") ||
+  pathname.startsWith("/call") ;
+
 
   return (
     <>
       <main
         className={
-          isChatPage
+          hideGlobalHeader
             ? "w-screen h-screen"
             : "flex justify-center w-full pt-11 lg:pt-37 md:pt-37"
         }
@@ -24,7 +27,7 @@ export default function LayoutWrapper({ children }) {
         <ChatToast />
       </main>
 
-      {!isChatPage && (
+      {!hideGlobalHeader && (
         <>
           <CookieConsent />
           <Footerlinks />
