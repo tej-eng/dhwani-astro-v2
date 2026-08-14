@@ -312,29 +312,37 @@ const formatDate = (dateValue) => {
         <div className="flex flex-col justify-between gap-4 md:flex-row">
           {/* LEFT */}
           <div>
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-sm font-semibold">
               {call?.astrologer?.name}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-xs text-gray-500">
               Session ID: {call?.sessionId?.slice(0, 8)}
             </p>
 
             <div className="flex flex-wrap gap-3 mt-3">
-              <span className="px-3 py-1 text-xs bg-purple-200 rounded-full">
-                📞 {call?.durationMinutes} mins
+            
+                <p className="px-3 py-1 text-[10px] bg-violet-200 rounded-full">
+                 
+                  {call.durationSec < 60
+                    ? `${call.durationSec} sec`
+                    : `${Math.floor(call.durationSec / 60)} min${
+                        call.durationSec % 60
+                          ? ` ${call.durationSec % 60} sec`
+                          : ""
+                      }`}
+                </p>
+
+              <span className="px-3 py-1 text-[10px] bg-violet-200 rounded-full">
+                 ₹ {call?.coinsDeducted}
               </span>
 
-              <span className="px-3 py-1 text-xs bg-violet-200 rounded-full">
-                🪙 {call?.coinsDeducted}
-              </span>
-
-              <span className="px-3 py-1 text-xs bg-purple-300 rounded-full">
+              <span className="px-3 py-1 text-[10px] bg-purple-300 rounded-full">
                 ₹ {call?.ratePerMin}/min
               </span>
 
               <span
-                className={`px-3 py-1 text-xs rounded-full ${
+                className={`px-3 py-1 text-[10px] rounded-full ${
                   call?.status === "COMPLETED"
                     ? "bg-green-100 text-green-700"
                     : call?.status === "MISSED"
@@ -351,14 +359,14 @@ const formatDate = (dateValue) => {
 
           {/* RIGHT */}
           <div className="flex flex-col justify-between">
-            <div className="text-sm text-right text-gray-500">
+            <div className="text-[10px] text-right text-gray-500">
               <p>{new Date(call?.createdAt).toLocaleDateString()}</p>
               <p>{new Date(call?.createdAt).toLocaleTimeString()}</p>
             </div>
 
             <div className="flex justify-end mt-4">
               <span
-                className="px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 rounded-full"
+                className="px-4 py-1 text-sm font-medium text-purple-700 bg-purple-100 rounded-full"
               >
                 Call Session
               </span>
