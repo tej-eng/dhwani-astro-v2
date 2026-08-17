@@ -7,41 +7,23 @@ import { useQuery } from "@apollo/client/react";
 import StatsCards from "./StatsCard";
 
 export default function UserProfilePage() {
+  const { data, loading, error, refetch } = useQuery(GET_USER_DASHBOARD);
 
-   const {
-  data,
-  loading,
-  error,
-  refetch,
-} = useQuery(GET_USER_DASHBOARD);
+  // if(loading) return <Loader/>
 
-    // if(loading) return <Loader/>
+  const user = data?.getUserDashboard;
 
-    const user=data?.getUserDashboard;
+  return (
+    <div className="max-w-7xl mx-auto sm:p-6 space-y-6">
+      <ProfileHeader user={user} />
 
-    return(
+      <StatsCards stats={user?.stats} />
 
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="grid lg:grid-cols-3 gap-6">
+        <PersonalInfo user={user} refetch={refetch} />
 
-            <ProfileHeader user={user}/>
-
-          <StatsCards
-    stats={user?.stats}
-/>
-
-            <div className="grid lg:grid-cols-3 gap-6">
-
-  <PersonalInfo
-  user={user}
-  refetch={refetch}
-/>
-
-                {/* <WalletSummary user={user}/> */}
-
-            </div>
-
-        </div>
-
-    )
-
+        {/* <WalletSummary user={user}/> */}
+      </div>
+    </div>
+  );
 }

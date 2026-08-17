@@ -262,9 +262,9 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
                       return (
                         <div className="flex absolute top-1 right-2 items-center gap-1">
                           <span
-                            className={`sm:w-3 sm:h-3 h-2 w-2  rounded-full ${status.color}`}
+                            className={`sm:w-2 sm:h-2 h-2 w-2  rounded-full ${status.color}`}
                           />
-                          <span className="text-[9px] sm:text-xs text-black font-semibold">
+                          <span className="text-[9px] sm:text-[9px] text-black ">
                             {status.status}
                           </span>
                         </div>

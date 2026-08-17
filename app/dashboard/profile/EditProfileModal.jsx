@@ -36,34 +36,31 @@ export default function EditProfileModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4">
       <div className="w-full text-black max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-
         {/* Header */}
 
         <div className="flex items-center justify-between border-b border-slate-200 px-7 py-5">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="sm:text-2xl text-sm font-bold text-slate-900">
               Edit Profile
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-500">
               Update your personal information.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 transition hover:bg-red-50 hover:text-red-600"
+            className="flex sm:h-10 sm:w-10 h-8 w-8 items-center justify-center rounded-xl bg-slate-100 transition hover:bg-red-50 hover:text-red-600"
           >
             <FaTimes />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-
-          <div className="grid gap-5 p-7 md:grid-cols-2">
-
+          <div className="grid gap-5 sm:p-7 p-3 md:grid-cols-2">
             {/* Name */}
 
             <Input
@@ -77,11 +74,11 @@ export default function EditProfileModal({
             {/* Mobile */}
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              <label className="sm:mb-2 block sm:text-sm text-xs font-semibold text-slate-700">
                 Mobile Number
               </label>
 
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-100 px-4 py-3">
+              <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-100 px-4 py-1 sm:py-3">
                 <FaPhoneAlt className="text-slate-400" />
 
                 <input
@@ -95,11 +92,11 @@ export default function EditProfileModal({
             {/* Gender */}
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              <label className="mb-1 sm:mb-2 block text-xs sm:text-sm font-semibold text-slate-700">
                 Gender
               </label>
 
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3">
+              <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-1 sm:py-3">
                 <FaVenusMars className="text-violet-600" />
 
                 <select
@@ -132,10 +129,9 @@ export default function EditProfileModal({
 
             {/* Birth Date */}
 
-           <Input
-   type="date"
-   max={new Date().toISOString().split("T")[0]}
-            
+            <Input
+              type="date"
+              max={new Date().toISOString().split("T")[0]}
               icon={<FaBirthdayCake />}
               label="Birth Date"
               register={register("birthDate")}
@@ -151,30 +147,26 @@ export default function EditProfileModal({
               register={register("birthTime")}
               error={errors.birthTime?.message}
             />
-
           </div>
 
           {/* Footer */}
 
-          <div className="flex justify-end gap-3 border-t border-slate-200 px-7 py-5">
-
+          <div className="flex justify-center gap-3 px-7 py-2 sm:py-5">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-300 px-5 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-100"
+              className="rounded-xl border text-xs sm:text-sm border-slate-300 px-5 py-1 sm:py-2.5 font-semibold text-slate-700 transition hover:bg-slate-100"
             >
               Cancel
             </button>
 
             <button
               disabled={loading}
-              className="rounded-xl bg-violet-600 px-6 py-2.5 font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-violet-600 px-6 text-xs sm:text-sm py-1 sm:py-2.5 font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
-
           </div>
-
         </form>
       </div>
     </div>
@@ -188,15 +180,15 @@ function Input({
   error,
   type = "text",
   placeholder,
-    max,
+  max,
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold text-slate-700">
+      <label className="sm:mb-2 mb-1 block text-xs sm:text-sm font-semibold text-slate-700">
         {label}
       </label>
 
-      <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 transition focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100">
+      <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-1 sm:py-3 transition focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100">
         <span className="text-violet-600">{icon}</span>
 
         <input
@@ -207,11 +199,7 @@ function Input({
         />
       </div>
 
-      {error && (
-        <p className="mt-1 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );
 }
