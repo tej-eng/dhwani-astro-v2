@@ -55,44 +55,44 @@ const totalPages =
   data?.getMyServiceBookings?.totalPages || 1;
 
   return (
-    <div className="min-h-screen p-4 bg-gray-100 md:p-6">
+    <div className="min-h-screen p-3 sm:p-4 bg-gray-100 md:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-purple-900">
+      <div className="mb-3 sm:mb-6">
+        <h1 className="text-xl sm:text-3xl font-bold text-purple-900">
           Healing Service Bookings
         </h1>
 
-        <p className="text-gray-500">View all your healing service bookings</p>
+        <p className="text-gray-500 text-[10px] sm:text-xs">View all your healing service bookings</p>
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
-        <div className="p-4 bg-white shadow rounded-2xl">
-          <p className="text-sm text-gray-500">Total Bookings</p>
+      <div className="grid grid-cols-2 gap-4 mb-3 bg-white px-2 py-2 rounded-xl shadow-xl  sm:mb-6 md:grid-cols-4">
+        <div className="p-2 sm:p-4 bg-white shadow rounded-2xl">
+          <p className="text-xs sm:text-sm text-gray-500">Total Bookings</p>
 
-          <h2 className="mt-2 text-2xl font-bold">{totalCount}</h2>
+          <h2 className="mt-1 sm:mt-2 text-xs sm:text-2xl text-black font-bold">{totalCount}</h2>
         </div>
 
-        <div className="p-4 bg-white shadow rounded-2xl">
-          <p className="text-sm text-gray-500">Assigned</p>
+        <div className="p-2 sm:p-4 bg-white shadow rounded-2xl">
+           <p className="text-xs sm:text-sm text-gray-500">Assigned</p>
 
-          <h2 className="mt-2 text-2xl font-bold">
+        <h2 className="mt-1 sm:mt-2 text-xs sm:text-2xl  text-black font-bold">
             {bookings.filter((b) => b.bookingStatus === "ASSIGNED").length}
           </h2>
         </div>
 
-        <div className="p-4 bg-white shadow rounded-2xl">
-          <p className="text-sm text-gray-500">Completed</p>
+        <div className="p-2 sm:p-4 bg-white shadow rounded-2xl">
+        <p className="text-xs sm:text-sm text-gray-500">Completed</p>
 
-          <h2 className="mt-2 text-2xl font-bold">
+           <h2 className="mt-1 sm:mt-2 text-xs sm:text-2xl text-black font-bold">
             {bookings.filter((b) => b.bookingStatus === "COMPLETED").length}
           </h2>
         </div>
 
-        <div className="p-4 bg-white shadow rounded-2xl">
-          <p className="text-sm text-gray-500">Total Amount</p>
+        <div className="p-2 sm:p-4 bg-white shadow rounded-2xl">
+           <p className="text-xs sm:text-sm text-gray-500">Total Amount</p>
 
-          <h2 className="mt-2 text-2xl font-bold">
+         <h2 className="mt-1 sm:mt-2 text-black  text-xs sm:text-2xl font-bold">
             ₹{bookings.reduce((sum, booking) => sum + booking.amount, 0)}
           </h2>
         </div>
@@ -118,28 +118,28 @@ const totalPages =
       {/* Booking Cards */}
       <div className="space-y-4">
         {bookings.map((booking) => (
-          <div key={booking.id} className="p-5 bg-white shadow rounded-2xl">
-            <div className="flex flex-col justify-between gap-4 md:flex-row">
+          <div key={booking.id} className="p-3 sm:p-5 bg-white shadow rounded-2xl">
+            <div className="flex flex-col justify-between gap-2 sm:gap-4 md:flex-row">
               <div>
-                <h2 className="text-xl font-semibold text-black">
+                <h2 className="text-xs sm:text-xl font-semibold text-black">
                   {booking?.service?.name}
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-xs sm:text-sm text-gray-500">
                   Booking ID: {booking.id}
                 </p>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-xs sm:text-sm text-gray-500">
                   Astrologer: {booking?.astrologer?.name || "Not Assigned"}
                 </p>
 
-                <div className="flex flex-wrap gap-3 mt-4">
-                  <span className="px-3 py-1 text-sm bg-gray-100 rounded-full">
+                <div className="flex flex-wrap gap-3 mt-2 sm:mt-4">
+                  <span className="px-3 py-1 text-[10px] sm:text-sm bg-gray-100 text-black rounded-full">
                     ₹ {booking.amount}
                   </span>
 
                   <span
-                    className={`px-3 py-1 text-sm rounded-full ${
+                    className={`px-3 py-1 text-[10px] sm:text-sm rounded-full ${
                       booking.paymentStatus === "SUCCESS"
                         ? "bg-green-100 text-green-700"
                         : booking.paymentStatus === "FAILED"
@@ -151,7 +151,7 @@ const totalPages =
                   </span>
 
                   <span
-                    className={`px-3 py-1 text-sm rounded-full ${
+                    className={`px-3 py-1 text-[10px] sm:text-sm rounded-full ${
                       booking.bookingStatus === "COMPLETED"
                         ? "bg-green-100 text-green-700"
                         : booking.bookingStatus === "ASSIGNED"
@@ -166,14 +166,14 @@ const totalPages =
                 </div>
               </div>
 
-              <div className="text-right">
-                <p className="text-sm text-gray-500">
+              <div className="text-right flex gap-1 ">
+                <p className="text-[10px] sm:text-sm text-gray-500">
                   {new Date(Number(booking.createdAt)).toLocaleDateString(
                     "en-IN",
                   )}
                 </p>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-[10px] sm:text-sm text-gray-500">
                   {new Date(Number(booking.createdAt)).toLocaleTimeString(
                     "en-IN",
                   )}
@@ -194,7 +194,7 @@ const totalPages =
       <button
         disabled={currentPage === 1}
         onClick={() => setPage((prev) => prev - 1)}
-        className={`px-4 py-2 rounded-lg border ${
+        className={`px-4 py-1 text-[10px] sm:text-sm sm:py-2 rounded-lg border ${
           currentPage === 1
             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
             : "bg-white hover:bg-gray-50"
@@ -228,7 +228,7 @@ const totalPages =
       <button
         disabled={currentPage === totalPages}
         onClick={() => setPage((prev) => prev + 1)}
-        className={`px-4 py-2 rounded-lg border ${
+        className={`px-4 py-1 text-[10px] sm:text-sm sm:py-2rounded-lg border ${
           currentPage === totalPages
             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
             : "bg-white hover:bg-gray-50"
