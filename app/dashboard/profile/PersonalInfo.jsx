@@ -143,18 +143,18 @@ const [updateProfile, { loading }] = useMutation(
 
       <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">
+          <h2 className="text-sm sm:text-2xl font-bold text-slate-900">
             Personal Information
           </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-xs sm:text-sm text-slate-500">
             Manage your personal details.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setOpenEdit(true)}
-          className="rounded-xl bg-violet-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-violet-700"
+          className="rounded-xl bg-violet-600 px-3 sm:px-5 sm:py-2 text-xs py-1 sm:text-sm font-semibold text-white transition hover:bg-violet-700"
         >
           Edit
         </button>
@@ -162,13 +162,13 @@ const [updateProfile, { loading }] = useMutation(
 
       {/* Body */}
 
-      <div className="grid gap-4 p-6 md:grid-cols-2">
+      <div className="grid gap-4 p-3 sm:p-6 md:grid-cols-2">
         {details.map((item) => (
           <div
             key={item.label}
-            className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition hover:border-violet-200 hover:bg-violet-50"
+            className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-2 sm:p-4 transition hover:border-violet-200 hover:bg-violet-50"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
+            <div className="flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md">
               {item.icon}
             </div>
 
@@ -177,7 +177,7 @@ const [updateProfile, { loading }] = useMutation(
                 {item.label}
               </p>
 
-              <h3 className="mt-1 text-base font-semibold text-slate-900">
+              <h3 className="mt-1 text-xs  sm:text-base font-semibold text-slate-900">
                 {item.value}
               </h3>
             </div>
