@@ -32,14 +32,18 @@ const GET_USER_WALLET = gql`
   }
 `;
 export const SEND_GIFT = gql`
-  mutation SendGift($input: SendGiftInput!) {
-    sendGift(input: $input) {
-      success
-      message
-      userBalance
-      astrologerBalance
-    }
+mutation SendGift($input: SendGiftInput!) {
+  sendGift(input: $input) {
+    success
+    message
+    userBalance
+    astrologerBalance
+    giftPrice
+    commissionPercent
+    astrologerEarning
+    platformEarning
   }
+}
 `;
 const CREATE_ORDER = gql`
   mutation CreateOrder($input: CreateOrderInput!) {
