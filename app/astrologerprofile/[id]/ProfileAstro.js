@@ -380,7 +380,7 @@ export default function ProfileAstro({ astrologerId }) {
 
               <div className="flex items-center gap-4">
                 <span className="font-semibold text-black">
-                  {astrologerdetail?.rating || 0}/5
+                  {Number(astrologerdetail?.rating || 0).toFixed(1)}/5
                 </span>
                 <StarRating
                   className="text-yellow-500"
@@ -526,9 +526,9 @@ export default function ProfileAstro({ astrologerId }) {
                     astrologerdetail?.about || "No description available.",
                 }}
               />
-                <div className="text-sm font-medium text-gray-700">
-              👥 {followersCount} Followers
-            </div>
+              <div className="text-sm font-medium text-gray-700">
+                👥 {followersCount} Followers
+              </div>
             </div>
           </div>
 
@@ -595,17 +595,15 @@ export default function ProfileAstro({ astrologerId }) {
                 Ratings & Reviews
               </h5>
               <div className="flex items-center gap-4">
-              <span className="font-semibold text-black">
-                {astrologerdetail?.rating || 0}/5
-              </span>
+                <span className="font-semibold text-black">
+                  {astrologerdetail?.rating || 0}/5
+                </span>
 
-              <StarRating
-                className="text-yellow-500"
-                onRate={(val) => console.log("Rated:", val)}
-              />
-            </div>
-
-          
+                <StarRating
+                  className="text-yellow-500"
+                  onRate={(val) => console.log("Rated:", val)}
+                />
+              </div>
 
               {astrologerdetail?.recentReviews?.length > 0 ? (
                 <>
@@ -688,7 +686,6 @@ export default function ProfileAstro({ astrologerId }) {
                 <div className="text-gray-500">No reviews yet</div>
               )}
             </div>
-            
           </div>
         </div>
       </div>
