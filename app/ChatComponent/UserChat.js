@@ -352,12 +352,6 @@ const handleCheckout = async (amount, packId) => {
   try {
     customer_recharge();
     setIsPaused(true);
-
-    console.log("🟡 Creating recharge order:", {
-      amount,
-      packId,
-    });
-
     const { data } = await createOrder({
       variables: {
         input: {
@@ -368,9 +362,6 @@ const handleCheckout = async (amount, packId) => {
     });
 
     const order = data?.createOrder;
-
-    console.log("🟢 GraphQL Order:", order);
-
     if (!order?.success || !order?.orderId) {
       setIsPaused(false);
       toast.error("Error creating order");
@@ -398,8 +389,6 @@ const handleCheckout = async (amount, packId) => {
       },
 
       handler: async function (response) {
-        console.log("🟢 Razorpay Response:", response);
-
         toast.success("Payment Successful");
 
         const selectedPack = rechargePacks.find(
@@ -420,12 +409,8 @@ const handleCheckout = async (amount, packId) => {
 
       modal: {
         ondismiss: function () {
-          console.log("🔴 Payment cancelled");
-
           customer_recharge_fail();
-
           toast.error("Payment Cancelled");
-
           setIsPaused(false);
         },
       },
@@ -483,8 +468,9 @@ const handleCheckout = async (amount, packId) => {
 
   const emitChatCompleted = () => {
     if (chatEndedRef.current) return;
-
-    //chatEndedRef.current = true;
+    clearInterval(intervalRef.current);
+          intervalRef.current = null;
+   // chatEndedRef.current = true;
 
     setChatEnded(true);
 
@@ -611,10 +597,8 @@ const handleCheckout = async (amount, packId) => {
     });
 
     socket.on("typing", (data) => {
-              console.log("1111111111111111111111111111111", data);
 
       if (data.user_name === "Astrologer") {
-        console.log("222222222222222222222222222222222222", data?.typing);
         
         setTypingStatus(data.typing ? "Astrologer typing..." : "");
       }
