@@ -611,7 +611,11 @@ const handleCheckout = async (amount, packId) => {
     });
 
     socket.on("typing", (data) => {
-      if (data.sender === "astrologer") {
+              console.log("1111111111111111111111111111111", data);
+
+      if (data.user_name === "Astrologer") {
+        console.log("222222222222222222222222222222222222", data?.typing);
+        
         setTypingStatus(data.typing ? "Astrologer typing..." : "");
       }
     });

@@ -304,7 +304,7 @@ export default function ProfileAstro({ astrologerId }) {
   };
 
   return (
-    <div className="w-full p-3 pt-5 md:pt-5">
+    <div className="w-full sm:p-3 sm:pt-5 md:pt-5">
       <div className="max-w-7xl p-3 mx-auto rounded-lg shadow-md  md:p-6">
         <div className="flex items-start relative overflow-hidden justify-evenly bg-linear-to-r from-yellow-100 p-3 rounded-2xl md:p-6 via-yellow-50 to-yellow-100 flex-col gap-5 sm:flex-row md:gap-10">
           {!astrologerdetail?.astro_tag ? (
@@ -317,7 +317,7 @@ export default function ProfileAstro({ astrologerId }) {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center w-full gap-2">
             <Image
               src={
                 astrologerdetail?.profilePic
@@ -327,7 +327,7 @@ export default function ProfileAstro({ astrologerId }) {
               alt="image"
               width={100}
               height={100}
-              className="border-4 border-yellow-400 rounded-full w-35 h-35 object-cover"
+              className="border-4 border-yellow-400 rounded-full w-30 h-30 sm:w-35 sm:h-35 object-cover"
             />
             {followLoadingStatus ? (
               <CustomButton variant="yellow" disabled>
@@ -353,7 +353,7 @@ export default function ProfileAstro({ astrologerId }) {
 
             <button
               onClick={() => setShowGiftPopup(true)}
-              className="relative shine-text mt-7 px-5 py-2 rounded-full text-white font-medium
+              className="relative shine-text mt-7 px-5 py-2 text-xs sm:text-base rounded-full text-white font-medium
              bg-linear-to-r from-pink-500 to-red-500 shadow-[4px_4px_8px_rgba(0,0,0,0.2)]
              overflow-hidden transition-transform duration-300 hover:scale-105"
               aria-label="Send Gift to Astrologer"
@@ -362,18 +362,18 @@ export default function ProfileAstro({ astrologerId }) {
             </button>
           </div>
 
-          <div className="flex flex-col gap-5 sm:flex-row md:items-start sm:gap-5 lg:gap-20">
+          <div className="flex flex-col gap-5 sm:flex-row  md:items-start sm:gap-5 lg:gap-20">
             <div className="flex flex-col gap-2 py-2 text-sm md:text-base">
-              <h2 className="flex items-center gap-1 text-xl text-gray-800 sm:text-xl sm:font-bold lg:text-3xl lg:font-semibold">
+              <h2 className="flex items-center gap-1 font-bold text-xl text-gray-800 sm:text-xl sm:font-bold lg:text-3xl lg:font-semibold">
                 {astrologerdetail?.displayName || astrologerdetail?.name}
                 <BiSolidBadgeCheck className="w-5 h-5 text-green-500" />
               </h2>
 
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-3 h-3 rounded-full ${profileStatus.color}`}
+                  className={`sm:w-3 sm:h-3 h-1 h-1 rounded-full ${profileStatus.color}`}
                 />
-                <span className="font-semibold text-black">
+                <span className="font-semibold text-xs sm:text-sm text-black">
                   {profileStatus.status}
                 </span>
               </div>
@@ -388,7 +388,7 @@ export default function ProfileAstro({ astrologerId }) {
                 />
               </div>
 
-              <span className="text-sm font-semibold text-black">
+              <span className="text-xs sm:text-sm font-semibold text-black">
                 {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
 
@@ -408,7 +408,7 @@ export default function ProfileAstro({ astrologerId }) {
             </div>
 
             <div className="sm:w-60 lg:w-120 w-full flex flex-col text-black">
-              <div className="space-y-2 text-sm sm:text-sm lg:text-base">
+              <div className="space-y-2 text-xs sm:text-sm lg:text-base">
                 <div className="grid grid-cols-2 gap-5">
                   <span className="font-semibold">Experience</span>
                   <span>{astrologerdetail?.experience} Years</span>
@@ -427,13 +427,13 @@ export default function ProfileAstro({ astrologerId }) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-5 mt-6 text-sm sm:flex-col lg:flex-row md:text-base">
+              <div className="flex items-center w-full self-align-center place-self-center justify-center gap-5 mt-6 text-sm sm:flex-col lg:flex-row md:text-base">
                 <button
                   disabled={chatStatus.disabled}
                   className={
                     chatStatus.disabled
-                      ? "opacity-50 cursor-not-allowed w-50 bg-green-300  rounded-2xl"
-                      : " bg-green-500 cursor-pointer hover:scale:105  w-50 rounded-2xl py-1"
+                      ? "opacity-50 cursor-not-allowed w-35 sm:w-50 bg-green-300  rounded-2xl"
+                      : " bg-green-500 cursor-pointer hover:scale:105 w-35 sm:w-50 rounded-2xl py-1"
                   }
                   onClick={() => {
                     if (!chatStatus.canConnect) {
@@ -474,8 +474,8 @@ export default function ProfileAstro({ astrologerId }) {
                   disabled={callStatus.disabled}
                   className={
                     callStatus.disabled
-                      ? "opacity-50 cursor-not-allowed w-50 bg-green-300  rounded-2xl"
-                      : " bg-green-500 cursor-pointer hover:scale:105 w-50 rounded-2xl py-1"
+                      ? "opacity-50 cursor-not-allowed w-35 sm:w-50 bg-green-300  rounded-2xl"
+                      : " bg-green-500 cursor-pointer hover:scale:105 w-35 sm:w-50 rounded-2xl py-1"
                   }
                   onClick={() => {
                     if (!callStatus.canConnect) {
@@ -520,13 +520,13 @@ export default function ProfileAstro({ astrologerId }) {
           <div className="p-4 mt-4 border   shadow bg-linear-to-r from-purple-50  rounded-2xl md:p-6 via-violet-50 to-yellow-50">
             <h3 className="mb-1 text-lg font-bold text-gray-800">About Me</h3>
             <div className="text-sm text-gray-700">
-              <div
+              <div className="text-xs sm:text-sm"
                 dangerouslySetInnerHTML={{
                   __html:
                     astrologerdetail?.about || "No description available.",
                 }}
               />
-              <div className="text-sm font-medium text-gray-700">
+              <div className="text-xs sm:text-sm my-1 font-medium text-gray-700">
                 👥 {followersCount} Followers
               </div>
             </div>
@@ -552,7 +552,7 @@ export default function ProfileAstro({ astrologerId }) {
                           onClick={() =>
                             router.push(`/astrologerprofile/${astro.id}`)
                           }
-                          className="flex items-center gap-3 bg-white rounded-xl shadow-md hover:shadow-lg cursor-pointer p-3 w-[240px]"
+                          className="flex flex-col sm:flex-row items-center gap-3 bg-white rounded-xl shadow-md hover:shadow-lg cursor-pointer p-2 sm:p-3 w-36 sm:w-60"
                         >
                           <Image
                             src={
@@ -563,17 +563,17 @@ export default function ProfileAstro({ astrologerId }) {
                             width={60}
                             height={60}
                             alt={astro.name}
-                            className="rounded-full object-cover w-15 h-15"
+                            className="rounded-full object-cover w-12 h-12 sm:w-15 sm:h-15"
                           />
 
-                          <div className="flex text-black flex-col flex-1">
-                            <h4 className="font-semibold">{astro.name}</h4>
+                          <div className="flex text-xs sm:text-sm text-black flex-col flex-1">
+                            <h4 className="font-semibold text-xs sm:text-sm">{astro.name}</h4>
 
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs sm:text-sm text-gray-500">
                               {astro.skills?.join(", ")}
                             </p>
 
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs sm:text-sm text-gray-500">
                               {astro.languages?.join(", ")}
                             </p>
 
@@ -591,11 +591,11 @@ export default function ProfileAstro({ astrologerId }) {
               </div>
             </div>
             <div className="flex flex-col shadow-xl rounded-2xl p-4 items-center flex-1 bg-linear-to-r from-yellow-50 md:p-6 via-violet-50 to-purple-100">
-              <h5 className="text-lg font-semibold text-gray-800 text-center mb-4">
+              <h5 className="text-lg font-semibold text-gray-800 text-center mb-2">
                 Ratings & Reviews
               </h5>
-              <div className="flex items-center gap-4">
-                <span className="font-semibold text-black">
+              <div className="flex items-center bg-black/60 rounded-full text-white px-3  gap-4 mb-1">
+                <span className="font-semibold ">
                   {Number(astrologerdetail?.rating || 0).toFixed(1)}/5
                 </span>
 
@@ -605,34 +605,36 @@ export default function ProfileAstro({ astrologerId }) {
                 />
               </div>
 
-              {astrologerdetail?.recentReviews?.length > 0 ? (
+              {astrologerdetail?.reviews?.length > 0 ? (
                 <>
-                  <div className="w-full max-w-xl space-y-5">
-                    {astrologerdetail.recentReviews
-                      .slice(
-                        0,
-                        showAll ? astrologerdetail.recentReviews.length : 3,
-                      )
+                  <div className="w-full h-70 overflow-y-auto max-w-xl space-y-5">
+                    {astrologerdetail.reviews
+                      .slice(0, showAll ? astrologerdetail.reviews.length : 3)
                       .map((review) => (
                         <div
                           key={review.id}
-                          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-4"
+                          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all p-2 px-4"
                         >
-                          <div className="flex justify-between items-center mb-2">
-                            <h5 className="font-semibold text-gray-700">
+                          <div className="flex justify-between items-center ">
+                            <h5 className="font-semibold text-xs sm:text-sm text-gray-700">
                               {review?.userName?.split(" ")[0] || "User"}
                             </h5>
 
                             <div className="text-right">
                               <p className="text-xs text-gray-400">
-                                {new Date(review.createdAt).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  },
-                                )}
+                                {(() => {
+                                  const date = new Date(
+                                    Number(review.createdAt),
+                                  );
+
+                                  return date
+                                    .toLocaleDateString("en-GB", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })
+                                    .replace(/(\w+) (\d{4})$/, "$1, $2");
+                                })()}
                               </p>
 
                               <div>
@@ -653,14 +655,14 @@ export default function ProfileAstro({ astrologerId }) {
                             </div>
                           </div>
 
-                          <hr className="border-gray-200 mb-3" />
+                          <hr className="border-gray-200 p-1" />
 
-                          <div className="text-sm italic text-gray-600 mb-2">
+                          <div className="text-xs italic text-gray-600 mb-2">
                             {review?.comment}
                           </div>
 
                           {review?.reply && (
-                            <div className="bg-gray-50 p-3 rounded-md text-sm text-black border-l-4 border-blue-400">
+                            <div className="bg-gray-50 p-3 rounded-md text-xs text-black border-l-4 border-blue-400">
                               <strong className="text-gray-700">
                                 Astrologer:
                               </strong>{" "}
