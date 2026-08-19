@@ -596,7 +596,7 @@ export default function ProfileAstro({ astrologerId }) {
               </h5>
               <div className="flex items-center gap-4">
                 <span className="font-semibold text-black">
-                  {Number(astrologerdetail?.rating || 0).toFixed(0)}/5
+                  {Number(astrologerdetail?.rating || 0).toFixed(1)}/5
                 </span>
 
                 <StarRating
