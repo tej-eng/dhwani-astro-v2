@@ -14,29 +14,23 @@ const ME_QUERY = gql`
 `;
 
 function AstrologerPrice({ mode, astro }) {
-  const pricing = astro?.pricing?.find(
-    (p) => p.type === mode?.toUpperCase()
-  );
+  const pricing = astro?.pricing?.find((p) => p.type === mode?.toUpperCase());
 
   if (!pricing) return null;
 
   const currentPrice = pricing.price ?? 0;
 
-  const originalPrice =   
-    pricing.offerPrice ||
-    currentPrice;
+  const originalPrice = pricing.offerPrice || currentPrice;
 
   return (
     <>
       <span className="flex items-center justify-center gap-3 text-sm font-semibold text-red-500 sm:text-lg">
-        ₹{currentPrice}
+        {Number(currentPrice || 0) === 0 ? "Free" : `₹${currentPrice}`}
       </span>
 
-      
-        <span className="text-sm font-semibold text-black line-through">
-          ₹{originalPrice}/min
-        </span>
-     
+      <span className="text-sm font-semibold text-black line-through">
+        ₹{originalPrice}/min
+      </span>
     </>
   );
 }
