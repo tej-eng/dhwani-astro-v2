@@ -126,8 +126,6 @@ export default function PhoneInput({ onChange, handleKeyEnter, resetTrigger }) {
         type="text"
         inputMode="numeric"
         pattern="[0-9]*"
-        autoComplete="one-time-code"
-        maxLength={4}
         className="flex-1 px-3 w-50 sm:w-full  py-2 border border-gray-200 text-gray-800 text-sm sm:text-base rounded-lg placeholder:text-xs shadow-lg outline-none"
         placeholder="Mobile number"
         value={number}
