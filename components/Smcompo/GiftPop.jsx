@@ -96,7 +96,17 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
   });
 
   const gifts = giftsResponse?.getGifts?.data || [];
+useEffect(() => {
+  if (!open) return;
 
+  const originalOverflow = document.body.style.overflow;
+
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.body.style.overflow = originalOverflow;
+  };
+}, [open]);
   const { statusCode } = useSelector((state) => state.recharge_payment);
   useEffect(() => {}, [userData, responsedata]);
 
@@ -217,19 +227,21 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
     toast.error(error.message || "Payment failed");
   }
 };
-
+const handleClose = () => {
+  console.log("Closing Gift Popup");
+  onClose?.();
+};
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 ">
+<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/10 overflow-y-auto">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
       />
-      <div className="relative w-[70%] max-w-md sm:max-w-xl rounded-3xl p-6 bg-white backdrop-blur-lg border border-white/30 shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff1a]">
-        <button
+<div className="relative w-[92%] sm:w-[70%] max-w-md sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl p-3 sm:p-6 bg-white backdrop-blur-lg border border-white/30 shadow-[8px_8px_20px_#bebebe,-8px_-8px_20px_#ffffff1a]">        <button
           aria-label="Close Gift Popup"
-          onClick={onClose}
+        onClick={handleClose}
           className="absolute cursor-pointer font-bold top-4 right-4 text-gray-800 hover:text-red-600 transition-all"
         >
           <svg
@@ -239,27 +251,27 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
             viewBox="-6 -6 24 24"
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="xMinYMin"
-            className="jam jam-close"
+            className="pointer-events-none"
           >
             <path d="M7.314 5.9l3.535-3.536A1 1 0 1 0 9.435.95L5.899 4.485 2.364.95A1 1 0 1 0 .95 2.364l3.535 3.535L.95 9.435a1 1 0 1 0 1.414 1.414l3.535-3.535 3.536 3.535a1 1 0 1 0 1.414-1.414L7.314 5.899z" />
           </svg>
         </button>
 
-        <h2 className="text-xl font-bold text-center text-[#2f1254] mb-4 drop-shadow">
+        <h2 className="sm:text-xl text-sm font-bold text-center text-[#2f1254] sm:mb-4 mb-2 drop-shadow">
           Send Gifts
         </h2>
 
-        <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 justify-items-center mb-5">
+        <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 px-3 py-2 bg-purple-50 rounded-xl sm:gap-4 justify-items-center mb-5">
           {gifts.map((gift, i) => (
             <div
               key={i}
               onClick={() => setSelected(gift)}
-              className={`cursor-pointer flex flex-col items-center justify-center w-[70px] sm:w-[110px] h-[100px] bg-white shadow-purple-200 shadow-xl rounded-2xl  hover:scale-110 transition-all border ${
+              className={`cursor-pointer flex flex-col items-center justify-center w-17.5 sm:w-27.5 h-25   rounded-2xl  hover:scale-110 transition-all border ${
                 selected?.name === gift.name
                   ? "border-yellow-500 shadow-inner"
                   : "border-transparent "
               }`}
-            >
+             >
               <Image
                 src={
                   gift?.image
@@ -279,7 +291,7 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
           ))}
         </div>
 
-        <div className="w-full bg-white/40 p-3 rounded-xl shadow-inner border border-white/40 mb-4">
+        {/* <div className="w-full bg-white/40 p-3 rounded-xl shadow-inner border border-white/40 mb-4">
           <p className="text-center text-sm font-semibold text-[#2f1254] mb-2">
             Recharge to seek blessing
           </p>
@@ -300,17 +312,17 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="flex justify-between items-center">
           <div>
             {responsedata?.update_price ? (
-              <p className="text-gray-700 font-semibold">
+              <p className="text-gray-700 text-xs font-semibold">
                 {" "}
                 ₹{(responsedata?.update_price + priceupdate).toFixed(2)}
               </p>
             ) : (
-              <p className="text-gray-700 font-semibold">
+              <p className="text-gray-700 text-xs  font-semibold">
                 ₹
                 {(
                   Number(walletData?.getUserWallet?.balanceCoins || 0) +
@@ -319,11 +331,11 @@ export default function GiftPop({ open, onClose, astrologername, astro_id }) {
               </p>
             )}
 
-            <p className="text-xs text-gray-500">Wallet Balance</p>
+            <p className="text-[10px] sm:text-xs text-gray-500">Wallet Balance</p>
           </div>
           <button
             aria-label="Send Gift"
-            className="px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold 
+            className="px-6 py-1 text-xs sm:py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold 
           rounded-full shadow-[4px_4px_10px_#b9b9b9,-4px_-4px_10px_#ffffffa0] transition-all"
             onClick={sendGift}
           >

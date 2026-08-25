@@ -123,7 +123,9 @@ export default function PhoneInput({ onChange, handleKeyEnter, resetTrigger }) {
       </div>
 
       <input
-        type="tel"
+         type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
         className="flex-1 px-3  py-2 border border-gray-200 text-gray-800 text-sm sm:text-base rounded-lg placeholder:text-xs shadow-lg outline-none"
         placeholder="Mobile number"
         value={number}

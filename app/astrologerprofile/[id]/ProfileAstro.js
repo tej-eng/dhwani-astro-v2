@@ -353,7 +353,7 @@ export default function ProfileAstro({ astrologerId }) {
 
             <button
               onClick={() => setShowGiftPopup(true)}
-              className="relative shine-text mt-7 px-5 py-2 text-xs sm:text-base rounded-full text-white font-medium
+              className="relative shine-text mt-3 sm:mt-7 px-5 py-2 text-xs sm:text-base rounded-full text-white font-medium
              bg-linear-to-r from-pink-500 to-red-500 shadow-[4px_4px_8px_rgba(0,0,0,0.2)]
              overflow-hidden transition-transform duration-300 hover:scale-105"
               aria-label="Send Gift to Astrologer"
