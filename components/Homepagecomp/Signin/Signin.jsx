@@ -35,7 +35,6 @@ const SignInModal = ({ onClose }) => {
     setStep,
   } = useOTP();
 
-
   const [phoneData, setPhoneData] = useState({
     countryCode: "",
     mobile: "",
@@ -86,7 +85,6 @@ const SignInModal = ({ onClose }) => {
       toast.error(err.message);
     }
   };
-
 
   const handleVerifyOTP = async () => {
     try {
@@ -258,6 +256,10 @@ const SignInModal = ({ onClose }) => {
                 <div className="flex gap-3">
                   {otp.map((digit, index) => (
                     <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete="one-time-code"
                       disabled={timer === 0}
                       id={`otp-${index}`}
                       key={index}
