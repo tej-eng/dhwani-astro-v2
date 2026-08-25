@@ -207,13 +207,13 @@ const SignInModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center overflow-hidden justify-center z-[9999]">
       <div className="flex flex-col sm:w-full w-[90%] max-w-2xl overflow-hidden  text-black rounded-2xl shadow-lg ">
-        <div className="relative py-4 md:flex items-center hidden overflow-hidden justify-center bg-[#3f1069]">
-          <span className="text-xl font-semibold text-white">
+        <div className="relative sm:py-4 md:flex  items-center   justify-center bg-[#3f1069]">
+          <span className="text-xl hidden sm:flex font-semibold text-white">
             Continue With Mobile
           </span>
           <RxCrossCircled
             onClick={onClose}
-            className="text-white absolute right-7 cursor-pointer text-xl"
+            className="text-white absolute right-1 sm:right-7 top-1 cursor-pointer text-xl"
           />
         </div>
 
