@@ -1,5 +1,5 @@
 "use client";
-
+import DOMPurify from "dompurify";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
@@ -139,12 +139,12 @@ export default function BlogDetail() {
           </div>
         </div>
         {/* Content */}
-        <div
-          className="prose max-w-none text-xs sm:text-sm prose-headings:text-black text-black prose-p:text-black mt-8"
-          dangerouslySetInnerHTML={{
-            __html: blog.content || "",
-          }}
-        />
+  <div
+  className="prose max-w-none text-xs sm:text-sm prose-headings:text-black text-black prose-p:text-black mt-8"
+  dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(blog.content || ""),
+  }}
+/>
       </div>
     </section>
   );

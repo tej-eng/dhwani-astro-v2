@@ -4,7 +4,7 @@ import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import Image from "next/image";
 import { useLanguage } from "@/app/context/LangContext";
-
+import DOMPurify from "dompurify";
 export default function AboutDirectorClient({ messages }) {
   useScrollZoom(".head-wrap");
   const { messages: t } = useLanguage();
@@ -14,7 +14,7 @@ export default function AboutDirectorClient({ messages }) {
       <h1
         className="text-[#2f1254] text-md sm:text-xl lg:text-2xl text-center font-semibold"
         dangerouslySetInnerHTML={{
-          __html: t?.about?.heading || "",
+          __html: DOMPurify.sanitize(t?.about?.heading || ""),
         }}
       ></h1>
       <div className="sm:grid sm:grid-cols-7 flex flex-col gap-4 items-center">
@@ -33,7 +33,7 @@ export default function AboutDirectorClient({ messages }) {
             {t?.about?.tagline}
           </h2>
 
-          <p className="text-black text-[13px] text-wide" dangerouslySetInnerHTML={{ __html: t?.about?.paragraph }} />
+          <p className="text-black text-[13px] text-wide" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.about?.paragraph || "") }} />
 
           <div className="flex items-center gap-5 mt-4">
             <Image src="/ds-img/legacy.webp" width={56} height={60} alt="Legacy" />

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { GET_ABOUT_PAGE } from "../../graphql/seoQuery";
 //export const revalidate = 604800; 
+import DOMPurify from "isomorphic-dompurify";
 
 export default async function AboutP() {
   const res = await fetch(
@@ -46,7 +47,7 @@ export default async function AboutP() {
             </span>
             <h1
               dangerouslySetInnerHTML={{
-                __html: about?.heroTitle || "",
+                __html: DOMPurify.sanitize(about?.heroTitle || ""),
               }}
               className="text-[#efd335] text-base sm:text-xl text-center font-semibold"
             />
@@ -60,7 +61,7 @@ export default async function AboutP() {
             <div
               className="text-base text-center"
               dangerouslySetInnerHTML={{
-                __html: about?.heroDescription || "",
+                __html: DOMPurify.sanitize(about?.heroDescription || ""),
               }}
             />
           </div>
@@ -97,7 +98,7 @@ export default async function AboutP() {
                 <div
                   className="mt-4 text-sm leading-relaxed text-gray-700"
                   dangerouslySetInnerHTML={{
-                    __html: mentor?.description || "",
+                    __html: DOMPurify.sanitize(mentor?.description || ""),
                   }}
                 />
               </div>
@@ -136,7 +137,7 @@ export default async function AboutP() {
                 <div
                   className="mt-4 text-sm leading-relaxed text-gray-700"
                   dangerouslySetInnerHTML={{
-                    __html: founder?.description || "",
+                    __html:DOMPurify.sanitize(founder?.description || ""),
                   }}
                 />
               </div>

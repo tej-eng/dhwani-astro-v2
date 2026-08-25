@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "dompurify";
 
 import Freereport from "@/components/Smcompo/Freereport";
 import Image from "next/image";
@@ -11,7 +12,7 @@ export default function Procompo({ data, heading }) {
         <>
 
             <div className="flex flex-col items-center gap-2">
-                <h1 className="relative text-[#2f1254] text-md sm:text-2xl py-1  sm:py-2 text-center font-semibold" dangerouslySetInnerHTML={{ __html: heading }}>
+                <h1 className="relative text-[#2f1254] text-md sm:text-2xl py-1  sm:py-2 text-center font-semibold" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(heading || "") }}>
 
                 </h1>
 

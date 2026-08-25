@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
+import DOMPurify from "dompurify";
 
 import { Navigation, Autoplay } from "swiper/modules";
 import { useLanguage } from "@/app/context/LangContext";
@@ -50,7 +51,7 @@ export default function Blogsection() {
     <section className="flex flex-col gap-4 w-full items-center self-center sm:max-w-7xl sm:my-4 p-3 ">
       <div className="py-3 flex flex-col gap-2">
         <h1
-          dangerouslySetInnerHTML={{ __html: t?.hblog?.head || "Latest Blogs" }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.hblog?.head || "Latest Blogs") }}
           className="relative head-wrap text-[#2f1254] text-md sm:text-xl lg:text-2xl text-center font-semibold"
         />
 

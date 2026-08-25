@@ -4,6 +4,7 @@ import { useLanguage } from "@/app/context/LangContext";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import { GET_FAQS } from "@/app/graphql/gqlQuery";
 import { useQuery } from "@apollo/client/react";
+import DOMPurify from "dompurify";
 
 export default function FAQue() {
   const { messages: t } = useLanguage();
@@ -29,7 +30,7 @@ export default function FAQue() {
     <div className="md:max-w-7xl w-full  mx-auto bg-white p-1 sm:p-6 px-4 py-3">
       <h1
         dangerouslySetInnerHTML={{
-          __html: t?.faq?.head || "Frequently Asked Questions",
+          __html: DOMPurify.sanitize(t?.faq?.head || "Frequently Asked Questions"),
         }}
         className="relative head-wrap text-[#2f1254] text-md sm:text-xl lg:text-2xl sm:py-5 pb-2 text-center font-semibold"
       />

@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "dompurify";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -51,7 +52,7 @@ export default function Testimon() {
       <div className="sm:py-3 py-1">
         <h1
           dangerouslySetInnerHTML={{
-            __html: t?.testimonial?.head || "Frequently Asked Questions",
+            __html: DOMPurify.sanitize(t?.testimonial?.head || "Frequently Asked Questions"),
           }}
           className="relative head-wrap text-[#2f1254] text-md sm:text-xl lg:text-2xl text-center font-semibold"
         />

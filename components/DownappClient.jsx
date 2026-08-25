@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import useScrollZoom from "@/Hooks/scrollZoom";
 import { useLanguage } from "@/app/context/LangContext";
+import DOMPurify from "dompurify";
 
 export default function DownappClient({ messages }) {
   useScrollZoom(".head-wrap");
@@ -14,7 +15,7 @@ export default function DownappClient({ messages }) {
       <h1
         className="text-[#2f1254] head-wrap text-md sm:text-xl lg:text-2xl text-center font-semibold"
         dangerouslySetInnerHTML={{
-          __html: messages?.download?.heading || "• Download Dhwani App •",
+          __html: DOMPurify.sanitize(messages?.download?.heading || "• Download Dhwani App •"),
         }}
       />
 

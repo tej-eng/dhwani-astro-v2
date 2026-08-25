@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "dompurify";
 
 import {
   useGetKalsharpQuery,
@@ -78,7 +79,7 @@ export default function KalsharpClient({ formData }) {
               <b className="text-purple-700">Main Report:</b>
               <div
                 dangerouslySetInnerHTML={{
-                  __html: kalData.report?.report,
+                  __html: DOMPurify.sanitize(kalData.report?.report || ""),
                 }}
               />
             </div>

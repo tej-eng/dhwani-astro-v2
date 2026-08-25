@@ -40,11 +40,9 @@ const ChatRequestCard = ({
   useEffect(() => {
     if (!socket) return;
 
-    socket.onAny((event, ...args) => {
-    });
+    socket.onAny((event, ...args) => {});
 
-    socket.on("connect", () => {
-    });
+    socket.on("connect", () => {});
 
     return () => {
       socket.offAny();
@@ -599,39 +597,52 @@ const ChatRequestCard = ({
       {showWaitingPopup && (
         <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
           <Image
-           src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
+            src={
+              astroimage
+                ? `https://www.dhwaniastro.com${astroimage}`
+                : "/man.png"
+            }
             alt="Neha Vermaaaa"
             width={50}
             height={50}
-           className="rounded-full w-8 h-auto  object-cover"
+            className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-[10px] sm:text-sm text-white ">{astro_Name}</h3>
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white ">
+              {astro_Name}
+            </h3>
             <p className="text-[8px] sm:text-sm text-gray-300 font-extralight">
               Wait Time: {formatTime(timeLeft)}
             </p>
           </div>
-          <button
-            onClick={() => handleRequestCancel(type)}
-            className="absolute right-2 top-2 text-xs bg-red-500 text-white  h-5 w-5 rounded-full"
-          >
-            ✕
-          </button>
+  <button
+  type="button"
+  onClick={() => handleRequestCancel(type)}
+  className="absolute right-1 top-1 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-sm font-semibold text-white touch-manipulation cursor-pointer"
+  aria-label="Cancel request"
+>
+  ✕
+</button>
         </div>
       )}
 
       {!showWaitingPopup && showQueuePopup && (
         <div className="w-full  bg-gray-800 px-3 sm:py-2 py-1 rounded-full flex relative">
-          
           <Image
-            src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
+            src={
+              astroimage
+                ? `https://www.dhwaniastro.com${astroimage}`
+                : "/man.png"
+            }
             alt="Neha Verma"
             width={50}
             height={50}
             className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-[10px] sm:text-sm text-white">{astro_Name}</h3>
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white">
+              {astro_Name}
+            </h3>
 
             <p className=" text-[8px] sm:text-sm font-extralight sm:font-medium">
               You are in line! Position : {queueData?.position}
@@ -640,12 +651,14 @@ const ChatRequestCard = ({
               Estimated wait time: {formatTime(timeLeft)}
             </p>
           </div>
-          <button
-            onClick={() => handleRequestCancel(queueData?.type)}
-            className="absolute right-2 top-2 text-xs bg-red-500 text-white  h-5 w-5 rounded-full"
-          >
-            ✕
-          </button>
+  <button
+  type="button"
+  onClick={() => handleRequestCancel(queueData?.type)}
+  className="absolute right-1 top-1 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-sm font-semibold text-white touch-manipulation cursor-pointer"
+  aria-label="Cancel request"
+>
+  ✕
+</button>
         </div>
       )}
     </div>

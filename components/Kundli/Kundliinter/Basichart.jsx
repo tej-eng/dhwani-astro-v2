@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Basicdetail from "./Basicdetail";
 import { useGetChartKundliMutation } from "@/app/redux/services/astrologyAPI";
+import DOMPurify from "dompurify";
 
 function colorizeKundliSvg(svg) {
   const colorMap = {
@@ -150,7 +151,7 @@ if (error) {
               {chartData[type]?.svg ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: beautifyKundliSvg(chartData[type].svg),
+                    __html:DOMPurify.sanitize( beautifyKundliSvg(chartData[type].svg) || ""),
                   }}
                 />
               ) : (

@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "dompurify";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -56,7 +57,7 @@ export default function Freereport() {
     return (
         <section className=" flex-col w-full items-center self-center sm:max-w-7xl my-2  ">
             <div className="py-3">
-                <h1 dangerouslySetInnerHTML={{__html : t?.comfree?.free || "Free Reports"}} className="relative head-wrap text-[#2f1254] text-md sm:text-2xl text-center font-semibold"/>
+                <h1 dangerouslySetInnerHTML={{__html : DOMPurify.sanitize(t?.comfree?.free || "Free Reports" )}} className="relative head-wrap text-[#2f1254] text-md sm:text-2xl text-center font-semibold"/>
 
             </div>
             <div className="slider-freereport  w-full relative">

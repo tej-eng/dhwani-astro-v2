@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import CustomButton from "@/components/Custom/CustomButton";
 import { useRouter } from "next/navigation";
+import DOMPurify from "dompurify";
 
 const DOSHAS = [
   { id: "manglik", name: "Manglik Dosha", img: "/ds-img/mars.gif" },
@@ -40,7 +41,7 @@ export default function Doshas({
     <div className="mb-2 text-xs sm:text-sm text-black">
       <strong>{label}:</strong>{" "}
       {block ? (
-        <div dangerouslySetInnerHTML={{ __html: value }} />
+        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(value || "") }} />
       ) : (
         <span>{String(value)}</span>
       )}

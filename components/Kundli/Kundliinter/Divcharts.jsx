@@ -2,6 +2,7 @@
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useGetChartKundliMutation } from "@/app/redux/services/astrologyAPI";
+import DOMPurify from "dompurify";
 
 function colorizeKundliSvg(svg) {
   const colorMap = {
@@ -173,7 +174,7 @@ const [getChartKundli] =
               {chart.svg ? (
                 <div
                   className="w-full h-auto object-contain flex items-center justify-center"
-                  dangerouslySetInnerHTML={{ __html: chart.svg }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(chart.svg || "") }}
                 />
               ) : (
                 <p className="text-center text-red-500">Chart not available</p>

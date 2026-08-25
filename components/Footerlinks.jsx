@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import DOMPurify from "dompurify";
 
 import Link from "next/link";
 import { useLanguage } from "../app/context/LangContext";
@@ -214,7 +215,7 @@ export default function Footerlinks() {
                     <svg width={12} height={12} viewBox="0 0 16 16" aria-hidden="true">
                       <path fill="#fdc700" d="M8,0 C11.3137,0 14,2.68629 14,6 C14,7.33918 13.5613,8.57588 12.8197,9.57422 L7.99994,16 L3.1803,9.57422 C2.43873,8.57588 2,7.33918 2,6 C2,2.68629 4.68629,0 8,0 Z M8,2 C5.79086,2 4,3.79086 4,6 C4,6.89363 4.29068,7.71358 4.78334,8.37826 L7.99996,12.6668 L11.2167,8.37817 C11.7093,7.71351 12,6.89359 12,6 C12,3.79086 10.2091,2 8,2 Z M8,4 C9.10457,4 10,4.89543 10,6 C10,7.10457 9.10457,8 8,8 C6.89543,8 6,7.10457 6,6 C6,4.89543 6.89543,4 8,4 Z" />
                     </svg>
-                    <span dangerouslySetInnerHTML={{ __html: t?.footer?.add || "908, 9th Floor, Mercantile <br /> House, KG Marg, New Delhi" }} className="text-xs sm:text-sm lg:text-sm">
+                    <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.footer?.add || "908, 9th Floor, Mercantile <br /> House, KG Marg, New Delhi") }} className="text-xs sm:text-sm lg:text-sm">
 
                     </span>
                   </li>
@@ -308,7 +309,7 @@ export default function Footerlinks() {
                         width={120}
                       />
                       <span className="flex items-center foot-trst-spn">
-                        <h3 dangerouslySetInnerHTML={{ __html: t?.footer?.w1 || "100%" }} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
+                        <h3 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.footer?.w1 || "100%") }} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
                       </span>
                     </div>
                   </li>
@@ -322,7 +323,7 @@ export default function Footerlinks() {
                         width={120}
                       />
                       <span className="flex items-center foot-trst-spn">
-                        <h3 dangerouslySetInnerHTML={{ __html: t?.footer?.w2 || "100%" }} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
+                        <h3 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.footer?.w2 || "100%")}} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
                       </span>
                     </div>
                   </li>
@@ -336,7 +337,7 @@ export default function Footerlinks() {
                         width={120}
                       />
                       <span className="flex items-center foot-trst-spn">
-                        <h3 dangerouslySetInnerHTML={{ __html: t?.footer?.w3 || "100%" }} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
+                        <h3 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.footer?.w3 || "100%") }} className="text-xs foot-h-sp sm:text-xs lg:text-sm" />
                       </span>
                     </div>
                   </li>

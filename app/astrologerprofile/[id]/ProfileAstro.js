@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
+import DOMPurify from "dompurify";
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import StarRating from "@/components/Homepagecomp/Remedosha/StarRating";
 import { useEffect, useMemo, useState } from "react";
@@ -55,6 +55,9 @@ export const GET_ASTROLOGER_FOLLOWERS_COUNT = gql`
 `;
 
 export default function ProfileAstro({ astrologerId }) {
+  const cleanHTML = DOMPurify.sanitize(
+    astrologerdetail?.about || "No description available.",
+  );
   const router = useRouter();
   const id = astrologerId;
   const [showRecentPopup, setShowRecentPopup] = useState(false);
@@ -520,10 +523,10 @@ export default function ProfileAstro({ astrologerId }) {
           <div className="p-4 mt-4 border   shadow bg-linear-to-r from-purple-50  rounded-2xl md:p-6 via-violet-50 to-yellow-50">
             <h3 className="mb-1 text-lg font-bold text-gray-800">About Me</h3>
             <div className="text-sm text-gray-700">
-              <div className="text-xs sm:text-sm"
+              <div
+                className="text-xs sm:text-sm"
                 dangerouslySetInnerHTML={{
-                  __html:
-                    astrologerdetail?.about || "No description available.",
+                  __html: cleanHTML,
                 }}
               />
               <div className="text-xs sm:text-sm my-1 font-medium text-gray-700">
@@ -567,7 +570,9 @@ export default function ProfileAstro({ astrologerId }) {
                           />
 
                           <div className="flex text-xs sm:text-sm text-black flex-col flex-1">
-                            <h4 className="font-semibold text-xs sm:text-sm">{astro.name}</h4>
+                            <h4 className="font-semibold text-xs sm:text-sm">
+                              {astro.name}
+                            </h4>
 
                             <p className="text-xs sm:text-sm text-gray-500">
                               {astro.skills?.join(", ")}

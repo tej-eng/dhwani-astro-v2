@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import DOMPurify from "dompurify";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -65,7 +66,7 @@ export default function Recastro() {
     return (
         <section className="flex flex-col w-full items-center self-center sm:max-w-7xl my-2 ">
             <div className="py-3">
-                <h1 dangerouslySetInnerHTML={{ __html: t?.comfree?.recastro || "Recommanded Astrologers" }} className="relative text-[#2f1254] text-md sm:text-2xl text-center font-semibold" />
+                <h1 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t?.comfree?.recastro || "Recommanded Astrologers" )}} className="relative text-[#2f1254] text-md sm:text-2xl text-center font-semibold" />
 
             </div>
             <div className="slider-recastro  w-full relative">

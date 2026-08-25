@@ -2,6 +2,7 @@
 
 import useScrollZoom from "@/Hooks/scrollZoom";
 import Image from "next/image";
+import DOMPurify from "dompurify";
 
 import Link from "next/link";
 
@@ -11,7 +12,7 @@ export default function Procards({ data, heading }) {
         <div className="relative flex flex-col items-center gap-2">
             <h1
                 className=" relative text-[#2f1254] text-md sm:text-2xl py-1  sm:py-2 text-center font-semibold"
-                dangerouslySetInnerHTML={{ __html: heading }}
+                dangerouslySetInnerHTML={{ __html:DOMPurify.sanitize( heading  || "")}}
             ></h1>
 
             <div className="love-product-new grid md:grid-cols-3 lg:grid-cols-4 grid-cols-2 place-self-center  gap-4">

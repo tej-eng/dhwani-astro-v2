@@ -5,6 +5,7 @@ import useScrollZoom from "@/Hooks/scrollZoom";
 import CustomButton from "@/components/Custom/CustomButton";
 import Image from "next/image";
 import Forminp from "@/components/Homepagecomp/Consultations/Concompo/Forminp";
+import DOMPurify from "dompurify";
 
 
 
@@ -50,9 +51,9 @@ export default function Consultcompo({ data }) {
                                 {data.que}{" "}
                             </h6>
                             <ul className="list-disc list-inside space-y-2 text-xs md:text-sm">
-                                <li dangerouslySetInnerHTML={{ __html: data.li1 }}></li>
-                                <li dangerouslySetInnerHTML={{ __html: data.li2 }}></li>
-                                <li dangerouslySetInnerHTML={{ __html: data.li3 }}></li>
+                                <li dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.li1 || "")}}></li>
+                                <li dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.li2 || "") }}></li>
+                                <li dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.li3 || "") }}></li>
                             </ul>
                         </div>
                     </div>

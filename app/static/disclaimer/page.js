@@ -1,6 +1,7 @@
 
 import { GET_DISCLAIMER_PAGE } from "@/app/graphql/seoQuery";
 import { notFound } from "next/navigation";
+import DOMPurify from "isomorphic-dompurify";
 
 export async function generateMetadata() {
   try {
@@ -109,7 +110,7 @@ if (!disclaimer) {
                 <div
                   className="prose max-w-none text-sm md:text-sm leading-relaxed text-gray-700"
                   dangerouslySetInnerHTML={{
-                    __html: disclaimer?.content || "",
+                    __html: DOMPurify.sanitize(disclaimer?.content || ""),
                   }}
                 />
               </div>
