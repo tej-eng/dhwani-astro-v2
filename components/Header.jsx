@@ -159,13 +159,13 @@ export default function Header({ openSignInModal }) {
                     >
                       👤 Profile
                     </Link>
-
+{/* 
                     <Link
                       href="/dashboard/account"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       🪪 Account
-                    </Link>
+                    </Link> */}
 
                     <Link
                       href="/dashboard/chat-history"
