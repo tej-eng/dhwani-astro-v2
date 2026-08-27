@@ -153,7 +153,7 @@ export default function Header({ openSignInModal }) {
                 {/* MENU */}
                 <div className="py-2 space-y-2">
                   <div className="flex bg-violet-300 rounded-xl sm:px-2 sm:py-2 gap-1 flex-col sm:gap-2">
-                    <Link
+                    <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/profile"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
@@ -167,34 +167,34 @@ export default function Header({ openSignInModal }) {
                       🪪 Account
                     </Link> */}
 
-                    <Link
+                    <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/chat-history"
                       className="flex items-center  text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       💬 Chat History
                     </Link>
 
-                    <Link
+                    <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/call-history"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       📞 Call History
                     </Link>
-                             <Link
+                             <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/myfollowing"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       ✨ My Following
                     </Link>
 
-                    <Link
+                    <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/transaction"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       🛒 Transaction
                     </Link>
 
-                    <Link
+                    <Link   onClick={() => setIsUserOpen(false)}
                       href="/dashboard/my-services"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
