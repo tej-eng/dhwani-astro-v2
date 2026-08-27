@@ -658,6 +658,23 @@ export const GET_USER_DASHBOARD = gql`
     }
   }
 `;
+export const GET_FOLLOWED_ASTROLOGERS = gql`
+  query GetFollowedAstrologers($page: Int, $limit: Int) {
+    getFollowedAstrologers(page: $page, limit: $limit) {
+      astrologers {
+        id
+        displayName
+        profilePic
+        rating
+        skills
+      }
+      total
+      page
+      limit
+      totalPages
+    }
+  }
+`;
 export const UPDATE_USER_PROFILE = gql`
   mutation UpdateUserProfile($input: UpdateUserInput!) {
     updateUserProfile(input: $input) {
