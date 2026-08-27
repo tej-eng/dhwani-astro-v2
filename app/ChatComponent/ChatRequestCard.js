@@ -421,8 +421,10 @@ const ChatRequestCard = ({
       setQueueData(data);
 
       localStorage.setItem(`queue_${room_Id}`, JSON.stringify(data));
+      const activeChatRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
-      if (data.position === 0) {
+
+   if (data.position === 0 && !activeChatRoom) {
         setShowWaitingPopup(true);
         setShowQueuePopup(false);
 

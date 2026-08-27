@@ -3,7 +3,7 @@
 import { GET_FOLLOWED_ASTROLOGERS } from "@/app/graphql/gqlQuery";
 import { useQuery } from "@apollo/client/react";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 export default function FollowingPage() {
   const { data, loading, error } = useQuery(GET_FOLLOWED_ASTROLOGERS, {
     variables: {
@@ -12,13 +12,10 @@ export default function FollowingPage() {
     },
     fetchPolicy: "network-only",
   });
-  const astrologerprofile = (id) => {
-    setAlert(true);
-    setTimeout(() => {
-      setAlert(false);
-      router.push(`/astrologerprofile/${id}`);
-    }, 1500);
-  };
+  const router = useRouter();
+ const astrologerprofile = (id) => {
+  router.push(`/astrologerprofile/${id}`);
+};
   const astrologers = data?.getFollowedAstrologers?.astrologers || [];
 
   if (loading) {
@@ -93,7 +90,7 @@ export default function FollowingPage() {
             >
               <div className="flex items-center gap-4">
                 {/* Image */}
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full cursor-pointer overflow-hidden bg-gray-100 shrink-0">
                   <Image
                     src={
                       astrologer?.profilePic
@@ -104,7 +101,7 @@ export default function FollowingPage() {
                     alt={astrologer.name || "Astrologer"}
                     fill
                     className="object-cover"
-                     onClick={() => astrologerprofile(astrologer?.id)}
+                    onClick={() => astrologerprofile(id)}
                   />
                 </div>
 
