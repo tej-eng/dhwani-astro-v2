@@ -53,7 +53,7 @@ export default function ProfileHeader({ user }) {
                   </span>
                 </div>
 
-             <p className="mt-2 text-xs text-slate-800">
+<p className="mt-2 text-xs text-slate-800">
   Member since:{" "}
   {user?.createdAt
     ? new Date(Number(user.createdAt)).toLocaleDateString("en-IN", {
