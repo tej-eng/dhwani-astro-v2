@@ -12,13 +12,21 @@ export default function FollowingPage() {
     },
     fetchPolicy: "network-only",
   });
-
+  const astrologerprofile = (id) => {
+    setAlert(true);
+    setTimeout(() => {
+      setAlert(false);
+      router.push(`/astrologerprofile/${id}`);
+    }, 1500);
+  };
   const astrologers = data?.getFollowedAstrologers?.astrologers || [];
 
   if (loading) {
     return (
       <div className="p-6 text-black">
-        <h1 className="text-2xl font-semibold text-black mb-6">Following</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold text-black mb-6">
+          My Following
+        </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map((item) => (
@@ -45,7 +53,9 @@ export default function FollowingPage() {
   if (error) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl text-black font-semibold mb-6">Following</h1>
+        <h1 className="text-xl sm:text-2xl text-black font-semibold mb-6">
+          My Following
+        </h1>
 
         <div className="border border-red-200 bg-red-50 text-red-600 rounded-xl p-4">
           Failed to load followed astrologers.
@@ -58,9 +68,11 @@ export default function FollowingPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl text-black font-semibold">Following</h1>
+          <h1 className="text-xl sm:text-2xl text-black font-semibold">
+            My Following
+          </h1>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             {data?.getFollowedAstrologers?.total || 0} astrologers
           </p>
         </div>
@@ -77,34 +89,35 @@ export default function FollowingPage() {
           {astrologers.map((astrologer) => (
             <div
               key={astrologer.id}
-              className="border border-gray-200 rounded-2xl p-5 bg-white hover:shadow-md transition-shadow"
+              className="border border-gray-200 rounded-2xl sm:p-5 p-3 px-4 bg-white hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-4">
                 {/* Image */}
-                <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
                   <Image
-                     src={
-                astrologer?.profilePic
-                  ? `https://www.dhwaniastro.com${astrologer.profilePic}`
-                  : "/man.png"
-              }
+                    src={
+                      astrologer?.profilePic
+                        ? `https://www.dhwaniastro.com${astrologer.profilePic}`
+                        : "/man.png"
+                    }
                     // src={astrologer.profilePic || "/images/default-user.png"}
                     alt={astrologer.name || "Astrologer"}
                     fill
                     className="object-cover"
+                     onClick={() => astrologerprofile(astrologer?.id)}
                   />
                 </div>
 
                 {/* Name + Rating */}
                 <div className="min-w-0">
-                  <h2 className="font-semibold text-lg truncate">
+                  <h2 className="font-semibold text-black text-lg truncate">
                     {astrologer.displayName}
                   </h2>
 
                   <div className="flex items-center gap-1 text-sm mt-1">
                     <span className="text-yellow-500">★</span>
 
-                    <span className="font-medium">
+                    <span className="font-medium text-black">
                       {astrologer.rating?.toFixed(2) ?? 0}
                     </span>
                   </div>

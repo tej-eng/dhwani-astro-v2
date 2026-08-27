@@ -119,10 +119,10 @@ export default function Header({ openSignInModal }) {
             className="relative user-container"
             onMouseEnter={() => setIsUserOpen(true)}
             onMouseLeave={() => setIsUserOpen(false)}
-          >
-            <button className="flex items-center gap-2">
+           >
+            <button className="flex pe-1 items-center gap-2">
               <Image
-                className="w-6 h-auto sm:w-10"
+                className="w-7 h-auto sm:w-10"
                 src="/ds-img/user2.webp"
                 width={30}
                 height={30}
@@ -144,7 +144,7 @@ export default function Header({ openSignInModal }) {
                   />
 
                   <div>
-                    <h3 className="sm:font-semibold  text-white">
+                    <h3 className="sm:font-semibold text-xs sm:text-sm  text-white">
                       {user?.name || "User"}
                     </h3>
                   </div>
@@ -152,7 +152,7 @@ export default function Header({ openSignInModal }) {
 
                 {/* MENU */}
                 <div className="py-2 space-y-2">
-                  <div className="flex bg-violet-300 rounded-2xl sm:px-2 sm:py-2 flex-col sm:gap-1">
+                  <div className="flex bg-violet-300 rounded-xl sm:px-2 sm:py-2 gap-1 flex-col sm:gap-2">
                     <Link
                       href="/dashboard/profile"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
