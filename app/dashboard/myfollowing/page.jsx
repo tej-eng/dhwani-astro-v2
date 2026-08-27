@@ -45,7 +45,7 @@ export default function FollowingPage() {
   if (error) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-semibold mb-6">Following</h1>
+        <h1 className="text-2xl text-black font-semibold mb-6">Following</h1>
 
         <div className="border border-red-200 bg-red-50 text-red-600 rounded-xl p-4">
           Failed to load followed astrologers.
@@ -58,7 +58,7 @@ export default function FollowingPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Following</h1>
+          <h1 className="text-2xl text-black font-semibold">Following</h1>
 
           <p className="text-sm text-gray-500 mt-1">
             {data?.getFollowedAstrologers?.total || 0} astrologers
@@ -73,7 +73,7 @@ export default function FollowingPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {astrologers.map((astrologer) => (
             <div
               key={astrologer.id}
@@ -83,7 +83,12 @@ export default function FollowingPage() {
                 {/* Image */}
                 <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
                   <Image
-                    src={astrologer.image || "/images/default-user.png"}
+                     src={
+                astrologer?.profilePic
+                  ? `https://www.dhwaniastro.com${astrologer.profilePic}`
+                  : "/man.png"
+              }
+                    // src={astrologer.profilePic || "/images/default-user.png"}
                     alt={astrologer.name || "Astrologer"}
                     fill
                     className="object-cover"
@@ -93,14 +98,14 @@ export default function FollowingPage() {
                 {/* Name + Rating */}
                 <div className="min-w-0">
                   <h2 className="font-semibold text-lg truncate">
-                    {astrologer.name}
+                    {astrologer.displayName}
                   </h2>
 
                   <div className="flex items-center gap-1 text-sm mt-1">
                     <span className="text-yellow-500">★</span>
 
                     <span className="font-medium">
-                      {astrologer.rating ?? 0}
+                      {astrologer.rating?.toFixed(2) ?? 0}
                     </span>
                   </div>
                 </div>
