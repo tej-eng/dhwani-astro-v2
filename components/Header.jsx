@@ -180,6 +180,12 @@ export default function Header({ openSignInModal }) {
                     >
                       📞 Call History
                     </Link>
+                             <Link
+                      href="/dashboard/myfollowing"
+                      className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
+                    >
+                      ✨ My Following
+                    </Link>
 
                     <Link
                       href="/dashboard/transaction"
