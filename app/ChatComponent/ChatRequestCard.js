@@ -40,11 +40,9 @@ const ChatRequestCard = ({
   useEffect(() => {
     if (!socket) return;
 
-    socket.onAny((event, ...args) => {
-    });
+    socket.onAny((event, ...args) => {});
 
-    socket.on("connect", () => {
-    });
+    socket.on("connect", () => {});
 
     return () => {
       socket.offAny();
@@ -423,17 +421,18 @@ const ChatRequestCard = ({
       localStorage.setItem(`queue_${room_Id}`, JSON.stringify(data));
       const activeChatRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
-
-   if (data.position === 0 && !activeChatRoom) {
+      if (data.position === 0 && !activeChatRoom) {
         setShowWaitingPopup(true);
         setShowQueuePopup(false);
 
         startTimer(60);
       } else {
-        setShowWaitingPopup(false);
-        setShowQueuePopup(true);
+        if (!activeChatRoom) {
+          setShowWaitingPopup(false);
+          setShowQueuePopup(true);
 
-        startTimer(data.waitTime);
+          startTimer(data.waitTime);
+        }
       }
     };
 
@@ -601,14 +600,20 @@ const ChatRequestCard = ({
       {showWaitingPopup && (
         <div className="w-full bg-gray-800 px-3 py-2 rounded-full flex relative">
           <Image
-           src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
+            src={
+              astroimage
+                ? `https://www.dhwaniastro.com${astroimage}`
+                : "/man.png"
+            }
             alt="Neha Vermaaaa"
             width={50}
             height={50}
-           className="rounded-full w-8 h-auto  object-cover"
+            className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-[10px] sm:text-sm text-white ">{astro_Name}</h3>
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white ">
+              {astro_Name}
+            </h3>
             <p className="text-[8px] sm:text-sm text-gray-300 font-extralight">
               Wait Time: {formatTime(timeLeft)}
             </p>
@@ -624,16 +629,21 @@ const ChatRequestCard = ({
 
       {!showWaitingPopup && showQueuePopup && (
         <div className="w-full  bg-gray-800 px-3 sm:py-2 py-1 rounded-full flex relative">
-          
           <Image
-            src={astroimage ? `https://www.dhwaniastro.com${astroimage}` : "/man.png"}
+            src={
+              astroimage
+                ? `https://www.dhwaniastro.com${astroimage}`
+                : "/man.png"
+            }
             alt="Neha Verma"
             width={50}
             height={50}
             className="rounded-full w-8 h-auto  object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-[10px] sm:text-sm text-white">{astro_Name}</h3>
+            <h3 className="font-semibold text-[10px] sm:text-sm text-white">
+              {astro_Name}
+            </h3>
 
             <p className=" text-[8px] sm:text-sm font-extralight sm:font-medium">
               You are in line! Position : {queueData?.position}
