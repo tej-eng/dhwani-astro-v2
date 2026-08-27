@@ -149,7 +149,7 @@ export default function CartPage() {
 
             <div className="flex justify-between">
               <span>GST @18%</span>
-              <span>₹ {gstAmount.toFixed(2)}</span>
+              <span>₹ {gstAmount?.toFixed(2)}</span>
             </div>
             <div className="mt-4">
               <div className="border border-gray-300 rounded-2xl px-3 py-3 flex justify-between items-center">
