@@ -111,6 +111,7 @@ export const GET_ASTROLOGER_BY_ID = gql`
       about
       experience
       rating
+      tags
 
       languages
       skills
@@ -289,6 +290,7 @@ export const GET_ASTROLOGERS_USER = gql`
         isChatActive
         isCallActive
         isLiveActive
+        tags
 
         activeOffer {
           id

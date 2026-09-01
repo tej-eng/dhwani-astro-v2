@@ -123,12 +123,13 @@ export default function Header({ openSignInModal }) {
               <Image
                 className="w-7 h-auto sm:w-10"
                 src={
-                  `https://dhwaniastro.com${user?.profileImage}` ||
-                  "/ds-img/user2.webp"
+                  user?.profileImage
+                    ? `https://dhwaniastro.com${user.profileImage}`
+                    : "/images/default-profile.png"
                 }
-                width={30}
-                height={30}
-                alt="User"
+                alt="Profile"
+                width={40}
+                height={40}
               />
 
               {/* <span className="text-white">{user?.name}</span> */}
@@ -137,16 +138,17 @@ export default function Header({ openSignInModal }) {
             {isUserOpen && (
               <div className="absolute -right-2 sm:-right-15 top-full p-2 bg-purple-800 w-40  sm:w-55 rounded-2xl  shadow-2xl border border-gray-600 z-50 overflow-hidden">
                 <div className="flex items-center gap-3 sm:px-3 sm:py-2 shadow-2xl bg-purple-500 rounded-full ">
-                  <Image
-                    src={
-                      `https://dhwaniastro.com${user?.profileImage}` ||
-                      "/ds-img/user2.webp"
-                    }
-                    width={25}
-                    height={25}
-                    alt="User"
-                    className="rounded-full sm:h-10 sm:w-10"
-                  />
+               <Image
+                className="w-7 h-auto sm:w-10"
+                src={
+                  user?.profileImage
+                    ? `https://dhwaniastro.com${user.profileImage}`
+                    : "/images/default-profile.png"
+                }
+                alt="Profile"
+                width={40}
+                height={40}
+              />
 
                   <div>
                     <h3 className="sm:font-semibold text-xs sm:text-sm  text-white">
