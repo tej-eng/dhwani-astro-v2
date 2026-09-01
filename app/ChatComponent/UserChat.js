@@ -348,52 +348,47 @@ const UserChat = ({
     });
   };
   // ================= RECHARGE FUNCTION =================
-const handleCheckout = async (amount, packId) => {
-  try {
-    customer_recharge();
-    setIsPaused(true);
-    const { data } = await createOrder({
-      variables: {
-        input: {
-          rechargePackId: packId,
-          coupan_code: "",
+  const handleCheckout = async (amount, packId) => {
+    try {
+      customer_recharge();
+      setIsPaused(true);
+      const { data } = await createOrder({
+        variables: {
+          input: {
+            rechargePackId: packId,
+            coupan_code: "",
+          },
         },
-      },
-    });
+      });
 
-    const order = data?.createOrder;
-    if (!order?.success || !order?.orderId) {
-      setIsPaused(false);
-      toast.error("Error creating order");
-      return;
-    }
+      const order = data?.createOrder;
+      if (!order?.success || !order?.orderId) {
+        setIsPaused(false);
+        toast.error("Error creating order");
+        return;
+      }
 
-    const options = {
-      key:
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-        "rzp_test_SNXjhTOgP1CIx0",
+      const options = {
+        key:
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
-      // Backend ke Razorpay order se aaya amount
-      amount: order.amount,
+        // Backend ke Razorpay order se aaya amount
+        amount: order.amount,
 
-      currency: order.currency,
-      order_id: order.orderId,
+        currency: order.currency,
+        order_id: order.orderId,
 
-      name: "Dhwani Astro LLP",
-      description: "Wallet Recharge",
+        name: "Dhwani Astro LLP",
+        description: "Wallet Recharge",
 
-      notes: {
-        userId: user?.id ?? "guest",
-        rechargePackId: packId,
-        platform: "WEB",
-      },
+        notes: {
+          userId: user?.id ?? "guest",
+          rechargePackId: packId,
+          platform: "WEB",
+        },
 
-      handler: async function (response) {
-        toast.success("Payment Successful");
-
-        const selectedPack = rechargePacks.find(
-          (p) => p.id === packId
-        );
+        handler: async function (response) {
+          toast.success("Payment Successful");
 
         if (selectedPack) {
             const requestData = JSON.parse(
@@ -408,44 +403,53 @@ const handleCheckout = async (amount, packId) => {
           const newTime =
             timeLeft + selectedPack.talktime * 60;
 
-          customer_recharge_completed(newTime);
+          if (selectedPack) {
+            console.log(
+              "---------------------------aaaaaaaaaaaaa",
+              selectedPack.talktime * 60,
+            );
+            console.log("----------BBBBBBBB---------", timeLeft);
+            const newTime = timeLeft + selectedPack.talktime * 60;
+            console.log("-------------newTime-------------", newTime);
 
-          setTimeLeft(newTime);
-        }
+            customer_recharge_completed(newTime);
 
-        setIsPaused(false);
-      },
+            setTimeLeft(newTime);
+          }
 
-      modal: {
-        ondismiss: function () {
-          customer_recharge_fail();
-          toast.error("Payment Cancelled");
           setIsPaused(false);
         },
-      },
 
-      theme: {
-        color: "#fff49e",
-      },
-    };
+        modal: {
+          ondismiss: function () {
+            customer_recharge_fail();
+            toast.error("Payment Cancelled");
+            setIsPaused(false);
+          },
+        },
 
-    if (!window.Razorpay) {
+        theme: {
+          color: "#fff49e",
+        },
+      };
+
+      if (!window.Razorpay) {
+        setIsPaused(false);
+        toast.error("Razorpay is not loaded");
+        return;
+      }
+
+      const razor = new window.Razorpay(options);
+
+      razor.open();
+    } catch (error) {
+      console.error("🔴 Checkout Error:", error);
+
       setIsPaused(false);
-      toast.error("Razorpay is not loaded");
-      return;
+
+      toast.error(error?.message || "Payment failed");
     }
-
-    const razor = new window.Razorpay(options);
-
-    razor.open();
-  } catch (error) {
-    console.error("🔴 Checkout Error:", error);
-
-    setIsPaused(false);
-
-    toast.error(error?.message || "Payment failed");
-  }
-};
+  };
 
   const handleMessageChange = (e) => {
     const value = e.target.value;
@@ -478,8 +482,8 @@ const handleCheckout = async (amount, packId) => {
   const emitChatCompleted = () => {
     if (chatEndedRef.current) return;
     clearInterval(intervalRef.current);
-          intervalRef.current = null;
-   // chatEndedRef.current = true;
+    intervalRef.current = null;
+    // chatEndedRef.current = true;
 
     setChatEnded(true);
 
@@ -606,9 +610,7 @@ const handleCheckout = async (amount, packId) => {
     });
 
     socket.on("typing", (data) => {
-
       if (data.user_name === "Astrologer") {
-        
         setTypingStatus(data.typing ? "Astrologer typing..." : "");
       }
     });
