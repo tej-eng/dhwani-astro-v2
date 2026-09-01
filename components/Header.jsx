@@ -29,7 +29,6 @@ export default function Header({ openSignInModal }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isUserOpen, setIsUserOpen] = useState(false);
- 
 
   const [logoutMutation, { loading: logoutLoading }] =
     useMutation(LOGOUT_MUTATION);
@@ -119,11 +118,14 @@ export default function Header({ openSignInModal }) {
             className="relative user-container"
             onMouseEnter={() => setIsUserOpen(true)}
             onMouseLeave={() => setIsUserOpen(false)}
-           >
+          >
             <button className="flex pe-1 items-center gap-2">
               <Image
                 className="w-7 h-auto sm:w-10"
-                src="/ds-img/user2.webp"
+                src={
+                  `https://dhwaniastro.com${user?.profileImage}` ||
+                  "/ds-img/user2.webp"
+                }
                 width={30}
                 height={30}
                 alt="User"
@@ -136,7 +138,10 @@ export default function Header({ openSignInModal }) {
               <div className="absolute -right-2 sm:-right-15 top-full p-2 bg-purple-800 w-40  sm:w-55 rounded-2xl  shadow-2xl border border-gray-600 z-50 overflow-hidden">
                 <div className="flex items-center gap-3 sm:px-3 sm:py-2 shadow-2xl bg-purple-500 rounded-full ">
                   <Image
-                    src="/ds-img/user2.webp"
+                    src={
+                      `https://dhwaniastro.com${user?.profileImage}` ||
+                      "/ds-img/user2.webp"
+                    }
                     width={25}
                     height={25}
                     alt="User"
@@ -153,13 +158,14 @@ export default function Header({ openSignInModal }) {
                 {/* MENU */}
                 <div className="py-2 space-y-2">
                   <div className="flex bg-violet-300 rounded-xl sm:px-2 sm:py-2 gap-1 flex-col sm:gap-2">
-                    <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/profile"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       👤 Profile
                     </Link>
-{/* 
+                    {/* 
                     <Link
                       href="/dashboard/account"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
@@ -167,34 +173,39 @@ export default function Header({ openSignInModal }) {
                       🪪 Account
                     </Link> */}
 
-                    <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/chat-history"
                       className="flex items-center  text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       💬 Chat History
                     </Link>
 
-                    <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/call-history"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       📞 Call History
                     </Link>
-                             <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/myfollowing"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       ✨ My Following
                     </Link>
 
-                    <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/transaction"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >
                       🛒 Transaction
                     </Link>
 
-                    <Link   onClick={() => setIsUserOpen(false)}
+                    <Link
+                      onClick={() => setIsUserOpen(false)}
                       href="/dashboard/my-services"
                       className="flex items-center text-xs sm:text-sm sm:font-medium gap-3 px-4 py-1 text-gray-700 hover:bg-gray-100 rounded-full"
                     >

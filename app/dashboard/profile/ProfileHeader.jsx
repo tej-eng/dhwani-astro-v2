@@ -115,27 +115,17 @@ export default function ProfileHeader({ user, refetch }) {
           <div className="relative flex flex-col gap-4 sm:gap-8 p-4 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
 
             <div className="flex items-center gap-6">
-
-              {/* ================= PROFILE IMAGE ================= */}
-
               <div className="relative">
 
                 <div className="flex h-18 w-18 sm:h-28 sm:w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-violet-100 shadow-xl">
-
-                  <Image
-                    src={
-                      user?.profileImage ||
-                      "/ds-img/user2.webp"
-                    }
-                    alt="Profile"
-                    width={110}
-                    height={110}
-                    className="object-cover"
-                  />
-
+<Image
+  src={user?.profileImage || "/ds-img/user2.webp"}
+  alt="Profile"
+  width={110}
+  height={110}
+  className="object-cover"
+/>
                 </div>
-
-                {/* Hidden File Input */}
 
                 <input
                   ref={fileInputRef}
@@ -144,9 +134,6 @@ export default function ProfileHeader({ user, refetch }) {
                   className="hidden"
                   onChange={handleProfileImageChange}
                 />
-
-                {/* Camera Button */}
-
                 <button
                   type="button"
                   disabled={uploading}
