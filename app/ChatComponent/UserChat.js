@@ -348,63 +348,55 @@ const UserChat = ({
     });
   };
   // ================= RECHARGE FUNCTION =================
-  const handleCheckout = async (amount, packId) => {
-    try {
-      customer_recharge();
-      setIsPaused(true);
-      const { data } = await createOrder({
-        variables: {
-          input: {
-            rechargePackId: packId,
-            coupan_code: "",
-          },
-        },
-      });
-
-      const order = data?.createOrder;
-      if (!order?.success || !order?.orderId) {
-        setIsPaused(false);
-        toast.error("Error creating order");
-        return;
-      }
-
-      const options = {
-        key:
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
-
-        // Backend ke Razorpay order se aaya amount
-        amount: order.amount,
-
-        currency: order.currency,
-        order_id: order.orderId,
-
-        name: "Dhwani Astro LLP",
-        description: "Wallet Recharge",
-
-        notes: {
-          userId: user?.id ?? "guest",
+const handleCheckout = async (amount, packId) => {
+  try {
+    customer_recharge();
+    setIsPaused(true);
+    const { data } = await createOrder({
+      variables: {
+        input: {
           rechargePackId: packId,
-          platform: "WEB",
+          coupan_code: "",
         },
+      },
+    });
 
-        handler: async function (response) {
-          toast.success("Payment Successful");
+    const order = data?.createOrder;
+    if (!order?.success || !order?.orderId) {
+      setIsPaused(false);
+      toast.error("Error creating order");
+      return;
+    }
+
+    const options = {
+      key:
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "rzp_test_SNXjhTOgP1CIx0",
+
+      // Backend ke Razorpay order se aaya amount
+      amount: order.amount,
+
+      currency: order.currency,
+      order_id: order.orderId,
+
+      name: "Dhwani Astro LLP",
+      description: "Wallet Recharge",
+
+      notes: {
+        userId: user?.id ?? "guest",
+        rechargePackId: packId,
+        platform: "WEB",
+      },
+
+      handler: async function (response) {
+        toast.success("Payment Successful");
+
+        const selectedPack = rechargePacks.find(
+          (p) => p.id === packId
+        );
 
         if (selectedPack) {
-            const requestData = JSON.parse(
-              localStorage.getItem(`chat_request_${room_Id}`) || "null",
-            );
-
-            console.log("------444444444444----- request -------------", requestData);
-            console.log(
-              "----------- pricePerMin -------------",
-              requestData?.pricePerMin,
-            );
-          const newTime =
-            timeLeft + selectedPack.talktime * 60;
-
-          if (selectedPack) {
-            const requestData = JSON.parse(
+          const requestData = JSON.parse(
               localStorage.getItem(`chat_request_${room_Id}`) || "null",
             );
 
@@ -413,53 +405,47 @@ const UserChat = ({
               "----------- pricePerMin -------------",
               requestData?.pricePerMin,
             );
+          const newTime =
+            timeLeft + selectedPack.talktime * 60;
 
-            console.log(
-              "---------------------------aaaaaaaaaaaaa",
-              selectedPack.talktime * 60,
-            );
-            console.log("----------BBBBBBBB---------", timeLeft);
-            const newTime = timeLeft + selectedPack.talktime * 60;
-            console.log("-------------newTime-------------", newTime);
+          customer_recharge_completed(newTime);
 
-            customer_recharge_completed(newTime);
+          setTimeLeft(newTime);
+        }
 
-            setTimeLeft(newTime);
-          }
+        setIsPaused(false);
+      },
 
+      modal: {
+        ondismiss: function () {
+          customer_recharge_fail();
+          toast.error("Payment Cancelled");
           setIsPaused(false);
         },
+      },
 
-        modal: {
-          ondismiss: function () {
-            customer_recharge_fail();
-            toast.error("Payment Cancelled");
-            setIsPaused(false);
-          },
-        },
+      theme: {
+        color: "#fff49e",
+      },
+    };
 
-        theme: {
-          color: "#fff49e",
-        },
-      };
-
-      if (!window.Razorpay) {
-        setIsPaused(false);
-        toast.error("Razorpay is not loaded");
-        return;
-      }
-
-      const razor = new window.Razorpay(options);
-
-      razor.open();
-    } catch (error) {
-      console.error("🔴 Checkout Error:", error);
-
+    if (!window.Razorpay) {
       setIsPaused(false);
-
-      toast.error(error?.message || "Payment failed");
+      toast.error("Razorpay is not loaded");
+      return;
     }
-  };
+
+    const razor = new window.Razorpay(options);
+
+    razor.open();
+  } catch (error) {
+    console.error("🔴 Checkout Error:", error);
+
+    setIsPaused(false);
+
+    toast.error(error?.message || "Payment failed");
+  }
+};
 
   const handleMessageChange = (e) => {
     const value = e.target.value;
@@ -492,8 +478,8 @@ const UserChat = ({
   const emitChatCompleted = () => {
     if (chatEndedRef.current) return;
     clearInterval(intervalRef.current);
-    intervalRef.current = null;
-    // chatEndedRef.current = true;
+          intervalRef.current = null;
+   // chatEndedRef.current = true;
 
     setChatEnded(true);
 
@@ -620,7 +606,9 @@ const UserChat = ({
     });
 
     socket.on("typing", (data) => {
+
       if (data.user_name === "Astrologer") {
+        
         setTypingStatus(data.typing ? "Astrologer typing..." : "");
       }
     });
