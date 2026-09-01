@@ -396,6 +396,7 @@ const handleCheckout = async (amount, packId) => {
         );
 
         if (selectedPack) {
+          console.log(`chat_request_${room_Id}`);
           const requestData = JSON.parse(
               localStorage.getItem(`chat_request_${room_Id}`) || "null",
             );
