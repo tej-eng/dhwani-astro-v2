@@ -118,14 +118,13 @@ export default function ProfileHeader({ user, refetch }) {
               <div className="relative">
 
                 <div className="flex h-18 w-18 sm:h-28 sm:w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-violet-100 shadow-xl">
-
-                  <Image
-                    src={`https://dhwaniastro.com${user?.profileImage }` || "/ds-img/user2.webp"}
-                    alt="Profile"
-                    width={110}
-                    height={110}
-                    className="object-cover"
-                  />
+<Image
+  src={user?.profileImage || "/ds-img/user2.webp"}
+  alt="Profile"
+  width={110}
+  height={110}
+  className="object-cover"
+/>
                 </div>
 
                 <input
