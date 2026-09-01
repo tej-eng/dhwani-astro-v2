@@ -637,6 +637,8 @@ export const GET_USER_DASHBOARD = gql`
       birthTime
       occupation
       createdAt
+      birthPlace
+      profileImage
 
       wallet {
         balanceCoins

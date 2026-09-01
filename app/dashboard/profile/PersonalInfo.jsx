@@ -33,18 +33,11 @@ const profileSchema = z.object({
 
   occupation: z.string().trim().max(80, "Maximum 80 characters."),
 
-  birthPlace: z
-    .string()
-    .trim()
-    .max(150, "Maximum 150 characters.")
-    .optional(),
+  birthPlace: z.string().trim().max(150, "Maximum 150 characters.").optional(),
 });
-export default function PersonalInfo({
-  user,
-  refetch,
-}) {
+export default function PersonalInfo({ user, refetch }) {
   const [openEdit, setOpenEdit] = useState(false);
- 
+
   const {
     register,
     handleSubmit,
@@ -52,67 +45,99 @@ export default function PersonalInfo({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(profileSchema),
-  defaultValues: {
-  name: "",
-  gender: "",
-  birthDate: "",
-  birthTime: "",
-  occupation: "",
-  birthPlace: "",
-},
-  });
-const [updateProfile, { loading }] = useMutation(
-  UPDATE_USER_PROFILE
-);
-  useEffect(() => {
-    if (!openEdit || !user) return;
-
-reset({
-  name: user.name || "",
-  gender: user.gender || "",
-  birthDate: user.birthDate ? user.birthDate.split("T")[0] : "",
-  birthTime: user.birthTime || "",
-  occupation: user.occupation || "",
-  birthPlace: user.birthPlace || "",
-});
-  }, [openEdit, user, reset]);
-  const birthDate = user?.birthDate
-    ? new Date(user.birthDate).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      })
-    : "-";
-
- const onSubmit = async (data) => {
-  try {
-   await updateProfile({
-  variables: {
-    input: {
-      name: data.name.trim(),
-      gender: data.gender,
-      birthDate: data.birthDate,
-      birthTime: data.birthTime,
-      occupation: data.occupation?.trim() || null,
-      birthPlace: data.birthPlace?.trim() || null,
+    defaultValues: {
+      name: "",
+      gender: "",
+      birthDate: "",
+      birthTime: "",
+      occupation: "",
+      birthPlace: "",
     },
-  },
-});
+  });
+  const [updateProfile, { loading }] = useMutation(UPDATE_USER_PROFILE);
+  const formatBirthDateForInput = (date) => {
+  if (!date) return "";
 
-    toast.success("Profile updated successfully.");
+  const value = String(date);
 
-    setOpenEdit(false);
-
-    refetch?.();
-
-  } catch (error) {
-   toast.error(
-  error?.graphQLErrors?.[0]?.message ||
-  error?.message ||
-  "Failed to update profile."
-);
+  // Unix timestamp in milliseconds
+  if (/^\d+$/.test(value)) {
+    return new Date(Number(value)).toISOString().split("T")[0];
   }
+
+  // ISO date
+  const parsedDate = new Date(date);
+
+  if (isNaN(parsedDate.getTime())) {
+    return "";
+  }
+
+  return parsedDate.toISOString().split("T")[0];
 };
+useEffect(() => {
+  if (!openEdit || !user) return;
+
+  reset({
+    name: user.name || "",
+    gender: user.gender || "",
+
+    birthDate: formatBirthDateForInput(user.birthDate),
+
+    birthTime: user.birthTime || "",
+    occupation: user.occupation || "",
+    birthPlace: user.birthPlace || "",
+  });
+}, [openEdit, user, reset]);
+const formatBirthDate = (date) => {
+  if (!date) return "-";
+
+  const value = String(date);
+
+  const parsedDate = /^\d+$/.test(value)
+    ? new Date(Number(value))
+    : new Date(value);
+
+  if (isNaN(parsedDate.getTime())) {
+    return "-";
+  }
+
+  return parsedDate.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const birthDate = formatBirthDate(user?.birthDate);
+
+  const onSubmit = async (data) => {
+    try {
+      await updateProfile({
+        variables: {
+          input: {
+            name: data.name.trim(),
+            gender: data.gender,
+            birthDate: data.birthDate,
+            birthTime: data.birthTime,
+            occupation: data.occupation?.trim() || null,
+            birthPlace: data.birthPlace?.trim() || null,
+          },
+        },
+      });
+
+      toast.success("Profile updated successfully.");
+
+      setOpenEdit(false);
+
+      refetch?.();
+    } catch (error) {
+      toast.error(
+        error?.graphQLErrors?.[0]?.message ||
+          error?.message ||
+          "Failed to update profile.",
+      );
+    }
+  };
 
   const details = [
     {
@@ -146,11 +171,11 @@ reset({
       label: "Occupation",
       value: user?.occupation || "-",
     },
-        {
-  icon: <FaMapMarkerAlt />,
-  label: "Birth Place",
-  value: user?.birthPlace || "-",
-},
+    {
+      icon: <FaMapMarkerAlt />,
+      label: "Birth Place",
+      value: user?.birthPlace || "-",
+    },
   ];
 
   return (
@@ -208,7 +233,7 @@ reset({
         errors={errors}
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
-       loading={loading}
+        loading={loading}
       />
     </div>
   );
