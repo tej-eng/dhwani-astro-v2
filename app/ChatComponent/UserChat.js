@@ -390,7 +390,18 @@ const UserChat = ({
         handler: async function (response) {
           toast.success("Payment Successful");
 
-          const selectedPack = rechargePacks.find((p) => p.id === packId);
+        if (selectedPack) {
+            const requestData = JSON.parse(
+              localStorage.getItem(`chat_request_${room_Id}`) || "null",
+            );
+
+            console.log("----------- request -------------", requestData);
+            console.log(
+              "----------- pricePerMin -------------",
+              requestData?.pricePerMin,
+            );
+          const newTime =
+            timeLeft + selectedPack.talktime * 60;
 
           if (selectedPack) {
             console.log(

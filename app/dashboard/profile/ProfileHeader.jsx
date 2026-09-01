@@ -44,17 +44,10 @@ export default function ProfileHeader({ user, refetch }) {
 
     // ================= TYPE =================
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-    ];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      toast.error(
-        "Only JPG, JPEG, PNG and WEBP images are allowed."
-      );
+      toast.error("Only JPG, JPEG, PNG and WEBP images are allowed.");
       e.target.value = "";
       return;
     }
@@ -73,14 +66,10 @@ export default function ProfileHeader({ user, refetch }) {
       const result = data?.uploadProfileImage;
 
       if (!result?.success || !result?.url) {
-        throw new Error(
-          result?.message || "Profile image upload failed"
-        );
+        throw new Error(result?.message || "Profile image upload failed");
       }
 
-      toast.success(
-        "Profile image updated successfully."
-      );
+      toast.success("Profile image updated successfully.");
 
       // Refresh user data
       if (refetch) {
@@ -89,15 +78,12 @@ export default function ProfileHeader({ user, refetch }) {
         window.location.reload();
       }
     } catch (error) {
-      console.error(
-        "Profile image upload error:",
-        error
-      );
+      console.error("Profile image upload error:", error);
 
       toast.error(
         error?.graphQLErrors?.[0]?.message ||
           error?.message ||
-          "Failed to update profile image."
+          "Failed to update profile image.",
       );
     } finally {
       setUploading(false);
@@ -109,22 +95,19 @@ export default function ProfileHeader({ user, refetch }) {
     <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-violet-700 via-purple-700 to-fuchsia-600 p-px shadow-2xl">
       <div className="rounded-3xl bg-white/60">
         <div className="relative overflow-hidden">
-
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#d8b4fe55,transparent_35%),radial-gradient(circle_at_bottom_left,#c4b5fd55,transparent_35%)]" />
 
           <div className="relative flex flex-col gap-4 sm:gap-8 p-4 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
-
             <div className="flex items-center gap-6">
               <div className="relative">
-
                 <div className="flex h-18 w-18 sm:h-28 sm:w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-violet-100 shadow-xl">
-<Image
-  src={user?.profileImage || "/ds-img/user2.webp"}
-  alt="Profile"
-  width={110}
-  height={110}
-  className="object-cover"
-/>
+                  <Image
+                    src={user?.profileImage || "/ds-img/user2.webp"}
+                    alt="Profile"
+                    width={110}
+                    height={110}
+                    className="object-cover"
+                  />
                 </div>
 
                 <input
@@ -137,72 +120,56 @@ export default function ProfileHeader({ user, refetch }) {
                 <button
                   type="button"
                   disabled={uploading}
-                  onClick={() =>
-                    fileInputRef.current?.click()
-                  }
+                  onClick={() => fileInputRef.current?.click()}
                   className="absolute bottom-1 right-1 flex h-5 w-5 cursor-pointer sm:h-9 sm:w-9 items-center justify-center rounded-full bg-violet-600 text-white shadow-lg hover:bg-violet-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploading ? (
-                    <span className="text-[10px] sm:text-sm">
-                      ...
-                    </span>
+                    <span className="text-[10px] sm:text-sm">...</span>
                   ) : (
                     <FaCamera size={14} />
                   )}
                 </button>
-
               </div>
 
               {/* ================= USER INFO ================= */}
 
               <div>
-
                 <div className="flex items-center gap-2">
-
                   <h1 className="text-xl sm:text-3xl font-bold text-slate-900">
                     {user?.name || "User"}
                   </h1>
 
-                  <MdVerified
-                    className="text-sky-500"
-                    size={24}
-                  />
-
+                  <MdVerified className="text-sky-500" size={24} />
                 </div>
 
                 <div className="mt-3 flex items-center gap-2 text-slate-600">
-
                   <FaPhoneAlt size={13} />
 
                   <span className="text-sm">
                     {user?.countryCode} {user?.mobile}
                   </span>
-
                 </div>
 
                 <p className="mt-2 text-xs text-slate-800">
                   Member since:{" "}
                   {user?.createdAt
-                    ? new Date(
-                        Number(user.createdAt)
-                      ).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
+                    ? new Date(Number(user.createdAt)).toLocaleDateString(
+                        "en-IN",
+                        {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )
                     : "-"}
                 </p>
-
               </div>
-
             </div>
 
             {/* ================= WALLET ================= */}
 
             <div className="flex w-full flex-wrap items-center gap-4">
-
               <div className="rounded-full w-full sm:rounded-2xl flex items-center justify-between gap-5 bg-violet-200 px-6 py-2 sm:py-4">
-
                 <p className="text-xs uppercase tracking-widest text-slate-500">
                   Wallet Balance
                 </p>
@@ -210,11 +177,8 @@ export default function ProfileHeader({ user, refetch }) {
                 <h2 className="mt-1 text-xl sm:text-3xl font-bold text-violet-700">
                   {user?.stats?.walletBalance || 0}
                 </h2>
-
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
