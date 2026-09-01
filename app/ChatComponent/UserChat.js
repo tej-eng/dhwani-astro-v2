@@ -396,6 +396,15 @@ const handleCheckout = async (amount, packId) => {
         );
 
         if (selectedPack) {
+            const requestData = JSON.parse(
+              localStorage.getItem(`chat_request_${room_Id}`) || "null",
+            );
+
+            console.log("----------- request -------------", requestData);
+            console.log(
+              "----------- pricePerMin -------------",
+              requestData?.pricePerMin,
+            );
           const newTime =
             timeLeft + selectedPack.talktime * 60;
 
