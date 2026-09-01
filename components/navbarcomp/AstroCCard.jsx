@@ -189,12 +189,12 @@ function AstroCCard({ mode = "chat", data = [], loading }) {
           <div key={index} className="overflow-hidden ">
             <div className="relative w-full   bg-center bg-cover  shadow-lg h-66 md:h-51 sm:p-1 back-astro-image">
               <div className="relative h-full p-2 overflow-hidden flex rounded-xl justify-center items-center text-white 	bg-linear-to-r from-purple-100 via-indigo-100 to-purple-100">
-                {!astro?.astro_tag ? (
+                {!astro?.tags ? (
                   <></>
                 ) : (
                   <div className="celeb-tag absolute -rotate-45 top-2 -left-8.75 z-20">
                     <span className="bg-[#ffd70a] p-1 text-[9px] text-black w-30 inline-block text-center  px-8">
-                      {astro?.astro_tag}
+                      {astro?.tags}
                     </span>
                   </div>
                 )}

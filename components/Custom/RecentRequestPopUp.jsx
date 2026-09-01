@@ -204,29 +204,6 @@ export default function RecentRequestPopup({
                     </p>
                   </div>
                 </div>
-
-              
-                <div className="sm:mt-3 mt-1 flex items-center justify-between">
-                  <span className="text-xs text-gray-500 uppercase">
-                    {mode} Price
-                  </span>
-
-                  <span className="font-semibold text-xs sm:text-sm text-purple-700">
-                    ₹
-                    {astrologer?.pricing?.find(
-                      (item) =>
-                        item?.type?.toUpperCase() === mode?.toUpperCase() &&
-                        item?.isActive,
-                    )?.price ||
-                      astrologer?.pricing?.find(
-                        (item) =>
-                          item?.type?.toUpperCase() === mode?.toUpperCase() &&
-                          item?.isActive,
-                      )?.price ||
-                      0}
-                    /min
-                  </span>
-                </div>
               </div>
             ))}
           </div>

@@ -307,12 +307,12 @@ export default function ProfileAstro({ astrologerId }) {
     <div className="w-full sm:p-3 sm:pt-5 md:pt-5">
       <div className="max-w-7xl p-3 mx-auto rounded-lg shadow-md  md:p-6">
         <div className="flex items-start relative overflow-hidden justify-evenly bg-linear-to-r from-yellow-100 p-3 rounded-2xl md:p-6 via-yellow-50 to-yellow-100 flex-col gap-5 sm:flex-row md:gap-10">
-          {!astrologerdetail?.astro_tag ? (
+          {!astrologerdetail?.tags ? (
             <></>
           ) : (
             <div className="celeb-tag absolute -rotate-45 top-4 left-[-35px] z-20">
               <span className="bg-[#ffd70a] p-1 text-[9px] text-black w-30 inline-block text-center  px-8">
-                {astrologerdetail?.astro_tag}
+                {astrologerdetail?.tags}
               </span>
             </div>
           )}
@@ -391,6 +391,9 @@ export default function ProfileAstro({ astrologerId }) {
               <span className="text-xs sm:text-sm font-semibold text-black">
                 {astrologerdetail?.totalSessions || 0} + Satisfied Consultations
               </span>
+                  <div className="text-xs sm:text-sm my-1 font-medium text-gray-700">
+                👥 {followersCount} Followers
+              </div>
 
               {/* <div className="flex flex-col mt-0 text-sm text-gray-700 sm:gap-1 lg:gap-1">
                 <span className="font-bold charge-price flex items-center gap-2">
@@ -461,7 +464,7 @@ export default function ProfileAstro({ astrologerId }) {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-lg text-red-700 font-extrabold">
-                        ₹{chatPricing?.price}
+                          {chatPricing?.price === 0 ? "Free" : `₹${chatPricing?.price}`}
                       </span>
 
                       <span className="line-through text-gray-200 text-sm">
@@ -502,7 +505,7 @@ export default function ProfileAstro({ astrologerId }) {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-lg text-red-700 font-extrabold">
-                        ₹{callPricing?.price}
+                         {callPricing?.price === 0 ? "Free" : `₹${callPricing?.price}`}
                       </span>
 
                       <span className="line-through text-gray-200 text-sm">
@@ -578,7 +581,8 @@ export default function ProfileAstro({ astrologerId }) {
                             </p>
 
                             <span className="text-sm text-red-600 font-bold">
-                              ₹{chatPrice?.price}/min
+                             {chatPrice?.price === 0 ? "Free" : `₹${chatPrice?.price}/min`}
+
                             </span>
                           </div>
                         </div>
