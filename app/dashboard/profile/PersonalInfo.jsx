@@ -7,6 +7,7 @@ import {
   FaBriefcase,
   FaVenusMars,
   FaClock,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -16,22 +17,28 @@ import EditProfileModal from "./EditProfileModal";
 import { UPDATE_USER_PROFILE } from "@/app/graphql/gqlQuery";
 import { useMutation } from "@apollo/client/react";
 import toast from "react-hot-toast";
- const profileSchema = z.object({
-    name: z
-      .string()
-      .trim()
-      .min(3, "Name must be at least 3 characters.")
-      .max(60, "Maximum 60 characters.")
-      .regex(/^[A-Za-z ]+$/, "Only alphabets are allowed."),
+const profileSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, "Name must be at least 3 characters.")
+    .max(60, "Maximum 60 characters.")
+    .regex(/^[A-Za-z ]+$/, "Only alphabets are allowed."),
 
-    gender: z.string().min(1, "Please select gender."),
+  gender: z.string().min(1, "Please select gender."),
 
-    birthDate: z.string().min(1, "Birth date is required."),
+  birthDate: z.string().min(1, "Birth date is required."),
 
-    birthTime: z.string().min(1, "Birth time is required."),
+  birthTime: z.string().min(1, "Birth time is required."),
 
-    occupation: z.string().trim().max(80, "Maximum 80 characters."),
-  });
+  occupation: z.string().trim().max(80, "Maximum 80 characters."),
+
+  birthPlace: z
+    .string()
+    .trim()
+    .max(150, "Maximum 150 characters.")
+    .optional(),
+});
 export default function PersonalInfo({
   user,
   refetch,
@@ -45,13 +52,14 @@ export default function PersonalInfo({
     formState: { errors },
   } = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: "",
-      gender: "",
-      birthDate: "",
-      birthTime: "",
-      occupation: "",
-    },
+  defaultValues: {
+  name: "",
+  gender: "",
+  birthDate: "",
+  birthTime: "",
+  occupation: "",
+  birthPlace: "",
+},
   });
 const [updateProfile, { loading }] = useMutation(
   UPDATE_USER_PROFILE
@@ -59,13 +67,14 @@ const [updateProfile, { loading }] = useMutation(
   useEffect(() => {
     if (!openEdit || !user) return;
 
-    reset({
-      name: user.name || "",
-      gender: user.gender || "",
-      birthDate: user.birthDate ? user.birthDate.split("T")[0] : "",
-      birthTime: user.birthTime || "",
-      occupation: user.occupation || "",
-    });
+reset({
+  name: user.name || "",
+  gender: user.gender || "",
+  birthDate: user.birthDate ? user.birthDate.split("T")[0] : "",
+  birthTime: user.birthTime || "",
+  occupation: user.occupation || "",
+  birthPlace: user.birthPlace || "",
+});
   }, [openEdit, user, reset]);
   const birthDate = user?.birthDate
     ? new Date(user.birthDate).toLocaleDateString("en-IN", {
@@ -77,17 +86,18 @@ const [updateProfile, { loading }] = useMutation(
 
  const onSubmit = async (data) => {
   try {
-    await updateProfile({
-      variables: {
-        input: {
-          name: data.name.trim(),
-          gender: data.gender,
-          birthDate: data.birthDate,
-          birthTime: data.birthTime,
-          occupation: data.occupation?.trim() || null,
-        },
-      },
-    });
+   await updateProfile({
+  variables: {
+    input: {
+      name: data.name.trim(),
+      gender: data.gender,
+      birthDate: data.birthDate,
+      birthTime: data.birthTime,
+      occupation: data.occupation?.trim() || null,
+      birthPlace: data.birthPlace?.trim() || null,
+    },
+  },
+});
 
     toast.success("Profile updated successfully.");
 
@@ -125,6 +135,7 @@ const [updateProfile, { loading }] = useMutation(
       label: "Birth Date",
       value: birthDate,
     },
+
     {
       icon: <FaClock />,
       label: "Birth Time",
@@ -135,6 +146,11 @@ const [updateProfile, { loading }] = useMutation(
       label: "Occupation",
       value: user?.occupation || "-",
     },
+        {
+  icon: <FaMapMarkerAlt />,
+  label: "Birth Place",
+  value: user?.birthPlace || "-",
+},
   ];
 
   return (

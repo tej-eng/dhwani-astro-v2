@@ -32,7 +32,7 @@ const AUTHWITH_OTP = gql`
 `;
 
 export const useOTP = () => {
-  const [step, setStep] = useState("PHONE"); // PHONE | OTP
+  const [step, setStep] = useState("PHONE"); 
   const [otp, setOtp] = useState(["", "", "", ""]);
   // const [countryCode, setCountryCode] = useState("+91");
   const [timer, setTimer] = useState(0);
