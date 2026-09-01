@@ -393,6 +393,16 @@ const UserChat = ({
           const selectedPack = rechargePacks.find((p) => p.id === packId);
 
           if (selectedPack) {
+            const requestData = JSON.parse(
+              localStorage.getItem(`chat_request_${room_Id}`) || "null",
+            );
+
+            console.log("----------- request -------------", requestData);
+            console.log(
+              "----------- pricePerMin -------------",
+              requestData?.pricePerMin,
+            );
+
             console.log(
               "---------------------------aaaaaaaaaaaaa",
               selectedPack.talktime * 60,
