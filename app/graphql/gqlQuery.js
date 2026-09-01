@@ -684,6 +684,8 @@ export const UPDATE_USER_PROFILE = gql`
       birthDate
       birthTime
       occupation
+      birthPlace
+      profileImage
     }
   }
 `;
