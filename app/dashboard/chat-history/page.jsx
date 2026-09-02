@@ -223,9 +223,7 @@ export default function ChatHistoryPage() {
                             }`}
                       </p>
 
-                      <span className="px-3 py-1 text-[10px] bg-violet-200 rounded-full">
-                        ₹{chat?.coinsDeducted}
-                      </span>
+                   
 
                       <span className="px-3 py-1 text-[10px] bg-purple-300 rounded-full">
                         ₹ {chat?.ratePerMin}/min
@@ -249,12 +247,28 @@ export default function ChatHistoryPage() {
 
                 {/* RIGHT */}
                 <div className="flex sm:flex-col items-center justify-between">
-                  <div className="text-[8px] sm:text-xs flex gap-1 text-right text-gray-500">
-                    <p>{new Date(chat?.createdAt).toLocaleDateString()}</p>
-                    <p>{new Date(chat?.createdAt).toLocaleTimeString()}</p>
-                  </div>
+                 <div className="text-[8px] sm:text-xs flex gap-1 text-right text-gray-500">
+  <p>
+    {new Date(chat?.createdAt).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+  </p>
 
-                  <div className="flex bg-black/10 rounded-full px-3 py-1 items-center justify-end gap-4 sm:mt-4">
+  <p>
+   , {new Date(chat?.createdAt).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })}
+  </p>
+</div>
+                     <span className="px-3 py-1 text-[10px] bg-red-300  rounded-full">
+                       Deduction :  ₹{chat?.coinsDeducted}
+                      </span>
+
+                  <div className="flex bg-black/10 rounded-full px-3 py-1 items-center justify-end gap-4 ">
                     {/* View Chat */}
                     <span
                       title="View Chat"
