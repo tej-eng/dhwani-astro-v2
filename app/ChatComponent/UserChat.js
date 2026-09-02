@@ -105,6 +105,25 @@ const UserChat = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const { socket, connectSocket } = useContext(SocketContext);
+  const [storedAstroName, setStoredAstroName] = useState("");
+
+  useEffect(() => {
+  if (!room_Id) return;
+
+  const savedRoom = localStorage.getItem(
+    `activeChatRoom_${room_Id}`
+  );
+
+  if (savedRoom) {
+    try {
+      const parsedRoom = JSON.parse(savedRoom);
+
+      setStoredAstroName(parsedRoom?.astroName || "");
+    } catch (error) {
+      console.error("Failed to parse active chat room:", error);
+    }
+  }
+}, [room_Id]);
   useEffect(() => {
     if (!socket) {
       connectSocket();
@@ -123,6 +142,7 @@ const UserChat = ({
       skip: !userIntakeId,
     },
   );
+  
   const saved = localStorage.getItem("activeChatSession");
   if (saved) {
     const parsed = JSON.parse(saved);
@@ -883,7 +903,7 @@ const handleCheckout = async (amount, packId) => {
               className="h-auto rounded-full md:w-10 w-7"
             />
             <div>
-              <div className="font-semibold text-sm">{astro_Name}</div>
+              <div className="font-semibold text-sm">{storedAstroName}</div>
               <div className="text-xs text-green-300">
                 {typingStatus || "Online"}
               </div>

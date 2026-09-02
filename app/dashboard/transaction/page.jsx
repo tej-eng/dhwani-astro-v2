@@ -193,13 +193,18 @@ export default function UserWalletTransactions() {
                   <div className="flex px-2 flex-col justify-between gap-2 sm:gap-4 md:flex-row">
                     {/* LEFT */}
                     <div>
-                      <h2 className="text-xs sm:text-xl font-semibold">
-                        {item?.astrologerName || "N/A"}
+                      <h2 className="text-xs sm:text-base font-semibold">
+                        {item?.description === "Recharge successful"
+                          ? "Wallet Recharge"
+                          : item?.astrologerName?.trim()
+                            ? item.astrologerName
+                            : "Admin Transaction"}
                       </h2>
-
-                      <p className="mt-1 text-[10px] sm:text-sm text-gray-500">
-                        Session ID: {item?.sessionId?.slice(0, 8) || "-"}
-                      </p>
+<p className="mt-1 text-[10px] sm:text-sm text-gray-500">
+  {item?.sessionId
+    ? `Session ID: ${item.sessionId.slice(0, 8)}`
+    : `TXN ID: ${item?.id?.slice(0, 8) || "-"}`}
+</p>
 
                       <div className="flex flex-wrap gap-3 mt-1 sm:mt-3">
                         <span className="px-3 py-1 text-[10px] sm:text-xs bg-violet-200 rounded-full">
@@ -225,7 +230,7 @@ export default function UserWalletTransactions() {
 
                     {/* RIGHT */}
                     <div className="flex flex-col justify-between">
-                      <div className="text-[10px] flex gap-1 sm:text-sm text-right text-gray-500">
+                      <div className="text-[10px] flex gap-1 sm:text-xs text-right text-gray-500">
                         <p>
                           {new Date(Number(item.createdAt)).toLocaleDateString(
                             "en-IN",
@@ -241,7 +246,7 @@ export default function UserWalletTransactions() {
 
                       <div className="sm:flex hidden justify-end mt-4">
                         <span
-                          className={`px-4 py-2 rounded-full text-sm font-medium ${
+                          className={`px-4 py-1 rounded-full text-xs font-medium ${
                             isDebit
                               ? "bg-red-100 text-red-700"
                               : "bg-green-100 text-green-700"

@@ -443,7 +443,8 @@ export default function RequestForm({ mode, astroId }) {
                     render={({ field }) => <input type="hidden" {...field} />}
                   />
                   <Select
-                    className="w-28 sm:w-32 text-xs p-0"
+                    readOnly
+                    className="w-28 sm:w-32 text-xs p-0 cursor-not-allowed opacity-70"
                     styles={selectStyles}
                     options={countries}
                     menuPortalTarget={
@@ -453,13 +454,6 @@ export default function RequestForm({ mode, astroId }) {
                     value={country}
                     getOptionValue={(option) => option.iso}
                     getOptionLabel={(option) => option.dialCode}
-                    onChange={(selected) => {
-                      setCountry(selected);
-
-                      setValue("countryCode", selected?.dialCode, {
-                        shouldValidate: true,
-                      });
-                    }}
                   />
 
                   <Controller
@@ -469,16 +463,11 @@ export default function RequestForm({ mode, astroId }) {
                       <CustomInput
                         {...field}
                         type="tel"
+                        readOnly
                         placeholder="Enter your contact number here"
-                        className="rounded-full text-sm border-gray-200 border bg-white focus:ring-purple-100  focus:ring-1 focus:outline-0 px-4 py-2"
+                        className="rounded-full text-sm border-gray-200 border bg-gray-100 px-4 py-2 cursor-not-allowed opacity-70"
                         error={errors.phone?.message}
                         maxLength={15}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 15);
-                          field.onChange(value);
-                        }}
                       />
                     )}
                   />
