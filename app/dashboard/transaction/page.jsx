@@ -200,11 +200,11 @@ export default function UserWalletTransactions() {
                             ? item.astrologerName
                             : "Admin Transaction"}
                       </h2>
-<p className="mt-1 text-[10px] sm:text-sm text-gray-500">
-  {item?.sessionId
-    ? `Session ID: ${item.sessionId.slice(0, 8)}`
-    : `TXN ID: ${item?.id?.slice(0, 8) || "-"}`}
-</p>
+                      <p className="mt-1 text-[10px] sm:text-sm text-gray-500">
+                        {item?.sessionId
+                          ? `Session ID: ${item.sessionId.slice(0, 8)}`
+                          : `TXN ID: ${item?.id?.slice(0, 8) || "-"}`}
+                      </p>
 
                       <div className="flex flex-wrap gap-3 mt-1 sm:mt-3">
                         <span className="px-3 py-1 text-[10px] sm:text-xs bg-violet-200 rounded-full">
@@ -230,19 +230,23 @@ export default function UserWalletTransactions() {
 
                     {/* RIGHT */}
                     <div className="flex flex-col justify-between">
-                      <div className="text-[10px] flex gap-1 sm:text-xs text-right text-gray-500">
-                        <p>
-                          {new Date(Number(item.createdAt)).toLocaleDateString(
-                            "en-IN",
-                          )}
-                        </p>
+            <div className="text-[10px] flex gap-1 sm:text-xs text-right text-gray-500">
+  <p>
+    {new Date(Number(item.createdAt)).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+  </p>
 
-                        <p>
-                          {new Date(Number(item.createdAt)).toLocaleTimeString(
-                            "en-IN",
-                          )}
-                        </p>
-                      </div>
+  <p>
+    ,{new Date(Number(item.createdAt)).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })}
+  </p>
+</div>
 
                       <div className="sm:flex hidden justify-end mt-4">
                         <span

@@ -14,7 +14,8 @@ import { createReviewRequest } from "../redux/reducer/auth/reviewSlice";
 import { debug } from "three/src/nodes/utils/DebugNode";
 import { removeActiveRequest } from "../redux/reducer/chat/sendRequestSlice";
 import { BiCheckDouble } from "react-icons/bi";
-
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 // ================= GRAPHQL =================
 const CREATE_ORDER = gql`
   mutation CreateOrder($input: CreateOrderInput!) {
@@ -101,6 +102,32 @@ const UserChat = ({
   astro_price,
   userIntakeId,
 }) => {
+    const [geoInfo, setGeoInfo] = useState({
+    ip: "",
+    city: "",
+    state: "",
+    country: "",
+  });
+  useEffect(() => {
+    const getGeo = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        // console.log("ghjghjgjhjg", data);
+
+        setGeoInfo({
+          ip: data.ip,
+          city: data.city,
+          state: data.region,
+          country: data.country_name,
+        });
+      } catch (err) {
+        console.error("Geo fetch failed", err);
+      }
+    };
+
+    getGeo();
+  }, []);
   const [createOrder] = useMutation(CREATE_ORDER);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -108,22 +135,20 @@ const UserChat = ({
   const [storedAstroName, setStoredAstroName] = useState("");
 
   useEffect(() => {
-  if (!room_Id) return;
+    if (!room_Id) return;
 
-  const savedRoom = localStorage.getItem(
-    `activeChatRoom_${room_Id}`
-  );
+    const savedRoom = localStorage.getItem(`activeChatRoom_${room_Id}`);
 
-  if (savedRoom) {
-    try {
-      const parsedRoom = JSON.parse(savedRoom);
+    if (savedRoom) {
+      try {
+        const parsedRoom = JSON.parse(savedRoom);
 
-      setStoredAstroName(parsedRoom?.astroName || "");
-    } catch (error) {
-      console.error("Failed to parse active chat room:", error);
+        setStoredAstroName(parsedRoom?.astroName || "");
+      } catch (error) {
+        console.error("Failed to parse active chat room:", error);
+      }
     }
-  }
-}, [room_Id]);
+  }, [room_Id]);
   useEffect(() => {
     if (!socket) {
       connectSocket();
@@ -142,7 +167,7 @@ const UserChat = ({
       skip: !userIntakeId,
     },
   );
-  
+
   const saved = localStorage.getItem("activeChatSession");
   if (saved) {
     const parsed = JSON.parse(saved);
@@ -368,106 +393,106 @@ const UserChat = ({
     });
   };
   // ================= RECHARGE FUNCTION =================
-const handleCheckout = async (amount, packId) => {
-  try {
-    customer_recharge();
-    setIsPaused(true);
-    const { data } = await createOrder({
-      variables: {
-        input: {
-          rechargePackId: packId,
-          coupan_code: "",
+  const handleCheckout = async (amount, packId) => {
+    try {
+      customer_recharge();
+      setIsPaused(true);
+      const { data } = await createOrder({
+        variables: {
+          input: {
+            rechargePackId: packId,
+            coupan_code: "",
+          },
         },
-      },
-    });
+      });
 
-    const order = data?.createOrder;
-    if (!order?.success || !order?.orderId) {
-      setIsPaused(false);
-      toast.error("Error creating order");
-      return;
-    }
+      const order = data?.createOrder;
+      if (!order?.success || !order?.orderId) {
+        setIsPaused(false);
+        toast.error("Error creating order");
+        return;
+      }
 
-    const options = {
-      key:
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-        "rzp_test_SNXjhTOgP1CIx0",
+      const options = {
+        key:
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SNXjhTOgP1CIx0",
 
-      // Backend ke Razorpay order se aaya amount
-      amount: order.amount,
+        // Backend ke Razorpay order se aaya amount
+        amount: order.amount,
 
-      currency: order.currency,
-      order_id: order.orderId,
+        currency: order.currency,
+        order_id: order.orderId,
 
-      name: "Dhwani Astro LLP",
-      description: "Wallet Recharge",
+        name: "Dhwani Astro LLP",
+        description: "Wallet Recharge",
 
-      notes: {
-        userId: user?.id ?? "guest",
-        rechargePackId: packId,
-        platform: "WEB",
-      },
+        notes: {
+          userId: user?.id ?? "guest",
+          rechargePackId: packId,
+              ipAddress: geoInfo.ip,
+                state: geoInfo.state,
+                city: geoInfo.city,
+                country: geoInfo.country,
+          platform: "WEB",
+        },
 
-      handler: async function (response) {
-        toast.success("Payment Successful");
+        handler: async function (response) {
+          toast.success("Payment Successful");
 
-        const selectedPack = rechargePacks.find(
-          (p) => p.id === packId
-        );
+          const selectedPack = rechargePacks.find((p) => p.id === packId);
 
-        if (selectedPack) {
-          debugger;
-          console.log("-------------room_Id----------",room_Id);
-          const requestData = JSON.parse(
-              localStorage.getItem(`chat_request_${room_Id}`) || "null",
+          if (selectedPack) {
+            debugger;
+            console.log("-------------room_Id----------", room_Id);
+            const requestData = JSON.parse(
+              localStorage.getItem(`activeRequests`) || "null",
             );
 
             console.log("----------- request -------------", requestData);
-            console.log(
-              "----------- pricePerMin -------------",
-              requestData?.pricePerMin,
-            );
-          const newTime =
-            timeLeft + selectedPack.talktime * 60;
+       console.log(
+  "----------- pricePerMin -------------",
+  requestData?.[0]?.astrologer?.pricePerMin
+);
+            const newTime = timeLeft + selectedPack.talktime * 60/requestData?.[0]?.astrologer?.pricePerMin;
 
-          customer_recharge_completed(newTime);
+            customer_recharge_completed(newTime);
 
-          setTimeLeft(newTime);
-        }
+            setTimeLeft(newTime);
+          }
 
-        setIsPaused(false);
-      },
-
-      modal: {
-        ondismiss: function () {
-          customer_recharge_fail();
-          toast.error("Payment Cancelled");
           setIsPaused(false);
         },
-      },
 
-      theme: {
-        color: "#fff49e",
-      },
-    };
+        modal: {
+          ondismiss: function () {
+            customer_recharge_fail();
+            toast.error("Payment Cancelled");
+            setIsPaused(false);
+          },
+        },
 
-    if (!window.Razorpay) {
+        theme: {
+          color: "#fff49e",
+        },
+      };
+
+      if (!window.Razorpay) {
+        setIsPaused(false);
+        toast.error("Razorpay is not loaded");
+        return;
+      }
+
+      const razor = new window.Razorpay(options);
+
+      razor.open();
+    } catch (error) {
+      console.error("🔴 Checkout Error:", error);
+
       setIsPaused(false);
-      toast.error("Razorpay is not loaded");
-      return;
+
+      toast.error(error?.message || "Payment failed");
     }
-
-    const razor = new window.Razorpay(options);
-
-    razor.open();
-  } catch (error) {
-    console.error("🔴 Checkout Error:", error);
-
-    setIsPaused(false);
-
-    toast.error(error?.message || "Payment failed");
-  }
-};
+  };
 
   const handleMessageChange = (e) => {
     const value = e.target.value;
@@ -500,8 +525,8 @@ const handleCheckout = async (amount, packId) => {
   const emitChatCompleted = () => {
     if (chatEndedRef.current) return;
     clearInterval(intervalRef.current);
-          intervalRef.current = null;
-   // chatEndedRef.current = true;
+    intervalRef.current = null;
+    // chatEndedRef.current = true;
 
     setChatEnded(true);
 
@@ -628,9 +653,7 @@ const handleCheckout = async (amount, packId) => {
     });
 
     socket.on("typing", (data) => {
-
       if (data.user_name === "Astrologer") {
-        
         setTypingStatus(data.typing ? "Astrologer typing..." : "");
       }
     });
@@ -966,7 +989,7 @@ const handleCheckout = async (amount, packId) => {
               onMouseLeave={() => setHoveredIndex(null)}
               className={`relative w-[60%] max-w-fit flex flex-col ${
                 msg.sender === "Astrologer"
-                  ? "justify-self-start bg-yellow-100 me-7"
+                  ? "justify-self-start bg-yellow-100 mx-4"
                   : "justify-self-end bg-purple-100 ms-7"
               } rounded-lg px-3 py-2 text-gray-700 md:text-xs tracking-wide  text-[10px] gap-0.5`}
             >
@@ -977,10 +1000,15 @@ const handleCheckout = async (amount, packId) => {
                     <strong>{msg.replyTo.sender}</strong>:{" "}
                     {msg.replyTo.message?.slice(0, 40)}
                     {msg.replyTo.image && (
-                      <img
-                        src={msg.replyTo.image}
-                        className="w-10 h-10 mt-1 rounded"
-                      />
+                    <span>
+                              <Zoom>
+                                <img
+                                  src={msg.replyTo.image}
+                                  alt="reply-img"
+                                  className="inline-block object-cover w-8 h-8 align-middle border border-gray-300 rounded-md"
+                                />
+                              </Zoom>
+                            </span>
                     )}
                   </div>
                 )}
@@ -989,37 +1017,14 @@ const handleCheckout = async (amount, packId) => {
                 {msg.message && <div>{msg.message}</div>}
 
                 {msg.image && (
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setHoveredIndex(i)}
-                  >
-                    <img
-                      src={msg.image}
-                      className="mt-2 w-32 h-32 rounded-lg object-cover"
-                    />
-
-                    {hoveredIndex === i && (
-                      <button
-                        onClick={() => setReplyTo(msg)}
-                        className="absolute top-1 left-[-22px] group"
-                      >
-                        <span className="relative flex items-center justify-center w-8 h-8 border rounded-lg shadow bg-white">
-                          <svg
-                            fill="currentColor"
-                            width="16"
-                            height="16"
-                            className="text-blue-500"
-                            viewBox="0 0 640 640"
-                          >
-                            <path d="M364.2 82.4C376.2 87.4 384 99 384 112L384 192L432 192C529.2 192 608 270.8 608 368C608 481.3 526.5 531.9 507.8 542.1C505.3 543.5 502.5 544 499.7 544C488.8 544 480 535.1 480 524.3C480 516.8 484.3 509.9 489.8 504.8C499.2 496 512 478.4 512 448.1C512 395.1 469 352.1 416 352.1L384 352.1L384 432.1C384 445 376.2 456.7 364.2 461.7C352.2 466.7 338.5 463.9 329.3 454.8L169.3 294.8C156.8 282.3 156.8 262 169.3 249.5L329.3 89.5C338.5 80.3 352.2 77.6 364.2 82.6z" />
-                          </svg>
-
-                          <span className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-700 text-white text-[10px] rounded px-2 py-1">
-                            Reply
-                          </span>
-                        </span>
-                      </button>
-                    )}
+                  <div className="relative">
+                       <Zoom>
+                            <img
+                              src={msg.image}
+                              alt="uploaded"
+                              className="object-cover w-32 h-32 rounded-lg cursor-zoom-in"
+                            />
+                          </Zoom>
                   </div>
                 )}
 
@@ -1034,9 +1039,9 @@ const handleCheckout = async (amount, packId) => {
                 {hoveredIndex === i && (
                   <button
                     onClick={() => setReplyTo(msg)}
-                    className="absolute top-[5px] left-[-22px] group"
+                    className="absolute top-1.25 -left-5.5 group"
                   >
-                    <span className="relative flex items-center justify-center w-8 h-8 border rounded-lg shadow bg-white">
+                    <span className="relative flex  cursor-pointer items-center justify-center w-6 h-6 border border-gray-300 rounded-lg shadow bg-white">
                       <svg
                         fill="currentColor"
                         className="text-blue-500"
@@ -1060,20 +1065,26 @@ const handleCheckout = async (amount, packId) => {
         </div>
 
         {replyTo && (
-          <div className="mx-3 mb-2 p-2 rounded-lg bg-blue-50 max-w-fit flex gap-5 text-black  border-l-4 border-purple-500 flex justify-between items-start">
+          <div className="mx-3 mb-2 p-1 rounded-lg bg-blue-50 max-w-fit flex gap-5 text-black  border-l-4 border-purple-500 flex justify-between items-start">
             <div className="text-xs">
-              <strong>Reply to {replyTo.sender}</strong>
+              <strong className="text-[10px]">Reply to {replyTo.sender}</strong>
 
-              <div className="mt-1">{replyTo.message?.slice(0, 40)}</div>
+              <div className="">{replyTo.message?.slice(0, 40)}</div>
 
               {replyTo.image && (
-                <img src={replyTo.image} className="w-10 h-10 rounded mt-2" />
+                <Zoom>
+                        <img
+                          src={replyTo.image}
+                          alt="reply-img"
+                          className="inline-block object-cover w-8 h-8 align-middle border border-gray-300 rounded-md"
+                        />
+                      </Zoom>
               )}
             </div>
 
             <button
               onClick={() => setReplyTo(null)}
-              className="text-red-500 cursor-pointer hover:scale-104"
+              className="text-red-500 bg-gray-300 rounded-full h-5 w-5 cursor-pointer text-xs"
             >
               ✕
             </button>
@@ -1082,7 +1093,7 @@ const handleCheckout = async (amount, packId) => {
 
         {/*  IMAGE PREVIEW */}
         {imagePreview && (
-          <div className="px-3 py-2 flex items-center gap-2">
+          <div className="px-3 py-2 flex items-start gap-0">
             <img
               src={imagePreview}
               className="w-16 h-16 object-cover rounded"
@@ -1092,9 +1103,9 @@ const handleCheckout = async (amount, packId) => {
                 setImagePreview(null);
                 setImageFile(null);
               }}
-              className="text-red-500"
+              className="text-red-500 bg-gray-300 rounded-full h-5 w-5 cursor-pointer text-xs"
             >
-              Remove
+              X
             </button>
           </div>
         )}

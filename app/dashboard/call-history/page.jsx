@@ -291,9 +291,7 @@ export default function UserCallHistory() {
                             }`}
                       </p>
 
-                      <span className="px-3 py-1 text-[10px] bg-violet-200 rounded-full">
-                        ₹ {call?.coinsDeducted}
-                      </span>
+                   
 
                       <span className="px-3 py-1 text-[10px] bg-purple-300 rounded-full">
                         ₹ {call?.ratePerMin}/min
@@ -316,17 +314,33 @@ export default function UserCallHistory() {
                   </div>
 
                   {/* RIGHT */}
-                  <div className="flex  justify-between">
-                    <div className="text-[10px] flex gap-1  text-right text-gray-500">
-                      <p>{new Date(call?.createdAt).toLocaleDateString()}</p>
-                      <p>{new Date(call?.createdAt).toLocaleTimeString()}</p>
-                    </div>
+                  <div className="flex  flex-col justify-between">
+                                 <div className="text-[8px] sm:text-xs flex gap-1 text-right text-gray-500">
+  <p>
+    {new Date(call?.createdAt).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+  </p>
 
-                    <div className="sm:flex hidden justify-end sm:mt-4">
+  <p>
+   , {new Date(call?.createdAt).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })}
+  </p>
+</div>
+                       <span className="px-3 py-1 text-[10px] bg-violet-200 rounded-full">
+                       Deduction : ₹ {call?.coinsDeducted}
+                      </span>
+
+                    {/* <div className="sm:flex hidden justify-end sm:mt-4">
                       <span className="px-4 py-1 text-sm font-medium text-purple-700 bg-purple-100 rounded-full">
                         Call Session
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
