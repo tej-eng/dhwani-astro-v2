@@ -16,6 +16,7 @@ const ChatRequestCard = ({
   astro_id,
   type,
 }) => {
+  
   const dispatch = useDispatch();
   const route = useRouter();
   const { socket, connectSocket } = useContext(SocketContext);
@@ -368,7 +369,13 @@ const ChatRequestCard = ({
       setShowQueuePopup(false);
       setQueueData(null);
 
-      localStorage.setItem(`activeChatRoom_${room_Id}`, room_Id);
+     localStorage.setItem(
+  `activeChatRoom_${room_Id}`,
+  JSON.stringify({
+    roomId: room_Id,
+    astroName: astro_Name,
+  })
+);
 
       [
         "chatActive",
