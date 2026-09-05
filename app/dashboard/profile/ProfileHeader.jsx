@@ -101,7 +101,8 @@ export default function ProfileHeader({ user, refetch }) {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <div className="flex h-18 w-18 sm:h-28 sm:w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-violet-100 shadow-xl">
-                  <Image
+                  <img
+                  
                     src={user?.profileImage || "/ds-img/user2.webp"}
                     alt="Profile"
                     width={110}
