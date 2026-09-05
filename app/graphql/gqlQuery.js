@@ -719,3 +719,57 @@ export const GET_ASTROLOGER_CATEGORIES = gql`
     }
   }
 `;
+
+export const GET_PAYMENT_INVOICE = gql`
+  query GetPaymentInvoice($transactionId: ID!) {
+    getPaymentInvoice(transactionId: $transactionId) {
+      id
+      invoiceNo
+
+      transactionId
+      razorpayOrderId
+      razorpayPaymentId
+
+      amount
+      discount
+      taxableAmount
+
+      sgst
+      cgst
+      igst
+
+      sgstRate
+      cgstRate
+      igstRate
+      gstRate
+
+      totalTax
+      totalAmount
+      amountReceived
+      amountInWords
+
+      userName
+      city
+      state
+      pincode
+      country
+
+      placeOfSupply
+
+      supplierGSTIN
+      supplierAddress
+      website
+      email
+
+      recipientGSTIN
+
+      transactionHistoryUrl
+
+      hsnSac
+      reverseCharge
+      panNumber
+
+      createdAt
+    }
+  }
+`;
