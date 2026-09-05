@@ -670,6 +670,8 @@ const UserChat = ({
           "chatActive",
           `activeChatRoom_${room_Id}`,
           "activeChatSession",
+          `queue_${room_Id}`,
+`timer_${room_Id}`
         ].forEach((key) => {
           localStorage.removeItem(key);
         });

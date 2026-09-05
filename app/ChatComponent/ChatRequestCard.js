@@ -95,10 +95,10 @@ const ChatRequestCard = ({
               type: type,
             });
             dispatch(removeActiveRequest(room_Id));
-            [`call_request_${room_Id}`].forEach((key) =>
+            [`${type}_request_${room_Id}`].forEach((key) =>
               localStorage.removeItem(key),
             );
-            toast.success("Chat request timed out. Please try again.");
+            toast.success(`${type} request timed out. Please try again.`);
           } else {
             socket.once("connect", () => {
               socket.emit("autodisconnect", {
@@ -107,10 +107,10 @@ const ChatRequestCard = ({
                 type: type,
               });
               dispatch(removeActiveRequest(room_Id));
-              [`call_request_${room_Id}`].forEach((key) =>
+              [`${type}_request_${room_Id}`].forEach((key) =>
                 localStorage.removeItem(key),
               );
-              toast.success("Chat request timed out. Please try again.");
+              toast.success(`${type} request timed out. Please try again.`);
             });
           }
         }
@@ -373,7 +373,6 @@ const ChatRequestCard = ({
   `activeChatRoom_${room_Id}`,
   JSON.stringify({
     roomId: room_Id,
-    astroName: astro_Name,
   })
 );
 
